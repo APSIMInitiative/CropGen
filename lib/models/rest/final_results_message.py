@@ -1,3 +1,5 @@
+import logging
+
 from lib.models.common.model import Model
 from lib.problems.output_value import OutputValue
 from lib.utils.date_time_helper import DateTimeHelper
@@ -39,9 +41,13 @@ class FinalResultsMessage(Model):
 
     # Extracts all of the inputs from the minimise result
     #
-    def _extract_inputs(self, job_request_inputs, variable_values_non_dominated_individuals):        
+    def _extract_inputs(self, job_request_inputs, variable_values_non_dominated_individuals):
         inputs = []
         id = 0
+
+        if not self._check_array_lengths(job_request_inputs, variable_values_non_dominated_individuals):
+            return inputs
+
         for input in job_request_inputs:
             results = []
             for result in variable_values_non_dominated_individuals[:, id]:
@@ -50,6 +56,20 @@ class FinalResultsMessage(Model):
             inputs.append(InputOutput(input.Name, results))
             id += 1
         return inputs
+
+
+    def _check_input_lengths(job_request_inputs, variable_values_non_dominated_individuals):
+        job_request_input_length = len(job_request_inputs)
+        algorithm_value_length = len(variable_values_non_dominated_individuals)
+        
+        if job_request_input_length > algorithm_value_length:
+            logging.error("job_request_inputs and variable_values_non_dominated_individuals have different lengths.")
+            logging.error("Length of job_request_inputs: %d", job_request_input_length)
+            logging.error("Length of variable_values_non_dominated_individuals: %d", algorithm_value_length)
+            logging.error("Contents of job_request_inputs: %s", job_request_inputs)
+            logging.error("Contents of variable_values_non_dominated_individuals: %s", variable_values_non_dominated_individuals)
+            return False
+        return True
 
     #
     # Extracts all of the outputs from the minimise result
