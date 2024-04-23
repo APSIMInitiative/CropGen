@@ -45,7 +45,7 @@ class FinalResultsMessage(Model):
         inputs = []
         id = 0
 
-        if not self._check_array_lengths(job_request_inputs, variable_values_non_dominated_individuals):
+        if not self._check_input_lengths(job_request_inputs, variable_values_non_dominated_individuals):
             return inputs
 
         for input in job_request_inputs:
@@ -58,7 +58,7 @@ class FinalResultsMessage(Model):
         return inputs
 
 
-    def _check_input_lengths(job_request_inputs, variable_values_non_dominated_individuals):
+    def _check_input_lengths(self, job_request_inputs, variable_values_non_dominated_individuals):
         job_request_input_length = len(job_request_inputs)
         algorithm_value_length = len(variable_values_non_dominated_individuals)
         
