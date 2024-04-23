@@ -45,6 +45,10 @@ class FinalResultsMessage(Model):
         inputs = []
         id = 0
 
+        logging.info("Extracting inputs for FinalResultsMessage")
+        logging.info("Job_request_inputs: %s", job_request_inputs)
+        logging.info("Variable_values_non_dominated_individuals: %s", variable_values_non_dominated_individuals)
+
         if not self._check_input_lengths(job_request_inputs, variable_values_non_dominated_individuals):
             return inputs
 
@@ -65,9 +69,7 @@ class FinalResultsMessage(Model):
         if job_request_input_length > algorithm_value_length:
             logging.error("job_request_inputs and variable_values_non_dominated_individuals have different lengths.")
             logging.error("Length of job_request_inputs: %d", job_request_input_length)
-            logging.error("Length of variable_values_non_dominated_individuals: %d", algorithm_value_length)
-            logging.error("Contents of job_request_inputs: %s", job_request_inputs)
-            logging.error("Contents of variable_values_non_dominated_individuals: %s", variable_values_non_dominated_individuals)
+            logging.error("Length of variable_values_non_dominated_individuals: %d", algorithm_value_length)            
             return False
         return True
 
