@@ -1,5 +1,3 @@
-import logging
-
 from lib.models.common.model import Model
 from lib.problems.output_value import OutputValue
 from lib.utils.date_time_helper import DateTimeHelper
