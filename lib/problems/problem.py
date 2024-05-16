@@ -49,6 +49,9 @@ class Problem(ProblemBase):
         apsim_data = APSimSimulationData()
         simulation_names = apsim_data.get_simulation_names(self.run_job_request.JobID)
 
+        if max_simulations and max_simulations > 0 and not simulation_names:
+            logging.warn("MaxSimulations set but cannot find simulation names for JobID: %s", self.run_job_request.JobID)
+
         if (max_simulations and
             max_simulations > 0 and
             simulation_names
