@@ -49,13 +49,13 @@ class Problem(ProblemBase):
         apsim_data = APSimSimulationData()
         simulation_names = apsim_data.get_simulation_names(self.run_job_request.JobID)
 
-        if max_simulations and max_simulations > 0 and not simulation_names:
-            logging.warn("MaxSimulations set but cannot find simulation names for JobID: %s", self.run_job_request.JobID)
-
         if (max_simulations and
-            max_simulations > 0 and
-            simulation_names
+            max_simulations > 0
         ):
+            # If we're being asked to split the simulation names up, but there is no simulation names configured, throw.
+            if not simulation_names: 
+                raise Exception(f"MaxSimulations set but cannot find simulation names for JobID: {self.run_job_request.JobID}")
+
             return self._perform_relay_apsim_staggered_requests(variable_values_for_population, simulation_names, max_simulations)
         else:
             return self._perform_relay_apsim_one_request(variable_values_for_population)
