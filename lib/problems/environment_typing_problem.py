@@ -77,5 +77,5 @@ class EnvironmentTypingProblem(ProblemBase):
             logging.error(str(e))
             return
 
-        logging.info("Environment Typing Sorted Results:")
-        logging.info(json_str)
+        logging.debug("Environment Typing Sorted Results:")
+        logging.debug(json_str)
