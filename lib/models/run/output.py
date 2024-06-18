@@ -28,7 +28,7 @@ class Output(Model):
     #
     @staticmethod
     def parse_outputs(json_object, errors):
-        outputs = JsonHelper.get_attribute(json_object, 'Outputs', errors)
+        outputs = JsonHelper.get_attribute(json_object, 'outputs', errors)
 
         if not outputs:
             errors.append("No outputs supplied.")

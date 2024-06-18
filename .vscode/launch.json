@@ -5,21 +5,8 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Remote Attach",
-            "type": "python",
-            "request": "attach",
-            "port": 5678,
-            "host": "localhost",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "/cropgen"
-                }
-            ]
-        },
-        {
             "name": "Run",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
@@ -28,8 +15,21 @@
             ]
         },
         {
+            "name": "RunNew",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main_new.py",
+            "console": "integratedTerminal",
+            "args": [
+                ""
+            ],
+            "env": {
+                "JobsServer": "http://localhost:8084"
+            }
+        },
+        {
             "name": "RunZmq",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "main_zmq.py",
             "console": "integratedTerminal",
@@ -38,49 +38,12 @@
             ]
         },
         {
-            "name": "Docker: Python - General",
-            "type": "docker",
-            "request": "launch",
-            "preLaunchTask": "docker-run: debug",
-            "python": {
-                "pathMappings": [
-                    {
-                        "localRoot": "${workspaceFolder}",
-                        "remoteRoot": "/crop-gen"
-                    }
-                ],
-                "projectType": "general"
-            }
-        },
-        {
             "name": "RunTests",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "run_tests.py",
             "console": "integratedTerminal",
             "args": [""]
         }
-
-        // {
-        //     "name": "Run",
-        //     "type": "python",
-        //     "request": "launch",
-        //     "program": "lib//utility_scripts//environment_type_csv_convert.py",
-        //     "console": "integratedTerminal",
-        //     //"args": ["all"],
-        //     "args": ["C:\\Projects\\uq\\CGM\\crop_gen\\lib\\utility_scripts\\data\\sorghum-factorials_et0.csv"]
-        // }
-
-        // {
-        //     "name": "Run",
-        //     "type": "python",
-        //     "request": "launch",
-        //     "program": "lib//utility_scripts//plot_graphs.py",
-        //     "console": "integratedTerminal",
-        //     "args": [
-        //         "C:\\CropGenResults\\CropGen_Results.12\\optimal_individuals_JobID-12.csv", 
-        //         "C:\\CropGenResults\\CropGen_Results.12\\all_individuals_JobID-12.csv"
-        //     ]
-        // }
     ]
 }

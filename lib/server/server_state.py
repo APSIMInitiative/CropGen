@@ -1,5 +1,6 @@
 import threading
 import logging
+from lib.server.job_state import JobState 
 
 #
 # Records the state of the server.
@@ -12,6 +13,7 @@ class ServerState():
     def __init__(self):
         self.lock = threading.Lock()
         self.running_job = ''
+        self.job_state = JobState.Created
 
     #
     # Get whether a job is currently running.
