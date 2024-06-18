@@ -13,9 +13,12 @@ class RunApsimResponse(Model):
     # Constructor
     #
     def __init__(self):
+        self.JobID = ''
         self.ID = 0
         self.Fields = []
         self.Rows = []
+        self.RunTime = 0.0
+        self.RunSource = ''
 
     #
     # Parses the JSON data into this class.
@@ -24,9 +27,12 @@ class RunApsimResponse(Model):
         errors = []
         try:
             json_object = json.loads(message)
+            self.JobID = JsonHelper.get_attribute(json_object, 'JobID', errors)
             self.ID = JsonHelper.get_attribute(json_object, 'ID', errors)
             self.Fields = JsonHelper.get_attribute(json_object, 'Fields', errors)
             self.Rows = self._parse_apsim_results(json_object, errors)
+            self.RunTime = JsonHelper.get_attribute(json_object, 'RunTime', errors)
+            self.RunSource = JsonHelper.get_attribute(json_object, 'RunSource', errors)
         except JSONDecodeError as error:
             errors.append(f"Failed to parse {self.get_type_name()} JSON: '{message}'. Error: '{error}'")
         return errors

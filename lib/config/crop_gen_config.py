@@ -64,6 +64,7 @@ class CropGenConfig(Model):
         self.RemoteLoggerUrl = self._get_config_setting(data, 'RemoteLoggerUrl', '')
         self.RestartAfterConfigUpdate = self._get_config_setting(data, 'RestartAfterConfigUpdate', False)
         self.InitWorkersPreRunSimulations = self._get_config_setting(data, 'InitWorkersPreRunSimulations', False)
+        self.AlwaysResetRunner = self._get_config_setting(data, 'AlwaysResetRunner', False)
 
     #
     # Writes this config, back to disk.

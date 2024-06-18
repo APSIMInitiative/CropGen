@@ -39,12 +39,19 @@ class FinalResultsMessage(Model):
 
     # Extracts all of the inputs from the minimise result
     #
-    def _extract_inputs(self, job_request_inputs, variable_values_non_dominated_individuals):        
+    def _extract_inputs(self, job_request_inputs, variable_values_non_dominated_individuals):
         inputs = []
         id = 0
+        is_multi_dimensional_arr = len(variable_values_non_dominated_individuals.shape) > 1
+
         for input in job_request_inputs:
             results = []
-            for result in variable_values_non_dominated_individuals[:, id]:
+
+            if is_multi_dimensional_arr:
+                for result in variable_values_non_dominated_individuals[:, id]:
+                    results.append(result)                
+            else:
+                result = variable_values_non_dominated_individuals[id]
                 results.append(result)
 
             inputs.append(InputOutput(input.Name, results))
@@ -57,12 +64,24 @@ class FinalResultsMessage(Model):
     def _extract_outputs_single_year_sim(self, job_request_outputs, objective_values_non_dominated_individuals):
         outputs = []
         id = 0
+        is_multi_dimensional_arr = len(objective_values_non_dominated_individuals.shape) > 1
+
         for output in job_request_outputs:
             results = []
 
             if not output.Optimise: continue
 
-            for result in objective_values_non_dominated_individuals[:, id]:
+            if is_multi_dimensional_arr:
+                for result in objective_values_non_dominated_individuals[:, id]:
+                    output_value = OutputValue(
+                        result, 
+                        output.ApsimOutputName, 
+                        output.Maximise, 
+                        output.Multiplier
+                    )
+                    results.append(output_value.get_output_value_from_algorithm())
+            else:
+                result = objective_values_non_dominated_individuals[id]
                 output_value = OutputValue(
                     result, 
                     output.ApsimOutputName, 
@@ -70,6 +89,7 @@ class FinalResultsMessage(Model):
                     output.Multiplier
                 )
                 results.append(output_value.get_output_value_from_algorithm())
+
             outputs.append(InputOutput(output.ApsimOutputName, results))
             id += 1
         return outputs
@@ -80,16 +100,30 @@ class FinalResultsMessage(Model):
     def _extract_outputs_multi_year_sim(self, processed_aggregated_outputs, objective_values_non_dominated_individuals):
         outputs = []
         id = 0
-        for output in processed_aggregated_outputs:            
+
+        is_multi_dimensional_arr = len(objective_values_non_dominated_individuals.shape) > 1
+
+        for output in processed_aggregated_outputs:
             results = []
-            for result in objective_values_non_dominated_individuals[:, id]:
+            if is_multi_dimensional_arr:
+                for result in objective_values_non_dominated_individuals[:, id]:
+                    output_value = OutputValue(
+                        result, 
+                        output.DisplayName, 
+                        output.Maximise, 
+                        output.Multiplier
+                    )
+                    results.append(output_value.get_output_value_from_algorithm())
+            else:
+                result = objective_values_non_dominated_individuals[id]
                 output_value = OutputValue(
-                    result, 
-                    output.DisplayName, 
-                    output.Maximise, 
-                    output.Multiplier
-                )
+                        result, 
+                        output.DisplayName, 
+                        output.Maximise, 
+                        output.Multiplier
+                    )
                 results.append(output_value.get_output_value_from_algorithm())
+
             outputs.append(InputOutput(output.DisplayName, results))
             id += 1
         return outputs

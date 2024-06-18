@@ -35,10 +35,18 @@ class OutputValue():
         result = self.raw_apsim_output
         if self.output_maximise:
             result = abs(self.raw_apsim_output)
-        return result * self.output_multiplier
+        
+        if self.output_multiplier > 0:
+            result *= self.output_multiplier
+
+        return result
     
     #
     # Gets the output value for use in results.
     #
     def get_output_value_for_results(self):
-        return self.raw_apsim_output * self.output_multiplier
+        result = self.raw_apsim_output
+
+        if self.output_multiplier > 0:
+            result *= self.output_multiplier
+        return result

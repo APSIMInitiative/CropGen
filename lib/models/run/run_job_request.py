@@ -190,7 +190,11 @@ class RunJobRequest(Model):
     # Determines whether the APSIM runner should be reset each Relay Apsim request or whether it should
     # use a fixed runner all of the way through the job.
     #
-    def get_should_reset_runner(self):
+    def get_should_reset_runner(self, config):
+
+        if config.AlwaysResetRunner:
+            return True
+
         reset_runner = (
             self.get_is_environment_typing_run() or 
             (
