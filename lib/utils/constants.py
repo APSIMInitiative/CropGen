@@ -9,6 +9,7 @@ class Constants():
     MINIMIZE_CONSTRAINT_NUMBER_OF_GENERATIONS = 'n_gen'
     OBJECTIVE_VALUES_ARRAY_INDEX = 'F'
     CGM_SERVER = 'CGM Server'
+    CGM_RELAY_APP_NAME = "CGMRelay"
 
     # Messages - Comparisons are made after converting the value to test to lowercase.
     RUN_MESSAGE = 'runcropgen'

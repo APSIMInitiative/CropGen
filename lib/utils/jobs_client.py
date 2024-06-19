@@ -5,8 +5,10 @@ import time
 from typing import Optional
 
 from lib.models.run.crop_gen_job import CropGenJob
+from lib.server.job_state import JobState
 
 class JobsClient:
+    
     def __init__(
         self, 
         client: requests.Session, 
@@ -21,7 +23,10 @@ class JobsClient:
         logging.info(f"Base URL: {base_url}")
 
 
-    def retrieve_service(self, name: str):
+    def retrieve_service(
+        self, 
+        name: str
+    ):
         url = f"{self._client.base_url}/api/services/address/{name}/{self._hpc_id}"
         retries = 5
 
@@ -52,15 +57,15 @@ class JobsClient:
     def update_job_status(
         self, 
         id: str, 
-        status: str, 
-        current_iteration: Optional[int] = None,
-        total_iterations: Optional[int] = None, 
-        avg_run_time: Optional[float] = None
+        status: JobState, 
+        current_iteration: Optional[int] = 0,
+        total_iterations: Optional[int] = 0, 
+        avg_run_time: Optional[float] = 0
     ):
         url = f"{self._client.base_url}/api/queue/status/{id}"
         update_job_status_request = {
             "Id": id,
-            "Status": status,
+            "Status": status.value,
             "CurrentIteration": current_iteration,
             "TotalIterations": total_iterations,
             "AvgRunTime": avg_run_time
@@ -74,7 +79,10 @@ class JobsClient:
             raise Exception("Invalid response when updating status")
 
 
-    def _retrieve_data_from_json(self, url: str):
+    def _retrieve_data_from_json(
+        self,
+        url: str
+    ):
         response = self._client.get(url)
         if response.status_code == 200:
             return response.json()

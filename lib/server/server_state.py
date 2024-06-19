@@ -1,46 +1,15 @@
-import threading
-import logging
 from lib.server.job_state import JobState 
 
-#
-# Records the state of the server.
-#
 class ServerState():
-
-    #
-    # Constructor
-    #
-    def __init__(self):
-        self.lock = threading.Lock()
-        self.running_job = ''
+    def __init__(self, jobs_client):
+        self.jobs_client = jobs_client
         self.job_state = JobState.Created
 
-    #
-    # Get whether a job is currently running.
-    #
-    def get_is_job_currently_running(self):
-        with self.lock:
-            return self.running_job != ''
+    def retrieve_job(self):
+        crop_gen_job = self.jobs_client.retrieve_new_job()
 
-    #
-    # Get the JobID of the running job.
-    #
-    def get_running_job_id(self):
-        with self.lock:
-            return self.running_job
-
-    #
-    # Set the running job.
-    #
-    def set_running_job_id(self, job_id):
-        logging.info("Setting running job: '%s'", job_id)
-        with self.lock:
-            self.running_job = job_id
-
-    #
-    # Clears the running job.
-    #
-    def clear_running_job_id(self):
-        logging.info("Clearing the current running job: '%s'", self.running_job)
-        with self.lock:
-            self.running_job = ''
+        if crop_gen_job:
+            self.jobs_client.update_job_status(crop_gen_job.id, JobState.Pending)
+            self.job_state = JobState.Pending
+            return crop_gen_job
+        return None

@@ -44,6 +44,14 @@
             "program": "run_tests.py",
             "console": "integratedTerminal",
             "args": [""]
+        },
+        {
+            "name": "CompileProto",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "lib//utility_scripts//compile_proto.py",
+            "console": "integratedTerminal",
+            "args": [""]
         }
     ]
 }

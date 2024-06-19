@@ -2,6 +2,5 @@ pymoo
 requests
 parameterized
 tzlocal
-docker
-psutil
 pyzmq
+protobuf
