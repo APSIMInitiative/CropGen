@@ -1,0 +1,3 @@
+[submodule "cgm.messages"]
+	path = cgm.messages
+	url = git@github.com:QAAFI/cgm.messages.git
