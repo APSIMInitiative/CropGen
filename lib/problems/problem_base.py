@@ -1,6 +1,6 @@
+import numpy as np
 from pymoo.core.problem import Problem
 import logging
-import numpy as np
 
 from lib.models.rest.iteration_results_message import IterationResultsMessage
 from lib.results_processors.single_year_results_processor import SingleYearResultsProcessor

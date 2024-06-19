@@ -11,6 +11,7 @@ from lib.utils.jobs_client import JobsClient
 from lib.server.server_state import ServerState
 from lib.server.job_state import JobState
 from lib.utils.constants import Constants
+from lib.socket.zmq_client import ZMQClient
 
 class CropGenRunner():
 
@@ -30,6 +31,8 @@ class CropGenRunner():
         self.cgm_relay_address = self.jobs_client.retrieve_service(Constants.CGM_RELAY_APP_NAME)
         if not self.cgm_relay_address:
             raise Exception(f"Failed to find {Constants.CGM_RELAY_APP_NAME}")
+        
+        self.zmq_client = ZMQClient(self.config)
 
 
     def log_app_startup(self):
@@ -39,10 +42,11 @@ class CropGenRunner():
 
     def run(self):
         if self.server_state.job_state == JobState.Running or self.server_state.job_state == JobState.Pending:
-            logging.debug("Job is currenly running, wait a minute before checking again.")
+            logging.debug("Job is currenly running.")
         else:
             job = self.server_state.retrieve_job()
             if job:
+                logging.info("Found CropGen job to run.")
                 self.job_runner.run(job)
 
         time.sleep(60000)
