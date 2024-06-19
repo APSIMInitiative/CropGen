@@ -31,17 +31,17 @@ class AggregateFunction(Model):
     #
     @staticmethod
     def parse_aggregate_functions(json_object, errors):
-        aggregate_functions = JsonHelper.get_non_mandatory_attribute(json_object, 'AggregateFunctions', None)
+        aggregate_functions = JsonHelper.get_non_mandatory_attribute(json_object, 'aggregateFunctions', None)
         if aggregate_functions == None:
             return []
 
         parsed_aggregate_functions = [] 
         for aggregate_function in aggregate_functions:
-            display_name = JsonHelper.get_attribute(aggregate_function, 'DisplayName', errors)
-            maximise = JsonHelper.get_non_mandatory_attribute(aggregate_function, 'Maximise', False)
-            multiplier = JsonHelper.get_non_mandatory_attribute(aggregate_function, 'Multiplier', 1)
-            calc_type = JsonHelper.get_attribute(aggregate_function, 'CalcType', errors)
-            params = JsonHelper.get_non_mandatory_attribute(aggregate_function, 'Params', [])
+            display_name = JsonHelper.get_attribute(aggregate_function, 'displayName', errors)
+            maximise = JsonHelper.get_non_mandatory_attribute(aggregate_function, 'maximise', False)
+            multiplier = JsonHelper.get_non_mandatory_attribute(aggregate_function, 'multiplier', 1)
+            calc_type = JsonHelper.get_attribute(aggregate_function, 'calcType', errors)
+            params = JsonHelper.get_non_mandatory_attribute(aggregate_function, 'params', [])
 
             parsed_aggregate_functions.append(AggregateFunction(
                 display_name,

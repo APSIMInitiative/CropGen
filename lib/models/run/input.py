@@ -25,10 +25,10 @@ class Input(Model):
             return []
         
         parsed_inputs = [] 
-        for output_value in inputs:
-            name = JsonHelper.get_attribute(output_value, 'Name', errors)
-            min = JsonHelper.get_attribute(output_value, 'Min', errors)
-            max = JsonHelper.get_attribute(output_value, 'Max', errors)
+        for input_value in inputs:
+            name = JsonHelper.get_attribute(input_value, 'name', errors)
+            min = JsonHelper.get_attribute(input_value, 'min', errors)
+            max = JsonHelper.get_attribute(input_value, 'max', errors)
 
             parsed_inputs.append(Input(
                 name, 

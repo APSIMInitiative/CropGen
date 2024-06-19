@@ -37,11 +37,11 @@ class Output(Model):
         total_outputs_to_optimise = 0
         parsed_outputs = []
         for output_value in outputs:
-            apsim_output_name = JsonHelper.get_attribute(output_value, 'ApsimOutputName', errors)
-            apsim_output_type = JsonHelper.get_non_mandatory_attribute(output_value, 'ApsimOutputType', ApsimOutputType.General)
-            optimise = JsonHelper.get_non_mandatory_attribute(output_value, 'Optimise', True)
-            maximise = JsonHelper.get_non_mandatory_attribute(output_value, 'Maximise', False)
-            multiplier = JsonHelper.get_non_mandatory_attribute(output_value, 'Multiplier', 1)
+            apsim_output_name = JsonHelper.get_attribute(output_value, 'apsimOutputName', errors)
+            apsim_output_type = JsonHelper.get_non_mandatory_attribute(output_value, 'apsimOutputType', ApsimOutputType.General)
+            optimise = JsonHelper.get_non_mandatory_attribute(output_value, 'optimise', True)
+            maximise = JsonHelper.get_non_mandatory_attribute(output_value, 'maximise', False)
+            multiplier = JsonHelper.get_non_mandatory_attribute(output_value, 'multiplier', 1)
             aggregate_functions = AggregateFunction.parse_aggregate_functions(output_value, errors)
 
             parsed_outputs.append(Output(
