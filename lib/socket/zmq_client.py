@@ -1,12 +1,10 @@
 import zmq
 import logging
 import google.protobuf.any_pb2 as any_pb2
-from google.protobuf.message import Message
 
 from lib.utils.constants import Constants
 import lib.proto.proto_paths
 import CgmMessage_pb2
-import InitApsimResponse_pb2
 
 class ZMQClient:
     
@@ -34,15 +32,13 @@ class ZMQClient:
 
     def send_proto_message(
         self, 
-        proto, 
-        name: str, 
-        response_type: type
+        proto_request
     ):
-        try:
-            cgm_message = self.wrap_proto(proto, name)
+        try:            
+            cgm_message = self.wrap_proto(proto_request)
             data = cgm_message.SerializeToString()
             self.socket.send(data)
-            response = self.receive_proto_message(response_type)
+            response = self.receive_proto_message(proto_request)
             return response
             
         except zmq.ZMQError as e:
@@ -51,7 +47,8 @@ class ZMQClient:
             print(f"An error occurred: {e}")
 
 
-    def receive_proto_message(self, response_type: type):
+    def receive_proto_message(self, proto_request):
+        response_type = proto_request.get_response_type()
         response_data = self.socket.recv()
         response_cgm_message = CgmMessage_pb2.CgmMsg()
         response_cgm_message.ParseFromString(response_data)
@@ -60,7 +57,11 @@ class ZMQClient:
         return converted_response
 
 
-    def wrap_proto(self, proto, name: str):
+    def wrap_proto(self, proto_request):
+
+        proto = proto_request.to_proto()
+        name = proto_request.get_type_name()
+
         cgm_message = CgmMessage_pb2.CgmMsg()
         cgm_message.name = name
         any_message = any_pb2.Any()
@@ -88,6 +89,5 @@ class ZMQClient:
     
 
     def close(self):
-        if self.socket:
-            self.socket.close()
+        if self.socket: self.socket.close()
         self.context.term()

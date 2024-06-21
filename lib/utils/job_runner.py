@@ -2,8 +2,7 @@ import logging
 
 from lib.utils.date_time_helper import DateTimeHelper
 from lib.utils.constants import Constants
-from lib.proto.init_apsim import InitApsim
-from lib.proto.init_apsim_response import InitApsimResponse
+from lib.proto.init_apsim_request import InitApsimRequest
 from lib.socket.zmq_client import ZMQClient
 # from lib.problems.problem_visualisation import ProblemVisualisation
 
@@ -43,16 +42,6 @@ class JobRunner():
 
 
     def _init_cgm(self, crop_gen_job):
-
-        init_apsim = InitApsim(self.config)
-        init_apsim_proto = init_apsim.to_proto(crop_gen_job)
-
-        if init_apsim_proto:
-            self.zmq_client.send_proto_message(
-                init_apsim_proto, 
-                init_apsim.get_type_name(),
-                InitApsimResponse
-            )
-            return True
-        
-        return False
+        init_apsim = InitApsimRequest(self.config, crop_gen_job)
+        init_apsim_response = self.zmq_client.send_proto_message(init_apsim)
+        return init_apsim_response != None

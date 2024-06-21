@@ -1,15 +1,16 @@
 import lib.proto.proto_paths
 import InitApsimResponse_pb2
 
-class InitApsimResponse():
+from lib.proto.proto_response import ProtoResponse
+
+class InitApsimResponse(ProtoResponse):
 
     def __init__(self):
         self.id = ''
         self.jobId = ''
         self.firstRunTime = 0.0
         self.secondRunTime = 0.0
-        self.runSource = 0.0
-
+        self.runSource = ''
 
     @staticmethod
     def from_proto(proto):
@@ -24,11 +25,9 @@ class InitApsimResponse():
             init_apsim_response.runSource = proto.RunSource
         return init_apsim_response
 
-
     @staticmethod
-    def get_proto_type()-> type:
+    def get_proto_type() -> type:
         return InitApsimResponse_pb2.InitApsimResponseProto
-
 
     def get_type_name(self):
         return __class__.__name__ + "Proto"
