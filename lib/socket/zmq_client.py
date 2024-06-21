@@ -32,12 +32,17 @@ class ZMQClient:
         return f"tcp://{address}:{Constants.CGM_RELAY_SOCKET_SERVICE_PORT}"
 
 
-    def send_proto_message(self, proto, name: str):
+    def send_proto_message(
+        self, 
+        proto, 
+        name: str, 
+        response_type: type
+    ):
         try:
             cgm_message = self.wrap_proto(proto, name)
             data = cgm_message.SerializeToString()
             self.socket.send(data)
-            response = self.receive_proto_message()
+            response = self.receive_proto_message(response_type)
             return response
             
         except zmq.ZMQError as e:
@@ -46,15 +51,16 @@ class ZMQClient:
             print(f"An error occurred: {e}")
 
 
-    def receive_proto_message(self):
+    def receive_proto_message(self, response_type: type):
         response_data = self.socket.recv()
         response_cgm_message = CgmMessage_pb2.CgmMsg()
         response_cgm_message.ParseFromString(response_data)
-        response_proto = self.unwrap_proto(response_cgm_message, InitApsimResponse_pb2.InitApsimResponseProto)
-        return response_proto
+        response = self.unwrap_proto(response_cgm_message, response_type.get_proto_type())
+        converted_response = response_type.from_proto(response)
+        return converted_response
 
 
-    def wrap_proto(self, proto, name: str) -> CgmMessage_pb2.CgmMsg:
+    def wrap_proto(self, proto, name: str):
         cgm_message = CgmMessage_pb2.CgmMsg()
         cgm_message.name = name
         any_message = any_pb2.Any()
@@ -66,19 +72,19 @@ class ZMQClient:
     def unwrap_proto(
         self, 
         cgm_message: CgmMessage_pb2.CgmMsg,
-        message_type: type
-    ) -> Message:
+        response_type: type
+    ):
 
         if not isinstance(cgm_message, CgmMessage_pb2.CgmMsg):
             raise TypeError("Expected a CgmMessage_pb2.CgmMsg instance.")
         
         any_message = cgm_message.body
-        message = message_type()
+        message = response_type()
         
         if not any_message.Unpack(message):
             raise ValueError("Failed to unpack message.")
-        
-        return any_message
+
+        return message
     
 
     def close(self):
