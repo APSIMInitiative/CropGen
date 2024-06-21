@@ -3,8 +3,6 @@ import logging
 import requests
 import time
 
-from lib.logging.logger_config import LoggerConfig
-from lib.config.crop_gen_config import CropGenConfig
 from lib.utils.environment_variables_provider import EnvironmentVariablesProvider
 from lib.utils.job_runner import JobRunner
 from lib.utils.jobs_client import JobsClient
@@ -14,11 +12,8 @@ from lib.utils.constants import Constants
 
 class CropGenRunner():
 
-    def __init__(self):
-        self.config = CropGenConfig()
-        self.config._parse()
-        self.logger_config = LoggerConfig(self.config)
-        self.logger_config.setup_logger(True)
+    def __init__(self, config):
+        self.config = config
         self.env_provider = EnvironmentVariablesProvider()
         self.http_client = requests.Session()
         self.jobs_client = JobsClient(self.http_client, self.env_provider)
@@ -36,7 +31,7 @@ class CropGenRunner():
         logging.info("Service Config: %s", self.config.to_json(self.config.PrettyPrintJsonInLogs))
 
 
-    def run(self):
+    def poll_for_job_and_run(self):
         crop_gen_job = None
         try:
             if self.server_state.job_state == JobState.Running or self.server_state.job_state == JobState.Pending:

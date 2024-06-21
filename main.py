@@ -1,18 +1,22 @@
 import logging
 
 from lib.server.cropgen_runner import CropGenRunner
+from lib.logging.logger_config import LoggerConfig
+from lib.config.crop_gen_config import CropGenConfig
 
 # Main entry point
 if __name__ == "__main__":
     try:
-        crop_gen_runner = CropGenRunner()
+        config = CropGenConfig()
+        config._parse()
+        logger_config = LoggerConfig(config)
+        logger_config.setup_logger(True)
+        crop_gen_runner = CropGenRunner(config)
 
-        # Run the loop forever until a keyboard event occurs
         while True:
             try:
-                crop_gen_runner.run()
-            except KeyboardInterrupt: 
-                # Break out of the loop on a keyboard event
+                crop_gen_runner.poll_for_job_and_run()
+            except KeyboardInterrupt:
                 logging.info("Keyboard interrupt. Exiting...")
                 break
 

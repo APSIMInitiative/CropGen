@@ -1,22 +1,18 @@
 import zmq
 import logging
-import google.protobuf.any_pb2 as any_pb2
-
-from lib.utils.constants import Constants
-import lib.proto.proto_paths
-import CgmMessage_pb2
 
 class ZMQClient:
     
-    def __init__(self, config, cgm_relay_address: str):
+    def __init__(self, config, host_address, port):
         self.config = config
-        self.cgm_relay_address = cgm_relay_address
+        self.host_address = host_address
+        self.port = port
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REQ)
-        self._connect()
+        self.connect()
         
 
-    def _connect(self):
+    def connect(self):
         try:
             connection_str = self._generate_connection_string()
             self.socket.connect(connection_str)
@@ -26,67 +22,21 @@ class ZMQClient:
 
 
     def _generate_connection_string(self) -> str:
-        address = self.cgm_relay_address if self.config.IS_RUNNING_IN_DOCKER else "localhost"
-        return f"tcp://{address}:{Constants.CGM_RELAY_SOCKET_SERVICE_PORT}"
+        address = self.host_address if self.config.IS_RUNNING_IN_DOCKER else "localhost"
+        return f"tcp://{address}:{self.port}"
 
 
-    def send_proto_message(
-        self, 
-        proto_request
-    ):
-        try:            
-            cgm_message = self.wrap_proto(proto_request)
-            data = cgm_message.SerializeToString()
+    def send(self, data):
+        try:
             self.socket.send(data)
-            response = self.receive_proto_message(proto_request)
+            response = self.socket.recv()
             return response
             
         except zmq.ZMQError as e:
-            print(f"Failed to send message: {e}")
+            logging.exception(f"Failed to send message: {e}")
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logging.exception(f"An error occurred: {e}")
 
-
-    def receive_proto_message(self, proto_request):
-        response_type = proto_request.get_response_type()
-        response_data = self.socket.recv()
-        response_cgm_message = CgmMessage_pb2.CgmMsg()
-        response_cgm_message.ParseFromString(response_data)
-        response = self.unwrap_proto(response_cgm_message, response_type.get_proto_type())
-        converted_response = response_type.from_proto(response)
-        return converted_response
-
-
-    def wrap_proto(self, proto_request):
-
-        proto = proto_request.to_proto()
-        name = proto_request.get_type_name()
-
-        cgm_message = CgmMessage_pb2.CgmMsg()
-        cgm_message.name = name
-        any_message = any_pb2.Any()
-        any_message.Pack(proto)
-        cgm_message.body.CopyFrom(any_message)
-        return cgm_message
-
-
-    def unwrap_proto(
-        self, 
-        cgm_message: CgmMessage_pb2.CgmMsg,
-        response_type: type
-    ):
-
-        if not isinstance(cgm_message, CgmMessage_pb2.CgmMsg):
-            raise TypeError("Expected a CgmMessage_pb2.CgmMsg instance.")
-        
-        any_message = cgm_message.body
-        message = response_type()
-        
-        if not any_message.Unpack(message):
-            raise ValueError("Failed to unpack message.")
-
-        return message
-    
 
     def close(self):
         if self.socket: self.socket.close()

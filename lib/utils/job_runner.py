@@ -3,7 +3,7 @@ import logging
 from lib.utils.date_time_helper import DateTimeHelper
 from lib.utils.constants import Constants
 from lib.proto.init_apsim_request import InitApsimRequest
-from lib.socket.zmq_client import ZMQClient
+from lib.socket.proto_zmq_client import ProtoZMQClient
 # from lib.problems.problem_visualisation import ProblemVisualisation
 
 class JobRunner():
@@ -11,7 +11,7 @@ class JobRunner():
     def __init__(self, config, cgm_relay_address):
         self.config = config
         self.cgm_relay_address = cgm_relay_address
-        self.zmq_client = ZMQClient(config, self.cgm_relay_address)
+        self.zmq_client = ProtoZMQClient(config, self.cgm_relay_address, Constants.CGM_RELAY_SOCKET_SERVICE_PORT)
 
 
     def run(self, crop_gen_job):
