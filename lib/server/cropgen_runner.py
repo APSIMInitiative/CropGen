@@ -11,28 +11,24 @@ from lib.utils.jobs_client import JobsClient
 from lib.server.server_state import ServerState
 from lib.server.job_state import JobState
 from lib.utils.constants import Constants
-from lib.socket.zmq_client import ZMQClient
 
 class CropGenRunner():
 
     def __init__(self):
         self.config = CropGenConfig()
         self.config._parse()
-
         self.logger_config = LoggerConfig(self.config)
         self.logger_config.setup_logger(True)
-
         self.env_provider = EnvironmentVariablesProvider()
         self.http_client = requests.Session()
         self.jobs_client = JobsClient(self.http_client, self.env_provider)
-        self.job_runner = JobRunner(self.config)
-        self.server_state = ServerState(self.jobs_client)
-
         self.cgm_relay_address = self.jobs_client.retrieve_service(Constants.CGM_RELAY_APP_NAME)
+        
         if not self.cgm_relay_address:
             raise Exception(f"Failed to find {Constants.CGM_RELAY_APP_NAME}")
-        
-        self.zmq_client = ZMQClient(self.config)
+
+        self.job_runner = JobRunner(self.config, self.cgm_relay_address)
+        self.server_state = ServerState(self.jobs_client)
 
 
     def log_app_startup(self):
@@ -41,12 +37,17 @@ class CropGenRunner():
 
 
     def run(self):
-        if self.server_state.job_state == JobState.Running or self.server_state.job_state == JobState.Pending:
-            logging.debug("Job is currenly running.")
-        else:
-            job = self.server_state.retrieve_job()
-            if job:
-                logging.info("Found CropGen job to run.")
-                self.job_runner.run(job)
+        crop_gen_job = None
+        try:
+            if self.server_state.job_state == JobState.Running or self.server_state.job_state == JobState.Pending:
+                logging.debug("Job is currenly running.")
+            else:
+                crop_gen_job = self.server_state.retrieve_job()
+                if crop_gen_job:
+                    logging.info("Found CropGen job to run.")
+                    self.job_runner.run(crop_gen_job)
 
-        time.sleep(60000)
+            time.sleep(self.config.SleepBetweenJobsMs)
+        except:
+            self.server_state.job_error(crop_gen_job)
+            raise

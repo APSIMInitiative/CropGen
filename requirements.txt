@@ -1,4 +1,3 @@
-numpy
 pymoo
 requests
 parameterized

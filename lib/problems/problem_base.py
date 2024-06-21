@@ -1,5 +1,5 @@
-import numpy as np
 from pymoo.core.problem import Problem
+import numpy as np
 import logging
 
 from lib.models.rest.iteration_results_message import IterationResultsMessage

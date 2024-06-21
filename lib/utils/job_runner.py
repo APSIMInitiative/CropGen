@@ -3,15 +3,18 @@ import logging
 from lib.utils.date_time_helper import DateTimeHelper
 from lib.utils.constants import Constants
 from lib.proto.init_apsim import InitApsim
+from lib.socket.zmq_client import ZMQClient
+from lib.problems.problem_visualisation import ProblemVisualisation
 
 class JobRunner():
 
-    def __init__(self, config):
+    def __init__(self, config, cgm_relay_address):
         self.config = config
-        self.cgm_server_client = None
+        self.cgm_relay_address = cgm_relay_address
+        self.zmq_client = ZMQClient(config, self.cgm_relay_address)
 
 
-    def run(self, crop_gen_job):        
+    def run(self, crop_gen_job):
         logging.info("Running job request for id: %s", crop_gen_job.id)        
         logging.info("Job request: %s", crop_gen_job.to_json(self.config.PrettyPrintJsonInLogs))
 
@@ -42,3 +45,9 @@ class JobRunner():
 
         init_apsim = InitApsim(self.config)
         init_apsim_proto = init_apsim.to_proto(crop_gen_job)
+
+        if init_apsim_proto:
+            self.zmq_client.send_proto_message(init_apsim_proto, init_apsim.get_type_name())
+            return True
+        
+        return False

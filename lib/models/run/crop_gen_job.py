@@ -1,10 +1,7 @@
-import json
-
 from lib.models.common.model import Model
 from lib.models.run.input import Input
 from lib.models.run.output import Output
 from lib.utils.json_helper import JsonHelper
-from lib.config.apsim_simulation_data import APSimSimulationData
 
 #
 # Model that represents a run job request sent from the jobs server
@@ -40,8 +37,8 @@ class CropGenJob(Model):
                 setattr(self, attribute, attribute_value)
 
             # Process Inputs and Outputs
-            self.Inputs = Input.parse_inputs(json_object, errors)
-            self.Outputs = Output.parse_outputs(json_object, errors)
+            self.inputs = Input.parse_inputs(json_object, errors)
+            self.outputs = Output.parse_outputs(json_object, errors)
 
         except Exception as error:
             errors.append(f"Failed to parse {self.__class__.__name__} JSON: '{json_object}'. Error: '{error}'")

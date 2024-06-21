@@ -65,6 +65,7 @@ class CropGenConfig(Model):
         self.RestartAfterConfigUpdate = self._get_config_setting(data, 'RestartAfterConfigUpdate', False)
         self.InitWorkersPreRunSimulations = self._get_config_setting(data, 'InitWorkersPreRunSimulations', False)
         self.AlwaysResetRunner = self._get_config_setting(data, 'AlwaysResetRunner', False)
+        self.SleepBetweenJobsMs = self._get_config_setting(data, 'SleepBetweenJobsMs', 60000)
 
     #
     # Writes this config, back to disk.

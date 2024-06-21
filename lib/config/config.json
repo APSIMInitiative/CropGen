@@ -24,6 +24,7 @@
     "RestartAfterConfigUpdate": false,
     "InitWorkersPreRunSimulations": false,
     "AlwaysResetRunner": true,
+    "SleepBetweenJobsMs": 60000,
     
     "DockerOverrides": "______________________",
     "SocketServerHostDocker": "0.0.0.0",
