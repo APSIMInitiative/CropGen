@@ -7,7 +7,7 @@ from lib.results_processors.single_year_results_processor import SingleYearResul
 from lib.results_processors.multi_year_results_processor import MultiYearResultsProcessor
 from lib.results_processors.empty_results_processor import EmptyResultsProcessor
 from lib.utils.constants import Constants
-from lib.utils.results_publisher import ResultsPublisher
+#from lib.utils.results_publisher import ResultsPublisher
 from lib.models.cgm.run_apsim_response import RunApsimResponse
 from lib.models.cgm.relay_apsim import RelayApsim
 from lib.utils.date_time_helper import DateTimeHelper
@@ -19,10 +19,10 @@ class ProblemBase(Problem):
     #
     # Constructor
     #
-    def __init__(self, config, run_job_request, cgm_server_client):
+    def __init__(self, config, crop_gen_job):
         # Member variables
         self.config = config
-        self.run_job_request = run_job_request
+        self.crop_gen_job = crop_gen_job
         self.run_errors = []
         self.current_iteration_id = 1
         self.is_multi_year = False
@@ -32,16 +32,16 @@ class ProblemBase(Problem):
         self.apsim_simulation_names = set()
         self.apsim_simulation_name_str = ''
 
-        self.results_publisher = ResultsPublisher(
-            run_job_request.IterationResultsUrl,
-            run_job_request.FinalResultsUrl,
-            self.config
-        )
+        # self.results_publisher = ResultsPublisher(
+        #     crop_gen_job.IterationResultsUrl,
+        #     crop_gen_job.FinalResultsUrl,
+        #     self.config
+        # )
 
-        self.cgm_server_client = cgm_server_client
+        #self.cgm_server_client = cgm_server_client
         
-        total_inputs = run_job_request.get_total_inputs()
-        total_outputs = run_job_request.get_total_outputs_for_optimisation()
+        total_inputs = crop_gen_job.get_total_inputs()
+        total_outputs = crop_gen_job.get_total_outputs_for_optimisation()
         lower_bounds = self._construct_input_lower_bounds()
         upper_bounds = self._construct_input_upper_bounds()
 
@@ -66,7 +66,7 @@ class ProblemBase(Problem):
     #
     def _construct_input_lower_bounds(self):
         input_lower_bounds = []
-        for input in self.run_job_request.Inputs:
+        for input in self.crop_gen_job.inputs:
             input_lower_bounds.append(input.Min)
         return input_lower_bounds
     
@@ -76,7 +76,7 @@ class ProblemBase(Problem):
     #
     def _construct_input_upper_bounds(self):
         input_upper_bounds = []
-        for input in self.run_job_request.Inputs:
+        for input in self.crop_gen_job.inputs:
             input_upper_bounds.append(input.Max)
         return input_upper_bounds
     
@@ -110,13 +110,13 @@ class ProblemBase(Problem):
     def _set_first_iteration_values(self, results_for_individual):
         self._set_unique_simulation_names(results_for_individual)
         
-        if self.run_job_request.get_is_environment_typing_run() or len(results_for_individual) > 1:
+        if self.crop_gen_job.get_is_environment_typing_run() or len(results_for_individual) > 1:
             logging.info("%s is running a multi year simulation.", Constants.APPLICATION_NAME)
             self.is_multi_year = True
             self.processed_aggregated_outputs = []
 
-            for output_index in range(0, self.run_job_request.get_total_outputs()):
-                request_output = self.run_job_request.get_output_by_index(output_index)
+            for output_index in range(0, self.crop_gen_job.get_total_outputs()):
+                request_output = self.crop_gen_job.get_output_by_index(output_index)
 
                 # If there is no output or we're not optimizing this output, then just skip and move onto the next one.
                 if not request_output or not request_output.Optimise:
@@ -153,7 +153,7 @@ class ProblemBase(Problem):
     #
     def _initialize_algorithm_array(self, out_objective_values):
         out_objective_values[Constants.OBJECTIVE_VALUES_ARRAY_INDEX] = np.empty(
-            [self.run_job_request.Individuals, self.run_job_request.get_total_inputs()]
+            [self.crop_gen_job.Individuals, self.crop_gen_job.get_total_inputs()]
         )
 
     #
@@ -173,11 +173,11 @@ class ProblemBase(Problem):
             return False
 
         # Populate the iteration message with all of the data that we currently have.
-        iteration_results_message = IterationResultsMessage(self.run_job_request, self.current_iteration_id, variable_values_for_population)
+        iteration_results_message = IterationResultsMessage(self.crop_gen_job, self.current_iteration_id, variable_values_for_population)
 
         all_algorithm_outputs = []
         all_results_outputs = []
-        total_inputs = self.run_job_request.Individuals
+        total_inputs = self.crop_gen_job.Individuals
 
         # Iterate over all of the individuals.
         for individual in range(RelayApsim.INPUT_START_INDEX, total_inputs):
@@ -199,11 +199,11 @@ class ProblemBase(Problem):
             logging.debug("Processing APSIM result for individual (%d of %d)", individual + 1, total_inputs)
 
             if not self._get_contains_results_for_individual(results_for_individual):
-                EmptyResultsProcessor.process_results(individual, self.run_job_request, results_for_individual, all_algorithm_outputs, all_results_outputs)
+                EmptyResultsProcessor.process_results(individual, self.crop_gen_job, results_for_individual, all_algorithm_outputs, all_results_outputs)
 
             elif self.is_multi_year:
                 MultiYearResultsProcessor.process_results(
-                    self.run_job_request, 
+                    self.crop_gen_job, 
                     self.config, 
                     self.apsim_simulation_id_str, 
                     self.apsim_simulation_name_str,
@@ -214,16 +214,16 @@ class ProblemBase(Problem):
                 )
 
             else:
-                SingleYearResultsProcessor.process_results(self.run_job_request, results_for_individual, all_algorithm_outputs, all_results_outputs)
+                SingleYearResultsProcessor.process_results(self.crop_gen_job, results_for_individual, all_algorithm_outputs, all_results_outputs)
 
         # Feed the results back into the algorithm so that it can continue advancing...
         out_objective_values[Constants.OBJECTIVE_VALUES_ARRAY_INDEX] = np.array(all_algorithm_outputs)
 
         # Populate the iteration results with the outputs from each individual.
-        iteration_results_message.add_outputs(self.run_job_request.get_display_output_names(), all_results_outputs)
+        iteration_results_message.add_outputs(self.crop_gen_job.get_display_output_names(), all_results_outputs)
 
         # Send out the results.
-        self.results_publisher.publish_iteration_results(iteration_results_message)
+        #self.results_publisher.publish_iteration_results(iteration_results_message)
 
         return True
 
@@ -279,7 +279,7 @@ class ProblemBase(Problem):
 
         logging.info("Processing APSIM iteration (%d of %d) with %d individuals", 
             self.current_iteration_id, 
-            self.run_job_request.Iterations,
+            self.crop_gen_job.Iterations,
             total_individuals
         )
     
@@ -288,7 +288,7 @@ class ProblemBase(Problem):
     #
     def _log_time_remaining(self, start_time):
         seconds_taken_one_iteration = DateTimeHelper.get_elapsed_seconds_since(start_time)
-        estimated_seconds_remaining = (self.run_job_request.Iterations - self.current_iteration_id) * seconds_taken_one_iteration
+        estimated_seconds_remaining = (self.crop_gen_job.Iterations - self.current_iteration_id) * seconds_taken_one_iteration
 
         logging.info("Finished processing APSIM iteration: %d. Time taken: %s. %s",  
             self.current_iteration_id, 

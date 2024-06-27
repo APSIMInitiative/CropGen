@@ -19,6 +19,7 @@ class CropGenJob(Model):
         self.reportName = ''
         self.inputs = []
         self.outputs = []
+        self.environmentTypes = []
         self.apsimJobId = ''
 
     #
@@ -39,11 +40,114 @@ class CropGenJob(Model):
             # Process Inputs and Outputs
             self.inputs = Input.parse_inputs(json_object, errors)
             self.outputs = Output.parse_outputs(json_object, errors)
+            self.environmentTypes = self.parse_environment_types(json_object, errors)
 
         except Exception as error:
             errors.append(f"Failed to parse {self.__class__.__name__} JSON: '{json_object}'. Error: '{error}'")
 
         return errors
+    
+    #
+    # Helper function to parse the environment types.
+    #
+    @staticmethod
+    def parse_environment_types(json_object, errors):
+        environment_types = JsonHelper.get_non_mandatory_attribute(json_object, 'EnvironmentTypes', [])
+
+        if not environment_types: return []
+        
+        parsed_env_types = []
+
+        # for environment_type_value in environment_types:
+        #     simulation = JsonHelper.get_attribute(environment_type_value, 'Simulation', errors)
+        #     parsed_env_types.append(Simulation.parse(simulation, errors))
+            
+        return parsed_env_types
+    
+
+    #
+    # Simple helper for getting the total number of Inputs defined
+    #
+    def get_total_inputs(self):
+        return len(self.inputs)
+
+    #
+    # Simple helper for getting the total number of outputs defined
+    #
+    def get_total_outputs(self):
+        total_outputs = 0
+        for output in self.outputs:
+            total_aggregate_functions = len(output.AggregateFunctions)
+            # Aggregate functions essentially expand out the amount of outputs
+            # that we are handling.
+            if total_aggregate_functions > 0:
+                total_outputs += total_aggregate_functions
+            else:
+                total_outputs += 1
+        return total_outputs
+    
+    #
+    # Simple helper for getting the total number of outputs that have been defined as optimisable 
+    #
+    def get_total_outputs_for_optimisation(self):
+        total_outputs = 0
+        for output in self.outputs:
+            if output.Optimise:
+                total_aggregate_functions = len(output.AggregateFunctions)
+                # Aggregate functions essentially expand out the amount of outputs
+                # that we are handling.
+                if total_aggregate_functions > 0:
+                    total_outputs += total_aggregate_functions
+                else:
+                    total_outputs += 1
+        return total_outputs
+    
+    #
+    # Get the output in the specified index, or None if it doesn't exist
+    #
+    def get_output_by_index(self, index):
+        output = None
+        if len(self.outputs) > index:
+            return self.outputs[index]
+        return output
+    
+    #
+    # Extract the input names from the array of input objects.
+    #
+    def get_input_names(self):
+        input_names = []
+        for input in self.inputs:
+            input_names.append(input.Name)
+        return input_names
+    
+    #
+    # Extract the APSIM output names from the array of output objects.
+    #
+    def get_apsim_output_names(self):
+        output_names = []
+        for output in self.outputs:
+            output_names.append(output.ApsimOutputName)
+        return output_names
+    
+    #
+    # Extract the display output names from the array of output objects.
+    #
+    def get_display_output_names(self):
+        output_names = []
+        for output in self.outputs:
+            if output.AggregateFunctions:
+                for aggregate_function in output.AggregateFunctions:
+                    output_names.append(aggregate_function.DisplayName)
+            else:
+                output_names.append(output.ApsimOutputName)
+        return output_names
+        
+    #
+    # Determines if this is an environment typing run.
+    #
+    def get_is_environment_typing_run(self):
+        return self.environmentTypes and len(self.environmentTypes) > 0
+
     
     #
     # Returns the type name.

@@ -14,8 +14,8 @@ class Problem(ProblemBase):
     #
     # Construct problem with the given dimensions and variable ranges
     #
-    def __init__(self, config, run_job_request, cgm_server_client):
-        super().__init__(config, run_job_request, cgm_server_client)
+    def __init__(self, config, crop_gen_job):
+        super().__init__(config, crop_gen_job)
 
     #
     # Iterate over each population and perform calculations.
@@ -45,16 +45,16 @@ class Problem(ProblemBase):
     #
     def _perform_relay_apsim_request(self, variable_values_for_population):
 
-        max_simulations = self.run_job_request.MaxSimulationsPerRequest
+        max_simulations = self.crop_gen_job.MaxSimulationsPerRequest
         apsim_data = APSimSimulationData()
-        simulation_names = apsim_data.get_simulation_names(self.run_job_request.JobID)
+        simulation_names = apsim_data.get_simulation_names(self.crop_gen_job.JobID)
 
         if (max_simulations and
             max_simulations > 0
         ):
             # If we're being asked to split the simulation names up, but there is no simulation names configured, throw.
             if not simulation_names: 
-                raise Exception(f"MaxSimulations set but cannot find simulation names for JobID: {self.run_job_request.JobID}")
+                raise Exception(f"MaxSimulations set but cannot find simulation names for JobID: {self.crop_gen_job.JobID}")
 
             return self._perform_relay_apsim_staggered_requests(variable_values_for_population, simulation_names, max_simulations)
         else:
@@ -81,7 +81,7 @@ class Problem(ProblemBase):
         for simulation_names in split_simulation_names:
 
             # Create a new RelayApsim object for each chunk
-            relay_apsim_request = RelayApsim(self.run_job_request.JobID, len(variable_values_for_population))
+            relay_apsim_request = RelayApsim(self.crop_gen_job.JobID, len(variable_values_for_population))
            
             for simulation_name in simulation_names:
                 individual = RelayApsim.INPUT_START_INDEX
@@ -114,7 +114,7 @@ class Problem(ProblemBase):
     #
     def _perform_relay_apsim_one_request(self, variable_values_for_population):
         
-        relay_apsim_request = RelayApsim(self.run_job_request.JobID, len(variable_values_for_population))
+        relay_apsim_request = RelayApsim(self.crop_gen_job.JobID, len(variable_values_for_population))
         relay_apsim_request.add_inputs(variable_values_for_population)
         response = self._call_relay_apsim(relay_apsim_request)
         return response

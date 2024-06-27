@@ -1,7 +1,6 @@
-import logging
 import google.protobuf.any_pb2 as any_pb2
-
 from lib.socket.zmq_client import ZMQClient
+
 import lib.proto.proto_paths
 import CgmMessage_pb2
 

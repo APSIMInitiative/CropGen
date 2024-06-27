@@ -24,10 +24,10 @@ class JobRunner():
             logging.error("Failed to initialise %s. Run message will not be processed.", Constants.CGM_SERVER)
             return
 
-        # problem = ProblemVisualisation(self.config, run_job_request)
+        problem = ProblemVisualisation(self.config, crop_gen_job)
         
-        # # Now run the problem code, pass in the CGM factory class for 
-        # problem.run(cgm_server_client)
+        # Now run the problem code, pass in the CGM factory class for 
+        problem.run()
 
         # Log out how long the problem took to run.
         logging.info("Problem run finished. Time taken: '%s'. ID: '%s', JobID: '%s', ApsimJobID: '%s', Name: '%s', Iterations: '%d', Individuals: '%d'", 
