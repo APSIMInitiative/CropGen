@@ -4,7 +4,7 @@ from lib.utils.date_time_helper import DateTimeHelper
 from lib.utils.constants import Constants
 from lib.proto.init_apsim_request import InitApsimRequest
 from lib.socket.proto_zmq_client import ProtoZMQClient
-# from lib.problems.problem_visualisation import ProblemVisualisation
+from lib.problems.problem_visualisation import ProblemVisualisation
 
 class JobRunner():
 
