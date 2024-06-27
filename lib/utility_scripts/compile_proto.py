@@ -13,7 +13,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Define the source and destination directories relative to the script directory
 src_dir = os.path.abspath(os.path.join(script_dir, '..', '..', 'cgm.messages', 'cgm.protobuf.messages', 'Proto'))
-dst_dir = os.path.abspath(os.path.join(script_dir, '..', '..', 'autogen'))
+dst_dir = os.path.abspath(os.path.join(script_dir, '..', '..', 'lib', 'autogen'))
 
 # Ensure the destination directory exists, delete contents if it does, create if it doesn't
 if os.path.exists(dst_dir):
