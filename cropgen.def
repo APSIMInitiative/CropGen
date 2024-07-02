@@ -20,7 +20,8 @@ From: python:3.12-slim
         && rm -rf /var/lib/apt/lists/*
 
     # Install Python dependencies
-    pip install --no-cache-dir -r requirements.txt
+    apt-get update && apt-get install -y python3 python3-pip
+    pip3 install --no-cache-dir -r requirements.txt
 
 %runscript
     cd /app
