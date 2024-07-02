@@ -1,5 +1,5 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 # Set our working directory to the CropGen root folder.
 WORKDIR /crop-gen
