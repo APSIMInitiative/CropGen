@@ -13,11 +13,19 @@ class LoggerConfig:
     #
     # Constructor.
     #
-    def __init__(self, config):
+    def __init__(self, config, env_provider):
         self.config = config
+        self.env_provider = env_provider
         self.this_script_path = os.path.dirname(__file__)
-        self.log_directory = os.path.join(self.this_script_path, "..", "..", "logs")
+        self.log_directory = self.get_log_dir()
         self.log_file = os.path.join(self.log_directory, 'cropgen.log')
+
+    def get_log_dir(self):
+        hpc_root_dir = self.env_provider.get_hpc_root_dir()
+        if hpc_root_dir:
+            return os.path.join(hpc_root_dir, "cropgen_logs")
+
+        return os.path.join(self.this_script_path, "..", "..", "logs")
 
     #
     # Configures the logger.

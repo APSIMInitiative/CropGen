@@ -3,7 +3,6 @@ import logging
 import requests
 import time
 
-from lib.utils.environment_variables_provider import EnvironmentVariablesProvider
 from lib.utils.job_runner import JobRunner
 from lib.utils.jobs_client import JobsClient
 from lib.server.jobs_server import JobsServer
@@ -12,9 +11,9 @@ from lib.utils.constants import Constants
 
 class CropGenRunner():
 
-    def __init__(self, config):
+    def __init__(self, config, env_provider):
         self.config = config
-        self.env_provider = EnvironmentVariablesProvider()
+        self.env_provider = env_provider
         self.http_client = requests.Session()
         self.jobs_client = JobsClient(self.http_client, self.env_provider)
         self.cgm_relay_address = self.jobs_client.retrieve_service(Constants.CGM_RELAY_APP_NAME)
