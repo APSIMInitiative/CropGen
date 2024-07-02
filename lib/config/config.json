@@ -26,12 +26,12 @@
     "AlwaysResetRunner": true,
     "SleepBetweenJobsMs": 60000,
     
-    "DockerOverrides": "______________________",
-    "SocketServerHostDocker": "0.0.0.0",
-    "SocketServerPortDocker": 27746,
-    "SocketTimeoutTestConnectionSecondsDocker": 5.0,
-    "PublishResultsDocker": true,
-    "PrettyPrintJsonInLogsDocker": false,
-    "RemoteLoggerUrlDocker": "https://jobs.cgmwgp.com/api/CropGen/logs",
-    "EndOfDockerOverrides": "______________________"
+    "ContainerOverrides": "______________________",
+    "SocketServerHostContainer": "0.0.0.0",
+    "SocketServerPortContainer": 27746,
+    "SocketTimeoutTestConnectionSecondsContainer": 5.0,
+    "PublishResultsContainer": true,
+    "PrettyPrintJsonInLogsContainer": false,
+    "RemoteLoggerUrlContainer": "https://jobs.cgmwgp.com/api/CropGen/logs",
+    "EndOfContainerOverrides": "______________________"
 }

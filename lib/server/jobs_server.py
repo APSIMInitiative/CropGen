@@ -1,6 +1,6 @@
 from lib.server.job_state import JobState 
 
-class ServerState():
+class JobsServer():
     def __init__(self, jobs_client):
         self.jobs_client = jobs_client
         self.job_state = JobState.Created

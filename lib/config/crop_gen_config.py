@@ -7,11 +7,11 @@ from lib.models.common.model import Model
 # The config for this application.
 #
 class CropGenConfig(Model):
-    # The environment variable that is created only when running in docker.
-    RUNNING_IN_DOCKER_ENV = 'RUNNING_IN_DOCKER'
+    # The environment variable that is created only when running in a container.
+    RUNNING_IN_CONTAINER = 'RUNNING_IN_CONTAINER'
     CONFIG_FILE_FULL_PATH = os.path.join(os.path.dirname(__file__), 'config.json')
     OVERRIDE_CONFIG_FILE_FULL_PATH = os.path.join(os.path.dirname(__file__), 'config_override.json')
-    IS_RUNNING_IN_DOCKER = os.environ.get(RUNNING_IN_DOCKER_ENV, False)
+    IS_RUNNING_IN_DOCKER = os.environ.get(RUNNING_IN_CONTAINER, False)
 
     #
     # Constructor.
@@ -81,7 +81,7 @@ class CropGenConfig(Model):
         return True
 
     #
-    # Safely gets a config setting, taking into consideration docker
+    # Safely gets a config setting, taking into consideration container
     # and defaults if it isn't present.
     #
     def _get_config_setting(
@@ -91,13 +91,13 @@ class CropGenConfig(Model):
         default_if_not_present = None
     ):
         # Any config value can be overriden by simply appending the word Docker 
-        # to the end of the key in the config json file. Construct a docker key
+        # to the end of the key in the config json file. Construct a container key
         # so that we can check for the presence of this.
-        docker_override_config_key = f"{config_key}Docker"
+        container_override_config_key = f"{config_key}Container"
 
         # Check for a Docker config override key.
-        if self._get_config_exists(data, docker_override_config_key) and CropGenConfig.IS_RUNNING_IN_DOCKER:
-            return self._get_config_value(data, docker_override_config_key, default_if_not_present)
+        if self._get_config_exists(data, container_override_config_key) and CropGenConfig.IS_RUNNING_IN_DOCKER:
+            return self._get_config_value(data, container_override_config_key, default_if_not_present)
 
         return self._get_config_value(data, config_key, default_if_not_present)
     

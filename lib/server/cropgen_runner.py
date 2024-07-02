@@ -6,7 +6,7 @@ import time
 from lib.utils.environment_variables_provider import EnvironmentVariablesProvider
 from lib.utils.job_runner import JobRunner
 from lib.utils.jobs_client import JobsClient
-from lib.server.server_state import ServerState
+from lib.server.jobs_server import JobsServer
 from lib.server.job_state import JobState
 from lib.utils.constants import Constants
 
@@ -23,7 +23,7 @@ class CropGenRunner():
             raise Exception(f"Failed to find {Constants.CGM_RELAY_APP_NAME}")
 
         self.job_runner = JobRunner(self.config, self.cgm_relay_address)
-        self.server_state = ServerState(self.jobs_client)
+        self.server_state = JobsServer(self.jobs_client)
 
 
     def log_app_startup(self):

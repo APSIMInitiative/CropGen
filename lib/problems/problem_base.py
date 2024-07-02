@@ -279,7 +279,7 @@ class ProblemBase(Problem):
 
         logging.info("Processing APSIM iteration (%d of %d) with %d individuals", 
             self.current_iteration_id, 
-            self.crop_gen_job.Iterations,
+            self.crop_gen_job.iterations,
             total_individuals
         )
     
@@ -288,7 +288,7 @@ class ProblemBase(Problem):
     #
     def _log_time_remaining(self, start_time):
         seconds_taken_one_iteration = DateTimeHelper.get_elapsed_seconds_since(start_time)
-        estimated_seconds_remaining = (self.crop_gen_job.Iterations - self.current_iteration_id) * seconds_taken_one_iteration
+        estimated_seconds_remaining = (self.crop_gen_job.iterations - self.current_iteration_id) * seconds_taken_one_iteration
 
         logging.info("Finished processing APSIM iteration: %d. Time taken: %s. %s",  
             self.current_iteration_id, 
