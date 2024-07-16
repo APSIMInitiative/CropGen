@@ -32,7 +32,7 @@ To run CropGen, a RunJobRequest message (CropGen\lib\models\run\run_job_request.
 
 To connect to APSIM, CropGen will create a socket connection, using the RunJobRequest, to extract the CGMServerHost and CGMServerPort. To run APSIM, CropGen will send RelayApsim messages (CropGen\lib\models\cgm\relay_apsim.py), until all iterations have been processed. Each iteration, CropGen will send an IterationResults message (CropGen\lib\models\rest\iteration_results_message.py) to the Results Server. Once all iterations have been processed, a FinalResults message (CropGen\lib\models\rest\final_results_message.py) will be sent. 
 
-The results messages will be sent using REST PUT calls (CropGen\lib\utils\results_publisher.py). The URLs for these are sent as part of the RunJobRequest (IterationResultsUrl and FinalResultsUrl). It is up to the Results Server to consolidate this data into the desired output format and allow these results to be downloaded.
+The results messages will be sent using REST PUT calls (CropGen\lib\utils\results_publisher.py). The URLs for these are sent as part of the RunJobRequest (IterationResultsUrl and FinalResultsUrl), it is up to the Results Server to consolidate this data into the desired output format and allow these results to be downloaded.
 
 ***GetStatus***
 
