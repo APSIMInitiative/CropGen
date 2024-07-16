@@ -18,8 +18,8 @@ class Simulation(Model):
     #
     @staticmethod
     def parse(json_object, errors):
-        name = JsonHelper.get_attribute(json_object, 'Name', '')
-        environments = JsonHelper.get_attribute(json_object, 'Environments', [])
+        name = JsonHelper.get_attribute(json_object, 'name', '')
+        environments = JsonHelper.get_attribute(json_object, 'environments', [])
 
         parsed_environments = []
         for environment in environments:

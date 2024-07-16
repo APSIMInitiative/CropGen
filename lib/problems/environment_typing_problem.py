@@ -15,9 +15,9 @@ class EnvironmentTypingProblem(ProblemBase):
     #
     # Construct problem with the given dimensions and variable ranges
     #
-    def __init__(self, config, run_job_request, cgm_server_client):
+    def __init__(self, config, crop_gen_job):
         logging.info("%s has received a request for an Environment Typing run.", Constants.APPLICATION_NAME)
-        super().__init__(config, run_job_request, cgm_server_client)
+        super().__init__(config, crop_gen_job)
 
     #
     # Iterate over each population and perform calculations
@@ -47,9 +47,9 @@ class EnvironmentTypingProblem(ProblemBase):
     # Creates request(s) and runs apsim.
     #
     def _perform_relay_apsim_request(self, variable_values_for_population):
-        season_date_generator = APSIMSeasonDateGenerator(self.config, self.crop_gen_job.APSIMSimulationClockStartDate)
-        relay_apsim_request = RelayApsim(self.crop_gen_job.JobID, self.crop_gen_job.Individuals)
-        relay_apsim_request.add_inputs_for_env_typing(self.crop_gen_job.EnvironmentTypes, season_date_generator, variable_values_for_population)
+        season_date_generator = APSIMSeasonDateGenerator(self.config, self.crop_gen_job.apsimSimulationClockStartDate)
+        relay_apsim_request = RelayApsim(self.crop_gen_job.JobID, self.crop_gen_job.individuals)
+        relay_apsim_request.add_inputs_for_env_typing(self.crop_gen_job.environmentTypes, season_date_generator, variable_values_for_population)
         response = super()._call_relay_apsim(relay_apsim_request)
         return response
     

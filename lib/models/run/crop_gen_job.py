@@ -1,6 +1,7 @@
 from lib.models.common.model import Model
 from lib.models.run.input import Input
 from lib.models.run.output import Output
+from lib.models.run.environment_typing.simulation import Simulation
 from lib.utils.json_helper import JsonHelper
 
 #
@@ -19,8 +20,10 @@ class CropGenJob(Model):
         self.reportName = ''
         self.inputs = []
         self.outputs = []
-        self.environmentTypes = []
         self.apsimJobId = ''
+        self.apsimSimulationClockStartDate = ''
+        self.environmentTypes = []
+        self.maxSimulationsPerRequest = 0        
 
     #
     # Parses the JSON data into this class.
@@ -28,10 +31,8 @@ class CropGenJob(Model):
     def parse_from_json_string(self, json_object):
         errors = []
         try:
-            required_attributes = [
-                'id', 'jobId', 'name', 'iterations', 'individuals', 'reportName', 'apsimJobId'
-            ]
-
+            required_attributes = CropGenJob.get_required_attributes()
+            
             # Process required attributes
             for attribute in required_attributes:
                 attribute_value = JsonHelper.get_attribute(json_object, attribute, errors)
@@ -47,20 +48,39 @@ class CropGenJob(Model):
 
         return errors
     
+    
+    #
+    # Gets the list of fields that are required to construct a cropgen job.
+    #
+    @staticmethod 
+    def get_required_attributes():
+        return [
+            'id',
+            'jobId',
+            'name',
+            'iterations',
+            'individuals',
+            'reportName',
+            'apsimJobId',
+            'apsimSimulationClockStartDate',
+            'maxSimulationsPerRequest'
+        ]
+    
+    
     #
     # Helper function to parse the environment types.
     #
     @staticmethod
     def parse_environment_types(json_object, errors):
-        environment_types = JsonHelper.get_non_mandatory_attribute(json_object, 'EnvironmentTypes', [])
+        environment_types = JsonHelper.get_non_mandatory_attribute(json_object, 'environmentTypes', [])
 
         if not environment_types: return []
         
         parsed_env_types = []
 
-        # for environment_type_value in environment_types:
-        #     simulation = JsonHelper.get_attribute(environment_type_value, 'Simulation', errors)
-        #     parsed_env_types.append(Simulation.parse(simulation, errors))
+        for environment_type_value in environment_types:
+            simulation = JsonHelper.get_attribute(environment_type_value, 'simulation', errors)
+            parsed_env_types.append(Simulation.parse(simulation, errors))
             
         return parsed_env_types
     

@@ -17,8 +17,8 @@ class EnvironmentData(Model):
     #
     @staticmethod
     def parse(json_object, errors):
-        type = JsonHelper.get_attribute(json_object, 'Type', errors)
-        seasons = JsonHelper.get_attribute(json_object, 'Seasons', errors)            
+        type = JsonHelper.get_attribute(json_object, 'type', errors)
+        seasons = JsonHelper.get_attribute(json_object, 'seasons', errors)
         return EnvironmentData(type, seasons)
 
     #
