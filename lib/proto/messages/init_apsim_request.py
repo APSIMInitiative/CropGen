@@ -1,9 +1,9 @@
-import lib.proto.proto_paths
+import lib.proto.path.proto_paths
 import ApsimConfig_pb2
 import InitApsim_pb2
 
-from lib.proto.proto_request import ProtoRequest
-from lib.proto.init_apsim_response import InitApsimResponse
+from lib.proto.base.proto_request import ProtoRequest
+from lib.proto.messages.init_apsim_response import InitApsimResponse
 
 class InitApsimRequest(ProtoRequest):
 

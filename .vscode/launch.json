@@ -18,6 +18,19 @@
             }
         },
         {
+            "name": "RunLiveJobsQ",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": [
+                ""
+            ],
+            "env": {
+                "JobsServer": "https://jobs.cgmwgp.com"
+            }
+        },
+        {
             "name": "RunTests",
             "type": "debugpy",
             "request": "launch",

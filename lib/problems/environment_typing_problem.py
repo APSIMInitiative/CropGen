@@ -15,9 +15,9 @@ class EnvironmentTypingProblem(ProblemBase):
     #
     # Construct problem with the given dimensions and variable ranges
     #
-    def __init__(self, config, crop_gen_job):
+    def __init__(self, config, crop_gen_job, cgm_relay_address):
         logging.info("%s has received a request for an Environment Typing run.", Constants.APPLICATION_NAME)
-        super().__init__(config, crop_gen_job)
+        super().__init__(config, crop_gen_job, cgm_relay_address)
 
     #
     # Iterate over each population and perform calculations

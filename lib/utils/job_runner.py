@@ -2,7 +2,7 @@ import logging
 
 from lib.utils.date_time_helper import DateTimeHelper
 from lib.utils.constants import Constants
-from lib.proto.init_apsim_request import InitApsimRequest
+from lib.proto.messages.init_apsim_request import InitApsimRequest
 from lib.socket.proto_zmq_client import ProtoZMQClient
 from lib.problems.problem_visualisation import ProblemVisualisation
 
@@ -24,7 +24,7 @@ class JobRunner():
             logging.error("Failed to initialise %s. Run message will not be processed.", Constants.CGM_SERVER)
             return
 
-        problem = ProblemVisualisation(self.config, crop_gen_job)
+        problem = ProblemVisualisation(self.config, crop_gen_job, self.cgm_relay_address)
         
         # Now run the problem code, pass in the CGM factory class for 
         problem.run()
@@ -44,4 +44,5 @@ class JobRunner():
     def _init_cgm(self, crop_gen_job):
         init_apsim = InitApsimRequest(self.config, crop_gen_job)
         init_apsim_response = self.zmq_client.send_proto_message(init_apsim)
+        logging.info("Received %s: %s", init_apsim_response.get_type_name(), init_apsim_response.to_json())
         return init_apsim_response != None

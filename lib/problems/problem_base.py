@@ -8,6 +8,7 @@ from lib.results_processors.multi_year_results_processor import MultiYearResults
 from lib.results_processors.empty_results_processor import EmptyResultsProcessor
 from lib.utils.constants import Constants
 #from lib.utils.results_publisher import ResultsPublisher
+from lib.socket.proto_zmq_client import ProtoZMQClient
 from lib.models.cgm.run_apsim_response import RunApsimResponse
 from lib.models.cgm.relay_apsim import RelayApsim
 from lib.utils.date_time_helper import DateTimeHelper
@@ -19,7 +20,7 @@ class ProblemBase(Problem):
     #
     # Constructor
     #
-    def __init__(self, config, crop_gen_job):
+    def __init__(self, config, crop_gen_job, cgm_relay_address):
         # Member variables
         self.config = config
         self.crop_gen_job = crop_gen_job
@@ -32,13 +33,14 @@ class ProblemBase(Problem):
         self.apsim_simulation_names = set()
         self.apsim_simulation_name_str = ''
 
+        self.cgm_relay_address = cgm_relay_address
+        self.zmq_client = ProtoZMQClient(config, self.cgm_relay_address, Constants.CGM_RELAY_SOCKET_SERVICE_PORT)
+
         # self.results_publisher = ResultsPublisher(
         #     crop_gen_job.IterationResultsUrl,
         #     crop_gen_job.FinalResultsUrl,
         #     self.config
         # )
-
-        #self.cgm_server_client = cgm_server_client
         
         total_inputs = crop_gen_job.get_total_inputs()
         total_outputs = crop_gen_job.get_total_outputs_for_optimisation()
@@ -232,6 +234,9 @@ class ProblemBase(Problem):
     #
     def _call_relay_apsim(self, relay_apsim_request):
         # Call CGM which will in turn call APSIM.
+        
+        response = self.zmq_client.send_proto_message(relay_apsim_request)
+
         read_message_data = self.cgm_server_client.call_cgm(relay_apsim_request)
         self.run_errors = self.cgm_server_client.validate_cgm_call(read_message_data, relay_apsim_request, 'RunApsimResponse')
 

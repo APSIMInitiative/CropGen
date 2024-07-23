@@ -1,7 +1,7 @@
-import lib.proto.proto_paths
+import lib.proto.path.proto_paths
 import InitApsimResponse_pb2
 
-from lib.proto.proto_response import ProtoResponse
+from lib.proto.base.proto_response import ProtoResponse
 
 class InitApsimResponse(ProtoResponse):
 
@@ -11,6 +11,7 @@ class InitApsimResponse(ProtoResponse):
         self.firstRunTime = 0.0
         self.secondRunTime = 0.0
         self.runSource = ''
+
 
     @staticmethod
     def from_proto(proto):
@@ -24,10 +25,12 @@ class InitApsimResponse(ProtoResponse):
         if proto.HasField('RunSource'):
             init_apsim_response.runSource = proto.RunSource
         return init_apsim_response
+    
 
     @staticmethod
     def get_proto_type() -> type:
         return InitApsimResponse_pb2.InitApsimResponseProto
+    
 
     def get_type_name(self):
         return __class__.__name__ + "Proto"
