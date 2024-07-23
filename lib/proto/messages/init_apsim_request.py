@@ -20,13 +20,13 @@ class InitApsimRequest(ProtoRequest):
         apsim_config_proto = ApsimConfig_pb2.ApsimConfigProto()
 
         for input in self.crop_gen_job.inputs:
-            apsim_config_proto.Inputs.append(input.Name)
+            apsim_config_proto.Inputs.append(input.name)
 
         report_config_proto = apsim_config_proto.ReportDetails.add()
         report_config_proto.ReportName = self.crop_gen_job.reportName
 
         for output in self.crop_gen_job.outputs:
-            report_config_proto.Fields.append(output.ApsimOutputName)
+            report_config_proto.Fields.append(output.apsimOutputName)
 
         init_proto.Configuration.CopyFrom(apsim_config_proto)
 

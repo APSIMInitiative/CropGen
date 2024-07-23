@@ -16,12 +16,12 @@ class Output(Model):
     # Constructor
     #
     def __init__(self, apsim_output_name, apsim_output_type, optimise, maximise, multiplier, aggregate_functions):
-        self.ApsimOutputName = apsim_output_name
-        self.ApsimOutputType = apsim_output_type
-        self.Optimise = optimise
-        self.Maximise = maximise
-        self.Multiplier = multiplier
-        self.AggregateFunctions = aggregate_functions
+        self.apsimOutputName = apsim_output_name
+        self.apsimOutputType = apsim_output_type
+        self.optimise = optimise
+        self.maximise = maximise
+        self.multiplier = multiplier
+        self.aggregateFunctions = aggregate_functions
 
     #
     # Parses the outputs

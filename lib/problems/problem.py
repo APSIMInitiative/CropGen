@@ -14,8 +14,8 @@ class Problem(ProblemBase):
     #
     # Construct problem with the given dimensions and variable ranges
     #
-    def __init__(self, config, crop_gen_job, cgm_relay_address):
-        super().__init__(config, crop_gen_job, cgm_relay_address)
+    def __init__(self, config, crop_gen_job, cgm_relay_address, results_manager):
+        super().__init__(config, crop_gen_job, cgm_relay_address, results_manager)
 
     #
     # Iterate over each population and perform calculations.
@@ -113,13 +113,8 @@ class Problem(ProblemBase):
     # Creates request and runs apsim.
     #
     def _perform_relay_apsim_one_request(self, variable_values_for_population):
-
-        # init_apsim = InitApsimRequest(self.config, crop_gen_job)
-        # init_apsim_response = self.zmq_client.send_proto_message(init_apsim)
-        # logging.info("Received %s: %s", init_apsim_response.get_type_name(), init_apsim_response.to_json())
-        # return init_apsim_response != None
         
         relay_apsim_request = RelayApsim(self.crop_gen_job.apsimJobId, len(variable_values_for_population))
         relay_apsim_request.add_inputs(variable_values_for_population)
-        response = self._call_relay_apsim(relay_apsim_request)
-        return response
+        run_apsim_response = self._call_relay_apsim(relay_apsim_request)
+        return run_apsim_response

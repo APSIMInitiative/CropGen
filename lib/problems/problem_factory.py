@@ -10,8 +10,8 @@ class ProblemFactory():
     # Creates an instance of a Problem.
     #
     @staticmethod
-    def create(config, crop_gen_job, cgm_relay_address):
+    def create(config, crop_gen_job, cgm_relay_address, results_manager):
         if crop_gen_job.get_is_environment_typing_run():
-            return EnvironmentTypingProblem(config, crop_gen_job, cgm_relay_address)
+            return EnvironmentTypingProblem(config, crop_gen_job, cgm_relay_address, results_manager)
         else:
-            return Problem(config, crop_gen_job, cgm_relay_address)
+            return Problem(config, crop_gen_job, cgm_relay_address, results_manager)

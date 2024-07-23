@@ -9,8 +9,8 @@ class Input(Model):
     # Constructor
     #
     def __init__(self, name, values):        
-        self.Name = name
-        self.Values = values
+        self.name = name
+        self.values = values
 
 #
 # Represents the output
@@ -20,10 +20,10 @@ class Output(Model):
     # Constructor
     #
     def __init__(self, name, values, simulation_id, simulation_name):        
-        self.Name = name
-        self.Values = values
-        self.SimulationID = simulation_id
-        self.SimulationName = simulation_name
+        self.name = name
+        self.values = values
+        self.simulationId = simulation_id
+        self.simulationName = simulation_name
 
 #
 # The Iteration Results Message contains the inputs and their correspoding 
@@ -34,17 +34,18 @@ class IterationResultsMessage(Model):
     # Constructor
     #
     def __init__(
-            self,
-            run_job_request,
-            iteration_id,
-            input_values
+        self,
+        crop_gen_job,
+        iteration_id,
+        input_values
     ):
-        self.DateTime = DateTimeHelper.get_date_time_now_str()
-        self.JobID = run_job_request.JobID
-        self.TotalIterations = run_job_request.Iterations
-        self.IterationID = iteration_id
-        self.Inputs = self._extract_inputs(run_job_request.get_input_names(), input_values)
-        self.Outputs = []
+        self.dateTime = DateTimeHelper.get_date_time_now_str()
+        self.jobId = crop_gen_job.jobId
+        self.totalIterations = crop_gen_job.iterations
+        self.iterationID = iteration_id
+        self.inputs = self._extract_inputs(crop_gen_job.get_input_names(), input_values)
+        self.outputs = []
+
 
     #
     # Creates all of the inputs
@@ -62,11 +63,12 @@ class IterationResultsMessage(Model):
 
         return inputs
 
+
     #
     # Add the specified output
     #
     def add_outputs(self, output_names, all_output_values):
-        self.Outputs = []
+        self.outputs = []
         index = 0
         for name in output_names:
             values = []
@@ -74,8 +76,9 @@ class IterationResultsMessage(Model):
                 if len(output_values.outputs) > index:
                     values.append(output_values.outputs[index].get_output_value_for_results())
 
-            self.Outputs.append(Output(name, values, output_values.simulation_id, output_values.simulation_name))
+            self.outputs.append(Output(name, values, output_values.simulation_id, output_values.simulation_name))
             index += 1
+
 
     #
     # Returns the type name.

@@ -97,7 +97,7 @@ class CropGenJob(Model):
     def get_total_outputs(self):
         total_outputs = 0
         for output in self.outputs:
-            total_aggregate_functions = len(output.AggregateFunctions)
+            total_aggregate_functions = len(output.aggregateFunctions)
             # Aggregate functions essentially expand out the amount of outputs
             # that we are handling.
             if total_aggregate_functions > 0:
@@ -112,8 +112,8 @@ class CropGenJob(Model):
     def get_total_outputs_for_optimisation(self):
         total_outputs = 0
         for output in self.outputs:
-            if output.Optimise:
-                total_aggregate_functions = len(output.AggregateFunctions)
+            if output.optimise:
+                total_aggregate_functions = len(output.aggregateFunctions)
                 # Aggregate functions essentially expand out the amount of outputs
                 # that we are handling.
                 if total_aggregate_functions > 0:
@@ -137,7 +137,7 @@ class CropGenJob(Model):
     def get_input_names(self):
         input_names = []
         for input in self.inputs:
-            input_names.append(input.Name)
+            input_names.append(input.name)
         return input_names
     
     #
@@ -146,7 +146,7 @@ class CropGenJob(Model):
     def get_apsim_output_names(self):
         output_names = []
         for output in self.outputs:
-            output_names.append(output.ApsimOutputName)
+            output_names.append(output.apsimOutputName)
         return output_names
     
     #
@@ -155,11 +155,11 @@ class CropGenJob(Model):
     def get_display_output_names(self):
         output_names = []
         for output in self.outputs:
-            if output.AggregateFunctions:
-                for aggregate_function in output.AggregateFunctions:
-                    output_names.append(aggregate_function.DisplayName)
+            if output.aggregateFunctions:
+                for aggregate_function in output.aggregateFunctions:
+                    output_names.append(aggregate_function.displayName)
             else:
-                output_names.append(output.ApsimOutputName)
+                output_names.append(output.apsimOutputName)
         return output_names
         
     #

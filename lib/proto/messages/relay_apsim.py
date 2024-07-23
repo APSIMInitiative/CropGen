@@ -20,11 +20,11 @@ class RelayApsim(ProtoRequest):
         job_id,
         individuals
     ):
-        self.JobID = job_id
-        self.Individuals = individuals
-        self.Inputs = []
-        self.SimulationNames = []
-        self.SystemPropertyValues = []
+        self.jobId = job_id
+        self.individuals = individuals
+        self.inputs = []
+        self.simulationNames = []
+        self.systemPropertyValues = []
 
 
     #
@@ -49,8 +49,8 @@ class RelayApsim(ProtoRequest):
                 start_date = season_date_generator.generate_start_date_from_season(season)
                 end_date = season_date_generator.generate_end_date_from_season(season)
 
-                self.SystemPropertyValues.append([str(input_id), start_date, end_date])
-                self.SimulationNames.append([str(input_id), environment_type.Name])
+                self.systemPropertyValues.append([str(input_id), start_date, end_date])
+                self.simulationNames.append([str(input_id), environment_type.Name])
 
                 self.add_inputs_for_individual(input_id, input_values)
     
@@ -79,28 +79,28 @@ class RelayApsim(ProtoRequest):
 
         # Now add the complete list of values which will contain the iteration
         # id, followed by all of the input values.
-        self.Inputs.append(values)
+        self.inputs.append(values)
 
 
     def to_proto(self):
         relay_apsim_proto = RelayApsim_pb2.RelayApsimProto()
-        relay_apsim_proto.JobID = self.JobID
-        relay_apsim_proto.Individuals = self.Individuals
+        relay_apsim_proto.JobID = self.jobId
+        relay_apsim_proto.Individuals = self.individuals
        
        # Populate the Inputs field
-        for input_list in self.Inputs:
+        for input_list in self.inputs:
             double_array_proto = Types_pb2.DoubleArrayProto()
             double_array_proto.Values.extend(input_list)
             relay_apsim_proto.Inputs.append(double_array_proto)
 
         # Populate the SimulationNames field
-        for name in self.SimulationNames:
+        for name in self.simulationNames:
             string_array_proto = Types_pb2.StringArrayProto()
             string_array_proto.Values.append(name)
             relay_apsim_proto.SimulationNames.append(string_array_proto)
 
         # Populate the SystemPropertyValues field
-        for value in self.SystemPropertyValues:
+        for value in self.systemPropertyValues:
             string_array_proto = Types_pb2.StringArrayProto()
             string_array_proto.Values.append(value)
             relay_apsim_proto.SystemPropertyValues.append(string_array_proto)

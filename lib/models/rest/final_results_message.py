@@ -10,8 +10,8 @@ class InputOutput(Model):
     # Constructor
     #
     def __init__(self, name, values):        
-        self.Name = name
-        self.Values = values
+        self.name = name
+        self.values = values
 
 #
 # The Final Results Message contains the final maximised/minimised output.
@@ -21,21 +21,22 @@ class FinalResultsMessage(Model):
     # Constructor
     #
     def __init__(
-            self, 
-            run_job_request, 
-            variable_values_non_dominated_individuals, 
-            objective_values_non_dominated_individuals,
-            is_multi_year, 
-            processed_aggregated_outputs
-        ):
+        self, 
+        crop_gen_job, 
+        variable_values_non_dominated_individuals, 
+        objective_values_non_dominated_individuals,
+        is_multi_year, 
+        processed_aggregated_outputs
+    ):
 
-        self.DateTime = DateTimeHelper.get_date_time_now_str()
-        self.JobID = run_job_request.JobID
-        self.Inputs = self._extract_inputs(run_job_request.Inputs, variable_values_non_dominated_individuals)
+        self.dateTime = DateTimeHelper.get_date_time_now_str()
+        self.jobId = crop_gen_job.jobId
+        self.inputs = self._extract_inputs(crop_gen_job.inputs, variable_values_non_dominated_individuals)
         if is_multi_year: 
-            self.Outputs = self._extract_outputs_multi_year_sim(processed_aggregated_outputs, objective_values_non_dominated_individuals)
+            self.outputs = self._extract_outputs_multi_year_sim(processed_aggregated_outputs, objective_values_non_dominated_individuals)
         else:
-            self.Outputs = self._extract_outputs_single_year_sim(run_job_request.Outputs, objective_values_non_dominated_individuals)
+            self.outputs = self._extract_outputs_single_year_sim(crop_gen_job.outputs, objective_values_non_dominated_individuals)
+
 
     # Extracts all of the inputs from the minimise result
     #
@@ -54,9 +55,10 @@ class FinalResultsMessage(Model):
                 result = variable_values_non_dominated_individuals[id]
                 results.append(result)
 
-            inputs.append(InputOutput(input.Name, results))
+            inputs.append(InputOutput(input.name, results))
             id += 1
         return inputs
+
 
     #
     # Extracts all of the outputs from the minimise result
@@ -69,30 +71,31 @@ class FinalResultsMessage(Model):
         for output in job_request_outputs:
             results = []
 
-            if not output.Optimise: continue
+            if not output.optimise: continue
 
             if is_multi_dimensional_arr:
                 for result in objective_values_non_dominated_individuals[:, id]:
                     output_value = OutputValue(
                         result, 
-                        output.ApsimOutputName, 
-                        output.Maximise, 
-                        output.Multiplier
+                        output.apsimOutputName, 
+                        output.maximise, 
+                        output.multiplier
                     )
                     results.append(output_value.get_output_value_from_algorithm())
             else:
                 result = objective_values_non_dominated_individuals[id]
                 output_value = OutputValue(
                     result, 
-                    output.ApsimOutputName, 
-                    output.Maximise, 
-                    output.Multiplier
+                    output.apsimOutputName, 
+                    output.maximise, 
+                    output.multiplier
                 )
                 results.append(output_value.get_output_value_from_algorithm())
 
-            outputs.append(InputOutput(output.ApsimOutputName, results))
+            outputs.append(InputOutput(output.apsimOutputName, results))
             id += 1
         return outputs
+    
     
     #
     # Extracts all of the outputs from the minimise result
@@ -109,25 +112,26 @@ class FinalResultsMessage(Model):
                 for result in objective_values_non_dominated_individuals[:, id]:
                     output_value = OutputValue(
                         result, 
-                        output.DisplayName, 
-                        output.Maximise, 
-                        output.Multiplier
+                        output.displayName, 
+                        output.maximise, 
+                        output.multiplier
                     )
                     results.append(output_value.get_output_value_from_algorithm())
             else:
                 result = objective_values_non_dominated_individuals[id]
                 output_value = OutputValue(
                         result, 
-                        output.DisplayName, 
-                        output.Maximise, 
-                        output.Multiplier
+                        output.displayName, 
+                        output.maximise, 
+                        output.multiplier
                     )
                 results.append(output_value.get_output_value_from_algorithm())
 
-            outputs.append(InputOutput(output.DisplayName, results))
+            outputs.append(InputOutput(output.displayName, results))
             id += 1
         return outputs
     
+
     #
     # Returns the type name.
     #

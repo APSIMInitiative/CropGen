@@ -20,8 +20,7 @@ class ProblemBase(Problem):
     #
     # Constructor
     #
-    def __init__(self, config, crop_gen_job, cgm_relay_address):
-        # Member variables
+    def __init__(self, config, crop_gen_job, cgm_relay_address, results_manager):
         self.config = config
         self.crop_gen_job = crop_gen_job
         self.run_errors = []
@@ -35,13 +34,8 @@ class ProblemBase(Problem):
 
         self.cgm_relay_address = cgm_relay_address
         self.zmq_client = ProtoZMQClient(config, self.cgm_relay_address, Constants.CGM_RELAY_SOCKET_SERVICE_PORT)
+        self.results_manager = results_manager
 
-        # self.results_publisher = ResultsPublisher(
-        #     crop_gen_job.IterationResultsUrl,
-        #     crop_gen_job.FinalResultsUrl,
-        #     self.config
-        # )
-        
         total_inputs = crop_gen_job.get_total_inputs()
         total_outputs = crop_gen_job.get_total_outputs_for_optimisation()
         lower_bounds = self._construct_input_lower_bounds()
@@ -69,7 +63,7 @@ class ProblemBase(Problem):
     def _construct_input_lower_bounds(self):
         input_lower_bounds = []
         for input in self.crop_gen_job.inputs:
-            input_lower_bounds.append(input.Min)
+            input_lower_bounds.append(input.min)
         return input_lower_bounds
     
     #
@@ -79,7 +73,7 @@ class ProblemBase(Problem):
     def _construct_input_upper_bounds(self):
         input_upper_bounds = []
         for input in self.crop_gen_job.inputs:
-            input_upper_bounds.append(input.Max)
+            input_upper_bounds.append(input.max)
         return input_upper_bounds
     
     #
@@ -89,9 +83,9 @@ class ProblemBase(Problem):
         return (
             len(results_for_individual) > 0
             and results_for_individual[0]
-            and results_for_individual[0].SimulationID != Constants.INVALID_SIMULATION_ID
-            and results_for_individual[0].SimulationName != Constants.INVALID_SIMULATION_NAME
-            and len(results_for_individual[0].Values) > 0
+            and results_for_individual[0].simulationID != Constants.INVALID_SIMULATION_ID
+            and results_for_individual[0].simulationName != Constants.INVALID_SIMULATION_NAME
+            and len(results_for_individual[0].values) > 0
         )
     
     #
@@ -99,11 +93,11 @@ class ProblemBase(Problem):
     #
     def _get_contains_results(self, run_apsim_response):
         return (
-            len(run_apsim_response.Rows) > 0
-            and run_apsim_response.Rows[0]
-            and run_apsim_response.Rows[0].SimulationID != Constants.INVALID_SIMULATION_ID
-            and run_apsim_response.Rows[0].SimulationName != Constants.INVALID_SIMULATION_NAME
-            and len(run_apsim_response.Rows[0].Values) > 0
+            len(run_apsim_response.rows) > 0
+            and run_apsim_response.rows[0]
+            and run_apsim_response.rows[0].simulationID != Constants.INVALID_SIMULATION_ID
+            and run_apsim_response.rows[0].simulationName != Constants.INVALID_SIMULATION_NAME
+            and len(run_apsim_response.rows[0].values) > 0
         )
     
     #
@@ -121,10 +115,10 @@ class ProblemBase(Problem):
                 request_output = self.crop_gen_job.get_output_by_index(output_index)
 
                 # If there is no output or we're not optimizing this output, then just skip and move onto the next one.
-                if not request_output or not request_output.Optimise:
+                if not request_output or not request_output.optimise:
                     continue
 
-                for aggregate_function in request_output.AggregateFunctions:
+                for aggregate_function in request_output.aggregateFunctions:
                     self.processed_aggregated_outputs.append(aggregate_function)
         else:
             logging.info("%s is running a single year simulation.", Constants.APPLICATION_NAME)
@@ -137,8 +131,8 @@ class ProblemBase(Problem):
         self.apsim_simulation_names = set()
         
         for apsim_result in results_for_individual:
-            self.apsim_simulation_names.add(apsim_result.SimulationName.strip())
-            self.apsim_simulation_id_str = apsim_result.SimulationID
+            self.apsim_simulation_names.add(apsim_result.simulationName.strip())
+            self.apsim_simulation_id_str = apsim_result.simulationID
 
         total_apsim_simulations = len(self.apsim_simulation_names)
 
@@ -175,11 +169,11 @@ class ProblemBase(Problem):
             return False
 
         # Populate the iteration message with all of the data that we currently have.
-        iteration_results_message = IterationResultsMessage(self.crop_gen_job, self.current_iteration_id, variable_values_for_population)
+        iteration_results = IterationResultsMessage(self.crop_gen_job, self.current_iteration_id, variable_values_for_population)
 
         all_algorithm_outputs = []
         all_results_outputs = []
-        total_inputs = self.crop_gen_job.Individuals
+        total_inputs = self.crop_gen_job.individuals
 
         # Iterate over all of the individuals.
         for individual in range(RelayApsim.INPUT_START_INDEX, total_inputs):
@@ -222,41 +216,28 @@ class ProblemBase(Problem):
         out_objective_values[Constants.OBJECTIVE_VALUES_ARRAY_INDEX] = np.array(all_algorithm_outputs)
 
         # Populate the iteration results with the outputs from each individual.
-        iteration_results_message.add_outputs(self.crop_gen_job.get_display_output_names(), all_results_outputs)
+        iteration_results.add_outputs(self.crop_gen_job.get_display_output_names(), all_results_outputs)
 
-        # Send out the results.
-        #self.results_publisher.publish_iteration_results(iteration_results_message)
+        # Append the iteration result to our list of results.
+        self.results_manager.add_iteration_result(iteration_results)
 
         return True
 
     #
     # Call APSIM and return the APSIM Response.
     #
-    def _call_relay_apsim(self, relay_apsim_request):
-        # Call CGM which will in turn call APSIM.
-        
-        response = self.zmq_client.send_proto_message(relay_apsim_request)
+    def _call_relay_apsim(self, relay_apsim_request):        
+        run_apsim_response = self.zmq_client.send_proto_message(relay_apsim_request)
 
-        read_message_data = self.cgm_server_client.call_cgm(relay_apsim_request)
-        self.run_errors = self.cgm_server_client.validate_cgm_call(read_message_data, relay_apsim_request, 'RunApsimResponse')
+        logging.debug("Received %s: %s", run_apsim_response.get_type_name(), run_apsim_response.to_json(self.config.PrettyPrintJsonInLogs))
 
-        # If there were any errors then bail out (these errors are logged later on.)
-        if self.run_errors:
-            logging.error(self.run_errors)
-            return None
-
-        # Convert the raw socket data into a RunApsimResponse object.
-        response = RunApsimResponse()
-        response.parse_from_json_string(read_message_data.message_wrapper.TypeBody)
-        logging.debug("Received %s: '%s'", response.get_type_name(), response.to_json(self.config.PrettyPrintJsonInLogs))
-
-        if not self._get_contains_results(response):
+        if not self._get_contains_results(run_apsim_response):
             error = Constants.NO_APSIM_RESULTS
             self.run_errors.append(error)
             logging.error(error)
             return None
 
-        return response
+        return run_apsim_response
 
     #
     # Stitches multiple RunApsimResponses into one.

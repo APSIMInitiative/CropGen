@@ -14,10 +14,11 @@ class ProblemVisualisation():
     #
     # Construct problem with the given dimensions and variable ranges
     #
-    def __init__(self, config, crop_gen_job, cgm_relay_address):
+    def __init__(self, config, crop_gen_job, cgm_relay_address, results_manager):
         self.config = config
         self.crop_gen_job = crop_gen_job
         self.cgm_relay_address = cgm_relay_address
+        self.results_manager = results_manager
 
     #
     # Invokes the running of the problem.
@@ -25,7 +26,7 @@ class ProblemVisualisation():
     def run(self):
         self.current_iteration_id = 1
         algorithm = AlgorithmGenerator.create_nsga2_algorithm(self.crop_gen_job.individuals)
-        problem = ProblemFactory.create(self.config, self.crop_gen_job, self.cgm_relay_address)
+        problem = ProblemFactory.create(self.config, self.crop_gen_job, self.cgm_relay_address, self.results_manager)
 
         # Run the optimisation algorithm on the defined problem. Note: framework only performs minimisation,
         # so problems must be framed such that each objective is minimised
@@ -51,7 +52,7 @@ class ProblemVisualisation():
         # Objective values for non-dominated individuals in the last generation
         objective_values_non_dominated_individuals = minimize_result.F
 
-        results_message = FinalResultsMessage(
+        final_results = FinalResultsMessage(
             self.crop_gen_job, 
             variable_values_non_dominated_individuals,
             objective_values_non_dominated_individuals,
@@ -59,5 +60,5 @@ class ProblemVisualisation():
             problem.processed_aggregated_outputs
         )
 
-        # Send out the results.
-        problem.results_publisher.publish_final_results(results_message)
+        # Store the final results.
+        self.results_manager.add_final_result(final_results)

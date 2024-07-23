@@ -1,72 +1,49 @@
-from json.decoder import JSONDecodeError
-import json
+import lib.proto.path.proto_paths
+import RunApsimResponse_pb2
+import ApsimResult_pb2
 
-from lib.models.common.model import Model
-from lib.models.cgm.apsim_result import ApsimResult
-from lib.utils.json_helper import JsonHelper
+from lib.proto.base.proto_response import ProtoResponse
+from lib.proto.messages.apsim_result import ApsimResult
 
-#
-# A WGP Server Response, as returned from the WGP Server.
-#
-class RunApsimResponse(Model):
-    #
-    # Constructor
-    #
+class RunApsimResponse(ProtoResponse):
     def __init__(self):
-        self.JobID = ''
-        self.ID = 0
-        self.Fields = []
-        self.Rows = []
-        self.RunTime = 0.0
-        self.RunSource = ''
+        self.id = ''
+        self.jobId = ''
+        self.fields = []
+        self.rows = []
+        self.runTime = 0.0
+        self.runSource = ''
 
-    #
-    # Parses the JSON data into this class.
-    #
-    def parse_from_json_string(self, message):
-        errors = []
-        try:
-            json_object = json.loads(message)
-            self.JobID = JsonHelper.get_attribute(json_object, 'JobID', errors)
-            self.ID = JsonHelper.get_attribute(json_object, 'ID', errors)
-            self.Fields = JsonHelper.get_attribute(json_object, 'Fields', errors)
-            self.Rows = self._parse_apsim_results(json_object, errors)
-            self.RunTime = JsonHelper.get_attribute(json_object, 'RunTime', errors)
-            self.RunSource = JsonHelper.get_attribute(json_object, 'RunSource', errors)
-        except JSONDecodeError as error:
-            errors.append(f"Failed to parse {self.get_type_name()} JSON: '{message}'. Error: '{error}'")
-        return errors
 
-    #
-    # Parses the rows into a collection of apsim simulation responses.
-    #
-    def _parse_apsim_results(self, json_object, errors):
-         apsim_results = []
+    @staticmethod
+    def from_proto(proto):
+        run_apsim_response = RunApsimResponse()
+        run_apsim_response.id = proto.ID
+        run_apsim_response.jobId = proto.JobID
+        run_apsim_response.fields = list(proto.Fields)
+        run_apsim_response.rows = [ApsimResult.from_proto(row) for row in proto.Rows]
+        
+        if proto.HasField('RunTime'):
+            run_apsim_response.runTime = proto.RunTime
 
-         results = JsonHelper.get_attribute(json_object, 'Rows', errors)
+        if proto.HasField('RunSource'):
+            run_apsim_response.runSource = proto.RunSource
 
-         if results:
-            # Iterate over all of the results
-            for result in results:
-                apsim_result = ApsimResult()
-                apsim_result.parse_from_json_object(result, errors)
-                apsim_results.append(apsim_result)
-
-         return apsim_results
+        return run_apsim_response
     
-    #
-    # Searches for an APSIM result for the given individual, or returns None
-    # if no APSIM result can be found for that individual.
-    #
+
     def get_apsim_results_for_individual(self, individual):
         apsim_results = []
-        for row in self.Rows:
-            if row.ID == individual:
+        for row in self.rows:
+            if row.id == individual:
               apsim_results.append(row)
         return apsim_results
+    
 
-    #
-    # Returns the type name.
-    #
+    @staticmethod
+    def get_proto_type() -> type:
+        return RunApsimResponse_pb2.RunApsimResponseProto
+    
+
     def get_type_name(self):
-        return __class__.__name__
+        return __class__.__name__ + "Proto"

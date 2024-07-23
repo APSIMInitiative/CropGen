@@ -9,9 +9,9 @@ class Input(Model):
     # Constructor
     #
     def __init__(self, name, min, max):        
-        self.Name = name
-        self.Min = min
-        self.Max = max
+        self.name = name
+        self.min = min
+        self.max = max
 
     #
     # Parses the inputs
