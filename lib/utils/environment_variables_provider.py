@@ -11,31 +11,40 @@ class EnvironmentVariablesProvider:
     UPDATE_FREQUENCY = "UPDATE_FREQUENCY"
     PROXY_IP_FILE = "PROXY_IP_FILE"
     HPC_ROOT_DIR = "HPC_ROOT_DIR"
+    
 
     def __init__(self):
         self._env_variable_values: Dict[str, Any] = self.create_env_var_mapping()
         self.load_environment_variables()
 
+
     def get_web_server_port_number(self) -> int:
         return self.get_variable(int, self.WEB_SERVER_PORT_NUMBER)
+    
 
     def get_jobs_server_address(self) -> str:
         return self.get_variable(str, self.JOBS_SERVER)
+    
 
     def get_hpc_id(self) -> str:
         return self.get_variable(str, self.HPC_ID)
+    
 
     def get_worker_id(self) -> str:
         return self.get_variable(str, self.WORKER_ID)
+    
 
     def get_update_freq(self) -> int:
         return self.get_variable(int, self.UPDATE_FREQUENCY)
+    
 
     def get_proxy_ip_file(self) -> str:
         return self.get_variable(str, self.PROXY_IP_FILE)
+    
 
     def get_hpc_root_dir(self) -> str:
         return self.get_variable(str, self.HPC_ROOT_DIR)
+    
 
     def get_variable(self, var_type: Type[T], name: str) -> T:
         if name not in self._env_variable_values:
@@ -48,11 +57,13 @@ class EnvironmentVariablesProvider:
             print(f"Failed to convert environment variable '{name}' to type '{var_type}'")
             raise
 
+
     def load_environment_variables(self):
         for name in self._env_variable_values.keys():
             env_var_value = os.getenv(name)
             if env_var_value is not None:
                 self._env_variable_values[name] = env_var_value
+
 
     @staticmethod
     def create_env_var_mapping() -> Dict[str, Any]:
