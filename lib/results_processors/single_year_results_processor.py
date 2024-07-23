@@ -31,6 +31,9 @@ class SingleYearResultsProcessor():
             # If there is no output move onto the next one.
             if not request_output: continue
 
+            if request_output.aggregateFunctions:
+                raise Exception(f"Aggregate Functions configured but Apsim Job ID: {crop_gen_job.apsimJobId} is a single year APSIM simulation.")
+
             output_value = OutputValue(
                 raw_apsim_output, 
                 request_output.apsimOutputName, 

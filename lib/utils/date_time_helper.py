@@ -10,6 +10,7 @@ class DateTimeHelper():
     DATE_FORMAT = '%Y-%m-%d'
     TIME_FORMAT = '%H.%M.%S'
     DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
+    DATE_TIME_FORMAT_DIR = "%Y-%m-%d %H-%M-%S"
 
     #
     # Gets the full date time as a DateTime object.
@@ -106,6 +107,14 @@ class DateTimeHelper():
     @staticmethod
     def get_date_time_now_str():
         return DateTimeHelper._get_now_str(DateTimeHelper.DATE_TIME_FORMAT)
+    
+
+    #
+    # Gets now as a datetime string.
+    #
+    @staticmethod
+    def get_date_time_now_str_dir_format():
+        return DateTimeHelper._get_now_str(DateTimeHelper.DATE_TIME_FORMAT_DIR)
 
     #
     # Helper that others call into, passing only the format.

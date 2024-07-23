@@ -23,7 +23,7 @@ class CropGenRunner():
         if not self.cgm_relay_address:
             raise Exception(f"Failed to find {Constants.CGM_RELAY_APP_NAME}")
 
-        self.job_runner = JobRunner(self.config, self.cgm_relay_address, self.results_manager)
+        self.job_runner = JobRunner(self.config, self.cgm_relay_address, self.results_manager, env_provider)
         self.server_state = JobsServer(self.jobs_client)
 
 
@@ -41,7 +41,7 @@ class CropGenRunner():
             else:
                 crop_gen_job = self.server_state.retrieve_job()
 
-                if crop_gen_job:
+                if crop_gen_job and len(crop_gen_job.errors) == 0:
                     logging.info("Found CropGen job to run.")
                     self.server_state.set_job_state(JobState.Running)
                     self.job_runner.run(crop_gen_job)

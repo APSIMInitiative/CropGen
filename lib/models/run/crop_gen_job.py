@@ -23,30 +23,29 @@ class CropGenJob(Model):
         self.apsimJobId = ''
         self.apsimSimulationClockStartDate = ''
         self.environmentTypes = []
-        self.maxSimulationsPerRequest = 0        
+        self.maxSimulationsPerRequest = 0
+        self.errors = []
 
     #
     # Parses the JSON data into this class.
     #
     def parse_from_json_string(self, json_object):
-        errors = []
+        self.errors = []
         try:
             required_attributes = CropGenJob.get_required_attributes()
             
             # Process required attributes
             for attribute in required_attributes:
-                attribute_value = JsonHelper.get_attribute(json_object, attribute, errors)
+                attribute_value = JsonHelper.get_attribute(json_object, attribute, self.errors)
                 setattr(self, attribute, attribute_value)
 
             # Process Inputs and Outputs
-            self.inputs = Input.parse_inputs(json_object, errors)
-            self.outputs = Output.parse_outputs(json_object, errors)
-            self.environmentTypes = self.parse_environment_types(json_object, errors)
+            self.inputs = Input.parse_inputs(json_object, self.errors)
+            self.outputs = Output.parse_outputs(json_object, self.errors)
+            self.environmentTypes = self.parse_environment_types(json_object, self.errors)
 
         except Exception as error:
-            errors.append(f"Failed to parse {self.__class__.__name__} JSON: '{json_object}'. Error: '{error}'")
-
-        return errors
+            self.errors.append(f"Failed to parse {self.__class__.__name__} JSON: '{json_object}'. Error: '{error}'")
     
     
     #
