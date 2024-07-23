@@ -1,6 +1,6 @@
 import lib.proto.path.proto_paths
 import RelayApsim_pb2
-import RunApsimResponse_pb2
+import Types_pb2
 
 from lib.proto.base.proto_request import ProtoRequest
 from lib.proto.messages.run_apsim_response import RunApsimResponse
@@ -84,29 +84,34 @@ class RelayApsim(ProtoRequest):
 
     def to_proto(self):
         relay_apsim_proto = RelayApsim_pb2.RelayApsimProto()
-        relay_apsim_proto.JobID = self.crop_gen_job.apsimJobId
+        relay_apsim_proto.JobID = self.JobID
         relay_apsim_proto.Individuals = self.Individuals
-        # relay_apsim_proto.Url = ""
-        # relay_apsim_proto.PreRunSimulations = self.config.InitWorkersPreRunSimulations
-        # relay_apsim_proto.ResetRunner = self.config.AlwaysResetRunner
-        # apsim_config_proto = ApsimConfig_pb2.ApsimConfigProto()
+       
+       # Populate the Inputs field
+        for input_list in self.Inputs:
+            double_array_proto = Types_pb2.DoubleArrayProto()
+            double_array_proto.Values.extend(input_list)
+            relay_apsim_proto.Inputs.append(double_array_proto)
 
-        # for input in self.crop_gen_job.inputs:
-        #     apsim_config_proto.Inputs.append(input.Name)
+        # Populate the SimulationNames field
+        for name in self.SimulationNames:
+            string_array_proto = Types_pb2.StringArrayProto()
+            string_array_proto.Values.append(name)
+            relay_apsim_proto.SimulationNames.append(string_array_proto)
 
-        # report_config_proto = apsim_config_proto.ReportDetails.add()
-        # report_config_proto.ReportName = self.crop_gen_job.reportName
-
-        # for output in self.crop_gen_job.outputs:
-        #     report_config_proto.Fields.append(output.ApsimOutputName)
-
-        # relay_apsim_proto.Configuration.CopyFrom(apsim_config_proto)
+        # Populate the SystemPropertyValues field
+        for value in self.SystemPropertyValues:
+            string_array_proto = Types_pb2.StringArrayProto()
+            string_array_proto.Values.append(value)
+            relay_apsim_proto.SystemPropertyValues.append(string_array_proto)
 
         return relay_apsim_proto
+
 
     @staticmethod
     def get_response_type() -> type:
         return RunApsimResponse
+
 
     def get_type_name(self):
         return __class__.__name__ + "Proto"
