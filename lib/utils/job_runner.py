@@ -1,4 +1,3 @@
-import os
 import logging
 
 from lib.utils.date_time_helper import DateTimeHelper
@@ -7,64 +6,46 @@ from lib.proto.messages.init_apsim_request import InitApsimRequest
 from lib.socket.proto_zmq_client import ProtoZMQClient
 from lib.problems.problem_visualisation import ProblemVisualisation
 from lib.utils.date_time_helper import DateTimeHelper
+from lib.server.results_manager import ResultsManager
+from lib.utils.constants import Constants
 
 class JobRunner():
 
-    def __init__(self, config, cgm_relay_address, results_manager, env_provider):
+    def __init__(self, config, cgm_relay_address, crop_gen_job):
         self.config = config
         self.cgm_relay_address = cgm_relay_address
-        self.results_manager = results_manager
-        self.env_provider = env_provider
+        self.crop_gen_job = crop_gen_job
+        self.results_manager = ResultsManager(self.config, crop_gen_job)
         self.zmq_client = ProtoZMQClient(config, self.cgm_relay_address, Constants.CGM_RELAY_SOCKET_SERVICE_PORT)
 
 
-    def run(self, crop_gen_job):
-        logging.info("Running job request for id: %s", crop_gen_job.id)        
-        logging.info("Job request: %s", crop_gen_job.to_json(self.config.PrettyPrintJsonInLogs))
-
-        self.results_manager.set_input_output_names(crop_gen_job)
+    def run(self):
+        logging.info("Running job request for id: %s", self.crop_gen_job.id)        
+        logging.info("Job request: %s", self.crop_gen_job.to_json(self.config.PrettyPrintJsonInLogs))
 
         run_start_time = DateTimeHelper.get_date_time()
 
-        if not self._init_cgm(crop_gen_job):
+        if not self._init_cgm(self.crop_gen_job):
             logging.error("Failed to initialise %s. Run message will not be processed.", Constants.CGM_SERVER)
             return
 
-        problem = ProblemVisualisation(self.config, crop_gen_job, self.cgm_relay_address, self.results_manager)
+        problem = ProblemVisualisation(self.config, self.crop_gen_job, self.cgm_relay_address, self.results_manager)
         
         # Now run the problem code, pass in the CGM factory class for 
         problem.run()
 
-        self.results_manager.write_to_disk(self.get_results_dir(crop_gen_job))
+        self.results_manager.write_to_disk()
 
         # Log out how long the problem took to run.
         logging.info("Problem run finished. Time taken: '%s'. ID: '%s', JobID: '%s', ApsimJobID: '%s', Name: '%s', Iterations: '%d', Individuals: '%d'", 
             DateTimeHelper.get_elapsed_time_since(run_start_time),
-            crop_gen_job.id,
-            crop_gen_job.jobId,
-            crop_gen_job.apsimJobId,
-            crop_gen_job.name,
-            crop_gen_job.iterations,
-            crop_gen_job.individuals
+            self.crop_gen_job.id,
+            self.crop_gen_job.jobId,
+            self.crop_gen_job.apsimJobId,
+            self.crop_gen_job.name,
+            self.crop_gen_job.iterations,
+            self.crop_gen_job.individuals
         )
-
-
-    
-    def get_results_dir(self, crop_gen_job):
-        results_dir = ""
-        hpc_root_dir = self.env_provider.get_hpc_root_dir()
-        date_str = DateTimeHelper.get_date_time_now_str_dir_format()
-        if hpc_root_dir:
-            results_dir = os.path.join(hpc_root_dir)
-        else:
-            this_script_path = os.path.dirname(os.path.abspath(__file__))
-            results_dir = os.path.join(this_script_path, "..", "..")
-        
-        
-        results_dir = os.path.join(results_dir, "results", crop_gen_job.apsimJobId, date_str)
-        results_dir = os.path.abspath(results_dir)
-
-        return results_dir
 
 
     def _init_cgm(self, crop_gen_job):

@@ -1,12 +1,14 @@
 import logging
 import json
 import os
+
 from lib.models.common.model import Model
+from lib.utils.constants import Constants
 
 #
 # The config for this application.
 #
-class CropGenConfig(Model):
+class Config(Model):
     # The environment variable that is created only when running in a container.
     RUNNING_IN_CONTAINER = 'RUNNING_IN_CONTAINER'
     CONFIG_FILE_FULL_PATH = os.path.join(os.path.dirname(__file__), 'config.json')
@@ -16,18 +18,39 @@ class CropGenConfig(Model):
     #
     # Constructor.
     #
-    def __init__(self) -> None:
+    def __init__(self, env_provider) -> None:
         super().__init__()
+        self.env_provider = env_provider
+        self.cropgen_runtime_dir = self.create_runtime_dir()
+        self.log_dir = os.path.join(self.cropgen_runtime_dir, "logs")
+        self.results_dir = os.path.join(self.cropgen_runtime_dir, "results")
+
+
+    #
+    # Creates a runtime directory for CropGen to use.
+    #
+    def create_runtime_dir(self):
+        runtime_dir = self.env_provider.get_hpc_root_dir()
+        if not runtime_dir:
+            this_script_path = os.path.dirname(os.path.abspath(__file__))
+            runtime_dir = os.path.join(this_script_path, "..", "..", "runtime")
+
+        runtime_dir = os.path.join(runtime_dir, Constants.APPLICATION_NAME.lower())
+        runtime_dir = os.path.abspath(runtime_dir)
+
+        os.makedirs(runtime_dir, exist_ok=True)
+
+        return runtime_dir
 
     #
     # Parses the config JSON file and stores it in memory.
     #
     def _parse(self):
-        config_file_to_use = CropGenConfig.CONFIG_FILE_FULL_PATH
+        config_file_to_use = Config.CONFIG_FILE_FULL_PATH
 
-        if os.path.exists(CropGenConfig.OVERRIDE_CONFIG_FILE_FULL_PATH):
-            logging.warn("Found an override config: %s. This will be used to configure CropGen.", CropGenConfig.OVERRIDE_CONFIG_FILE_FULL_PATH)
-            config_file_to_use = CropGenConfig.OVERRIDE_CONFIG_FILE_FULL_PATH
+        if os.path.exists(Config.OVERRIDE_CONFIG_FILE_FULL_PATH):
+            logging.warn("Found an override config: %s. This will be used to configure CropGen.", Config.OVERRIDE_CONFIG_FILE_FULL_PATH)
+            config_file_to_use = Config.OVERRIDE_CONFIG_FILE_FULL_PATH
 
         with open(config_file_to_use) as json_config_file:
             data = json.load(json_config_file)
@@ -72,7 +95,7 @@ class CropGenConfig(Model):
     #
     def write_to_disk(self):
         try:
-            with open(CropGenConfig.OVERRIDE_CONFIG_FILE_FULL_PATH, 'w') as json_config_file:
+            with open(Config.OVERRIDE_CONFIG_FILE_FULL_PATH, 'w') as json_config_file:
                 json_config_file.write(self.to_json(True))
         except Exception:
             logging.exception("Error while writing config to disk.")
@@ -96,7 +119,7 @@ class CropGenConfig(Model):
         container_override_config_key = f"{config_key}Container"
 
         # Check for a Docker config override key.
-        if self._get_config_exists(data, container_override_config_key) and CropGenConfig.IS_RUNNING_IN_DOCKER:
+        if self._get_config_exists(data, container_override_config_key) and Config.IS_RUNNING_IN_DOCKER:
             return self._get_config_value(data, container_override_config_key, default_if_not_present)
 
         return self._get_config_value(data, config_key, default_if_not_present)

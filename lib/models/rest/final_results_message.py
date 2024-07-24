@@ -133,6 +133,14 @@ class FinalResultsMessage(Model):
     
 
     #
+    # Creates a progress string based on this data.
+    #
+    def to_progress_str(self):
+        progress_str = self.to_json()
+        return progress_str
+    
+
+    #
     # Returns the type name.
     #
     def get_type_name(self):

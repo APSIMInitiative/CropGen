@@ -79,6 +79,12 @@ class IterationResultsMessage(Model):
             self.outputs.append(Output(name, values, output_values.simulation_id, output_values.simulation_name))
             index += 1
 
+    #
+    # Creates a progress string based on this data.
+    #
+    def to_progress_str(self):
+        progress_str = self.to_json()
+        return progress_str
 
     #
     # Returns the type name.

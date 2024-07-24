@@ -6,7 +6,9 @@ import os.path
 import requests
 
 from http import HTTPStatus
+
 from lib.models.rest.log_request import LogRequest
+from lib.utils.constants import Constants
 
 class LoggerConfig:
 
@@ -17,15 +19,9 @@ class LoggerConfig:
         self.config = config
         self.env_provider = env_provider
         self.this_script_path = os.path.dirname(__file__)
-        self.log_directory = self.get_log_dir()
+        self.log_directory = self.config.log_dir
         self.log_file = os.path.join(self.log_directory, 'cropgen.log')
 
-    def get_log_dir(self):
-        hpc_root_dir = self.env_provider.get_hpc_root_dir()
-        if hpc_root_dir:
-            return os.path.join(hpc_root_dir, "cropgen_logs")
-
-        return os.path.join(self.this_script_path, "..", "..", "logs")
 
     #
     # Configures the logger.
@@ -33,10 +29,9 @@ class LoggerConfig:
     def setup_logger(self, is_starting_up=False):
         if is_starting_up and self.config.DeleteLogsOnStartup:
             self._delete_all_log_files()
-            
-        if not os.path.exists(self.log_directory):
-            os.makedirs(self.log_directory)
 
+        os.makedirs(self.log_directory, exist_ok=True)
+        
         # Add the HTTPS handler
         self.remove_all_log_handlers()
         self.add_remote_logger()
