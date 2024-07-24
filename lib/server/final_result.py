@@ -14,9 +14,9 @@ class InputOutput(Model):
         self.values = values
 
 #
-# The Final Results Message contains the final maximised/minimised output.
+# The Final Result containing the final maximised/minimised output.
 #
-class FinalResultsMessage(Model):
+class FinalResult(Model):
     #
     # Constructor
     #

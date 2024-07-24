@@ -1,7 +1,7 @@
 from pymoo.optimize import minimize
 import logging
 
-from lib.models.rest.final_results_message import FinalResultsMessage
+from lib.server.final_result import FinalResult
 from lib.problems.problem_factory import ProblemFactory
 from lib.utils.algorithm_generator import AlgorithmGenerator
 from lib.utils.constants import Constants
@@ -52,7 +52,7 @@ class ProblemVisualisation():
         # Objective values for non-dominated individuals in the last generation
         objective_values_non_dominated_individuals = minimize_result.F
 
-        final_results = FinalResultsMessage(
+        final_results = FinalResult(
             self.crop_gen_job, 
             variable_values_non_dominated_individuals,
             objective_values_non_dominated_individuals,

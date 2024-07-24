@@ -29,7 +29,7 @@ class Output(Model):
 # The Iteration Results Message contains the inputs and their correspoding 
 # outputs for one cgm iteration.
 #
-class IterationResultsMessage(Model):
+class IterationResult(Model):
     #
     # Constructor
     #

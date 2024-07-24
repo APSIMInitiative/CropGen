@@ -2,7 +2,7 @@ from pymoo.core.problem import Problem
 import numpy as np
 import logging
 
-from lib.models.rest.iteration_results_message import IterationResultsMessage
+from lib.server.iteration_result import IterationResult
 from lib.results_processors.single_year_results_processor import SingleYearResultsProcessor
 from lib.results_processors.multi_year_results_processor import MultiYearResultsProcessor
 from lib.results_processors.empty_results_processor import EmptyResultsProcessor
@@ -169,7 +169,7 @@ class ProblemBase(Problem):
             return False
 
         # Populate the iteration message with all of the data that we currently have.
-        iteration_results = IterationResultsMessage(self.crop_gen_job, self.current_iteration_id, variable_values_for_population)
+        iteration_results = IterationResult(self.crop_gen_job, self.current_iteration_id, variable_values_for_population)
 
         all_algorithm_outputs = []
         all_results_outputs = []
