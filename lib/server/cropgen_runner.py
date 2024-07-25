@@ -39,6 +39,7 @@ class CropGenRunner():
                 crop_gen_job = self.server_state.retrieve_job()
 
                 if crop_gen_job and len(crop_gen_job.errors) == 0:
+                    self.server_state.job_pending(crop_gen_job)
                     self.run_job(crop_gen_job)
 
             time.sleep(self.config.SleepBetweenJobsMs)
@@ -50,7 +51,7 @@ class CropGenRunner():
     def run_job(self, crop_gen_job):
         logging.info("Found CropGen job to run.")
 
-        self.server_state.set_job_state(JobState.Running)
+        self.server_state.job_running()
         
         job_runner = JobRunner(
             self.config, 
@@ -60,4 +61,4 @@ class CropGenRunner():
 
         job_runner.run()
 
-        self.server_state.set_job_state(JobState.Finished)
+        self.server_state.job_finished(JobState.Finished)

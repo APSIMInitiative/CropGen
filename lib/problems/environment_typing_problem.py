@@ -48,7 +48,7 @@ class EnvironmentTypingProblem(ProblemBase):
     #
     def _perform_relay_apsim_request(self, variable_values_for_population):
         season_date_generator = APSIMSeasonDateGenerator(self.config, self.crop_gen_job.apsimSimulationClockStartDate)
-        relay_apsim_request = RelayApsim(self.crop_gen_job.JobID, self.crop_gen_job.individuals)
+        relay_apsim_request = RelayApsim(self.crop_gen_job.jobId, self.crop_gen_job.individuals)
         relay_apsim_request.add_inputs_for_env_typing(self.crop_gen_job.environmentTypes, season_date_generator, variable_values_for_population)
         response = super()._call_relay_apsim(relay_apsim_request)
         return response
