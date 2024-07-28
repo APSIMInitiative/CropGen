@@ -119,7 +119,7 @@ class Problem(ProblemBase):
     #
     def _perform_relay_apsim_individuals_split(self, variable_values_for_population, max_individuals):
         # Calculate the number of chunks based on the max_individuals value
-        num_chunks = (len(variable_values_for_population) + max_individuals - 1)
+        num_chunks = (len(variable_values_for_population) + max_individuals - 1) // max_individuals
 
         logging.info("Splitting individuals into %d separate RelayApsim requests", num_chunks)
 
@@ -131,7 +131,7 @@ class Problem(ProblemBase):
         for chunk_index in range(num_chunks):
             # Calculate the start and end index for each chunk
             start_index = chunk_index * max_individuals
-            end_index = (chunk_index + 1) * max_individuals
+            end_index = min((chunk_index + 1) * max_individuals, len(variable_values_for_population))
             inputs_to_process = variable_values_for_population[start_index:end_index]
 
             # Create a new RelayApsim object for each chunk
@@ -143,6 +143,33 @@ class Problem(ProblemBase):
 
             # Call _call_relay_apsim for the current chunk and store the response
             response = self._call_relay_apsim(relay_apsim_request)
+            if not response:
+                return None
+            responses.append(response)
+
+    # Stitch the responses together
+    final_response = super()._stitch_responses_together(responses)
+    return final_response
+
+        # Split the variable_values_for_population into chunks and process each chunk
+        for chunk_index in range(num_chunks):
+            # Calculate the start and end index for each chunk
+            start_index = chunk_index * max_individuals
+            end_index = (chunk_index + 1) * max_individuals
+            inputs_to_process = variable_values_for_population[start_index:end_index]
+
+            logging.info("Processing inputs at range: %d - %d. Total inputs: %d", start_index, end_index, len(inputs_to_process))
+
+            # Create a new RelayApsim object for each chunk
+            relay_apsim_request = RelayApsim(self.run_job_request.JobID, len(inputs_to_process))
+
+            for input_index in range(len(inputs_to_process)):
+                relay_apsim_request.add_inputs_for_individual(individual, inputs_to_process[input_index])
+                individual += 1
+
+            # Call _call_relay_apsim for the current chunk and store the response
+            response = self._call_relay_apsim(relay_apsim_request)
+            if not response: return None
             responses.append(response)
 
         response = super()._stitch_responses_together(responses)
