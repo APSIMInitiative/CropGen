@@ -46,6 +46,8 @@ class Problem(ProblemBase):
     def _perform_relay_apsim_request(self, variable_values_for_population):
 
         max_simulations = self.run_job_request.MaxSimulationsPerRequest
+        max_individuals = self.run_job_request.MaxIndividualsPerRequest
+
         apsim_data = APSimSimulationData()
         simulation_names = apsim_data.get_simulation_names(self.run_job_request.JobID)
 
@@ -54,16 +56,18 @@ class Problem(ProblemBase):
         ):
             # If we're being asked to split the simulation names up, but there is no simulation names configured, throw.
             if not simulation_names: 
-                raise Exception(f"MaxSimulations set but cannot find simulation names for JobID: {self.run_job_request.JobID}")
+                raise Exception("MaxSimulations set but cannot find simulation names for JobID: %s", self.run_job_request.JobID)
 
-            return self._perform_relay_apsim_staggered_requests(variable_values_for_population, simulation_names, max_simulations)
+            return self._perform_relay_apsim_simulation_split(variable_values_for_population, simulation_names, max_simulations)
+        elif max_individuals:
+            return self._perform_relay_apsim_individuals_split(variable_values_for_population, max_individuals)
         else:
             return self._perform_relay_apsim_one_request(variable_values_for_population)
     
     #
     # Creates request(s) and runs apsim.
     #
-    def _perform_relay_apsim_staggered_requests(self, variable_values_for_population, simulation_names, max_simulations):
+    def _perform_relay_apsim_simulation_split(self, variable_values_for_population, simulation_names, max_simulations):
         split_simulation_names = ArrayUtils._split_arr(simulation_names, max_simulations)
         total_relay_apsim_requests = len(split_simulation_names)
 
@@ -109,6 +113,41 @@ class Problem(ProblemBase):
         response = super()._stitch_responses_together(responses)
         return response
     
+
+    #
+    # Creates request(s) and runs apsim.
+    #
+    def _perform_relay_apsim_individuals_split(self, variable_values_for_population, max_individuals):
+        # Calculate the number of chunks based on the max_individuals value
+        num_chunks = (len(variable_values_for_population) + max_individuals - 1)
+
+        logging.info("Splitting individuals into %d separate RelayApsim requests", num_chunks)
+
+        # Initialize an empty list to store the responses
+        responses = []
+        individual = RelayApsim.INPUT_START_INDEX
+
+        # Split the variable_values_for_population into chunks and process each chunk
+        for chunk_index in range(num_chunks):
+            # Calculate the start and end index for each chunk
+            start_index = chunk_index * max_individuals
+            end_index = (chunk_index + 1) * max_individuals
+            inputs_to_process = variable_values_for_population[start_index:end_index]
+
+            # Create a new RelayApsim object for each chunk
+            relay_apsim_request = RelayApsim(self.run_job_request.JobID, len(inputs_to_process))
+
+            for input_index in range(len(inputs_to_process)):
+                relay_apsim_request.add_inputs_for_individual(individual, inputs_to_process[input_index])
+                individual += 1
+
+            # Call _call_relay_apsim for the current chunk and store the response
+            response = self._call_relay_apsim(relay_apsim_request)
+            responses.append(response)
+
+        response = super()._stitch_responses_into_response(responses)
+        return response
+
     #
     # Creates request and runs apsim.
     #

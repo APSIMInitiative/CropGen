@@ -54,6 +54,7 @@ class RunJobRequest(Model):
             self.EnvironmentTypes = RunJobRequest.parse_environment_types(json_object, errors)
             self.APSIMSimulationClockStartDate = JsonHelper.get_non_mandatory_attribute(json_object, 'APSIMSimulationClockStartDate', None)
             self.MaxSimulationsPerRequest = JsonHelper.get_non_mandatory_attribute(json_object, 'MaxSimulationsPerRequest', None)
+            self.MaxIndividualsPerRequest = JsonHelper.get_non_mandatory_attribute(json_object, 'MaxIndividualsPerRequest', 50)
         except Exception as error:
             errors.append(f"Failed to parse {self.get_type_name()} JSON: '{message}'. Error: '{error}'")
 
@@ -194,16 +195,19 @@ class RunJobRequest(Model):
 
         if config.AlwaysResetRunner:
             return True
-
-        reset_runner = (
-            self.get_is_environment_typing_run() or 
-            (
-                self.MaxSimulationsPerRequest is not None and 
-                self.MaxSimulationsPerRequest != 0
-            )
-        )
-
-        return reset_runner
+        
+        if (self.MaxIndividualsPerRequest is not None and 
+            self.MaxIndividualsPerRequest != 0):
+            return True
+        
+        if self.get_is_environment_typing_run(): 
+            return True
+        
+        if (self.MaxSimulationsPerRequest is not None and 
+            self.MaxSimulationsPerRequest != 0):
+            return True
+        
+        return False
     
     #
     # Get a collection of system property names that we want to override.
