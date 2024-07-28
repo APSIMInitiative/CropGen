@@ -54,7 +54,7 @@ class Problem(ProblemBase):
         ):
             # If we're being asked to split the simulation names up, but there is no simulation names configured, throw.
             if not simulation_names: 
-                raise Exception(f"MaxSimulations set but cannot find simulation names for JobID: {self.crop_gen_job.apsimJobId}")
+                raise Exception("MaxSimulations set but cannot find simulation names for JobID: %s", self.crop_gen_job.apsimJobId)
 
             return self._perform_relay_apsim_staggered_requests(variable_values_for_population, simulation_names, max_simulations)
         else:
