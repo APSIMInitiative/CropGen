@@ -145,7 +145,7 @@ class Problem(ProblemBase):
             response = self._call_relay_apsim(relay_apsim_request)
             responses.append(response)
 
-        response = super()._stitch_responses_into_response(responses)
+        response = super()._stitch_responses_together(responses)
         return response
 
     #
