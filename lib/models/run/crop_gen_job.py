@@ -24,6 +24,7 @@ class CropGenJob(Model):
         self.apsimSimulationClockStartDate = ''
         self.environmentTypes = []
         self.maxSimulationsPerRequest = 0
+        self.maxIndividualsPerRequest = 0
         self.errors = []
 
     #
@@ -62,7 +63,8 @@ class CropGenJob(Model):
             'reportName',
             'apsimJobId',
             'apsimSimulationClockStartDate',
-            'maxSimulationsPerRequest'
+            'maxSimulationsPerRequest',
+            'maxIndividualsPerRequest'
         ]
     
     

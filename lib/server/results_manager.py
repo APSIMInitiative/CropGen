@@ -16,7 +16,7 @@ class ResultsManager:
     def create_results_dir(self):
         results_dir = os.path.join(
             self.config.results_dir, 
-            self.crop_gen_job.apsimJobId,
+            self.crop_gen_job.jobId,
             DateTimeHelper.get_date_time_now_str_dir_format()
         )
 

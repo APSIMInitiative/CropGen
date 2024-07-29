@@ -10,6 +10,7 @@ class EnvironmentVariablesProvider:
     WORKER_ID = "WORKER_ID"
     UPDATE_FREQUENCY = "UPDATE_FREQUENCY"
     PROXY_IP_FILE = "PROXY_IP_FILE"
+    RELAY_IP_FILE = "RELAY_IP_FILE"
     HPC_ROOT_DIR = "HPC_ROOT_DIR"
     
 
@@ -23,15 +24,15 @@ class EnvironmentVariablesProvider:
     
 
     def get_jobs_server_address(self) -> str:
-        return self.get_variable(str, self.JOBS_SERVER)
+        return self.get_variable(str, self.JOBS_SERVER).strip()
     
 
     def get_hpc_id(self) -> str:
-        return self.get_variable(str, self.HPC_ID)
+        return self.get_variable(str, self.HPC_ID).strip()
     
 
     def get_worker_id(self) -> str:
-        return self.get_variable(str, self.WORKER_ID)
+        return self.get_variable(str, self.WORKER_ID).strip()
     
 
     def get_update_freq(self) -> int:
@@ -39,11 +40,15 @@ class EnvironmentVariablesProvider:
     
 
     def get_proxy_ip_file(self) -> str:
-        return self.get_variable(str, self.PROXY_IP_FILE)
+        return self.get_variable(str, self.PROXY_IP_FILE).strip()
+    
+
+    def get_relay_ip_file(self) -> str:
+        return self.get_variable(str, self.RELAY_IP_FILE).strip()
     
 
     def get_hpc_root_dir(self) -> str:
-        return self.get_variable(str, self.HPC_ROOT_DIR)
+        return self.get_variable(str, self.HPC_ROOT_DIR).strip()
     
 
     def get_variable(self, var_type: Type[T], name: str) -> T:
@@ -74,5 +79,6 @@ class EnvironmentVariablesProvider:
             EnvironmentVariablesProvider.WORKER_ID: 0,
             EnvironmentVariablesProvider.UPDATE_FREQUENCY: 1,
             EnvironmentVariablesProvider.PROXY_IP_FILE: "",
+            EnvironmentVariablesProvider.RELAY_IP_FILE: "",
             EnvironmentVariablesProvider.HPC_ROOT_DIR: "",
         }
