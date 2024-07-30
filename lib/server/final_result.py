@@ -1,17 +1,7 @@
 from lib.models.common.model import Model
 from lib.problems.output_value import OutputValue
 from lib.utils.date_time_helper import DateTimeHelper
-
-#
-# Represents the input
-#
-class InputOutput(Model):
-    #
-    # Constructor
-    #
-    def __init__(self, name, values):        
-        self.name = name
-        self.values = values
+from lib.server.input_output import InputOutput
 
 #
 # The Final Result containing the final maximised/minimised output.
@@ -136,7 +126,20 @@ class FinalResult(Model):
     # Creates a progress string based on this data.
     #
     def to_progress_str(self):
-        progress_str = self.to_json()
+        progress_str = f"{self.dateTime} - Final Results"
+        inputs_str = "Inputs:\n" + "\n".join(
+            input.to_progress_str() for input in self.inputs
+        )
+
+        progress_str += "\n"
+
+        outputs_str = "Outputs:\n" + "\n".join(
+            output.to_progress_str() for output in self.outputs
+        )
+        
+        progress_str += f"{inputs_str}\n{outputs_str}"
+        progress_str += "\n"
+        
         return progress_str
     
 

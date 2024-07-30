@@ -1,10 +1,8 @@
-# Imports
 import logging
-import requests
 import time
 
 from lib.utils.job_runner import JobRunner
-from lib.utils.jobs_client import JobsClient
+from lib.jobs_client.jobs_client_factory import JobsClientFactory
 from lib.server.jobs_server import JobsServer
 from lib.server.job_state import JobState
 from lib.utils.constants import Constants
@@ -14,9 +12,8 @@ class CropGenRunner():
     def __init__(self, config, env_provider):
         self.config = config
         self.env_provider = env_provider
-        self.http_client = requests.Session()
-        self.jobs_client = JobsClient(self.http_client, self.env_provider)
-        self.cgm_relay_address = self.jobs_client.retrieve_service(Constants.CGM_RELAY_APP_NAME)
+        self.jobs_client = JobsClientFactory.create(config, env_provider)
+        self.cgm_relay_address = self.jobs_client.retrieve_cgm_relay_address()
         
         if not self.cgm_relay_address:
             raise Exception(f"Failed to find {Constants.CGM_RELAY_APP_NAME}")
@@ -34,15 +31,14 @@ class CropGenRunner():
             if (self.server_state.job_state == JobState.Running or
                 self.server_state.job_state == JobState.Pending
             ):
-                  logging.debug("Job is currenly running.")
+                logging.debug("Job is currenly running")
             else:
                 crop_gen_job = self.server_state.retrieve_job()
 
                 if crop_gen_job and len(crop_gen_job.errors) == 0:
                     self.server_state.job_pending(crop_gen_job)
                     self.run_job(crop_gen_job)
-
-            time.sleep(self.config.SleepBetweenJobsMs)
+            time.sleep(self.config.SleepBetweenJobsSeconds)
         except:
             self.server_state.job_error()
             raise
@@ -61,4 +57,4 @@ class CropGenRunner():
 
         job_runner.run()
 
-        self.server_state.job_finished(JobState.Finished)
+        self.server_state.job_finished()

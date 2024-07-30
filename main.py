@@ -15,6 +15,8 @@ if __name__ == "__main__":
         logger_config.setup_logger(True)        
         crop_gen_runner = CropGenRunner(config, env_provider)
 
+        logging.info("Starting main job polling routine. Polling for jobs every %d seconds", config.SleepBetweenJobsSeconds)
+
         while True:
             try:
                 crop_gen_runner.poll_for_job_and_run()

@@ -24,7 +24,7 @@
     "RestartAfterConfigUpdate": false,
     "InitWorkersPreRunSimulations": false,
     "AlwaysResetRunner": true,
-    "SleepBetweenJobsMs": 60000,
+    "SleepBetweenJobsSeconds": 60,
     
     "ContainerOverrides": "______________________",
     "SocketServerHostContainer": "0.0.0.0",

@@ -24,7 +24,9 @@ class Config(Model):
         self.cropgen_runtime_dir = self.create_runtime_dir()
         self.log_dir = os.path.join(self.cropgen_runtime_dir, "logs")
         self.results_dir = os.path.join(self.cropgen_runtime_dir, "results")
+        self.jobs_dir = os.path.join(self.cropgen_runtime_dir, "jobs")
 
+        self.create_run_time_subdirs()
 
     #
     # Creates a runtime directory for CropGen to use.
@@ -41,6 +43,14 @@ class Config(Model):
         os.makedirs(runtime_dir, exist_ok=True)
 
         return runtime_dir
+    
+    #
+    # Create all of the other run time dirs.
+    #
+    def create_run_time_subdirs(self):
+        os.makedirs(self.log_dir, exist_ok=True)
+        os.makedirs(self.results_dir, exist_ok=True)
+        os.makedirs(self.jobs_dir, exist_ok=True)
 
     #
     # Parses the config JSON file and stores it in memory.
@@ -88,7 +98,7 @@ class Config(Model):
         self.RestartAfterConfigUpdate = self._get_config_setting(data, 'RestartAfterConfigUpdate', False)
         self.InitWorkersPreRunSimulations = self._get_config_setting(data, 'InitWorkersPreRunSimulations', False)
         self.AlwaysResetRunner = self._get_config_setting(data, 'AlwaysResetRunner', False)
-        self.SleepBetweenJobsMs = self._get_config_setting(data, 'SleepBetweenJobsMs', 60000)
+        self.SleepBetweenJobsSeconds = self._get_config_setting(data, 'SleepBetweenJobsSeconds', 60)
 
     #
     # Writes this config, back to disk.

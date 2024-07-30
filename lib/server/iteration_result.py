@@ -1,29 +1,6 @@
 from lib.models.common.model import Model
 from lib.utils.date_time_helper import DateTimeHelper
-
-#
-# Represents the input
-#
-class Input(Model):
-    #
-    # Constructor
-    #
-    def __init__(self, name, values):        
-        self.name = name
-        self.values = values
-
-#
-# Represents the output
-#
-class Output(Model):
-    #
-    # Constructor
-    #
-    def __init__(self, name, values, simulation_id, simulation_name):        
-        self.name = name
-        self.values = values
-        self.simulationId = simulation_id
-        self.simulationName = simulation_name
+from lib.server.input_output import InputOutput
 
 #
 # The Iteration Results Message contains the inputs and their correspoding 
@@ -58,7 +35,7 @@ class IterationResult(Model):
             for input_values in all_input_values:
                 values.append(input_values[index])
 
-            inputs.append(Input(name, values))
+            inputs.append(InputOutput(name, values))
             index += 1
 
         return inputs
@@ -76,15 +53,29 @@ class IterationResult(Model):
                 if len(output_values.outputs) > index:
                     values.append(output_values.outputs[index].get_output_value_for_results())
 
-            self.outputs.append(Output(name, values, output_values.simulation_id, output_values.simulation_name))
+            self.outputs.append(InputOutput(name, values, output_values.simulation_id, output_values.simulation_name))
             index += 1
 
     #
     # Creates a progress string based on this data.
     #
     def to_progress_str(self):
-        progress_str = self.to_json()
+        progress_str = f"{self.dateTime} - Iteration Results {self.iterationID}/{self.totalIterations}:"
+        inputs_str = "Inputs:\n" + "\n".join(
+            input.to_progress_str() for input in self.inputs
+        )
+
+        progress_str += "\n"
+
+        outputs_str = "Outputs:\n" + "\n".join(
+            output.to_progress_str() for output in self.outputs
+        )
+        
+        progress_str += f"{inputs_str}\n{outputs_str}"
+        progress_str += "\n"
+        
         return progress_str
+
 
     #
     # Returns the type name.

@@ -6,8 +6,9 @@ from typing import Optional
 
 from lib.models.run.crop_gen_job import CropGenJob
 from lib.server.job_state import JobState
+from lib.utils.constants import Constants
 
-class JobsClient:
+class JobsClientServer:
     
     def __init__(
         self, 
@@ -23,10 +24,8 @@ class JobsClient:
         logging.info(f"Base URL: {base_url}")
 
 
-    def retrieve_service(
-        self, 
-        name: str
-    ):
+    def retrieve_cgm_relay_address(self):
+        name = Constants.CGM_RELAY_APP_NAME
         url = f"{self._client.base_url}/api/services/address/{name}/{self._hpc_id}"
         retries = 5
 

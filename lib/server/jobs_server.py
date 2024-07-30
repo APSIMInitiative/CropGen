@@ -8,7 +8,6 @@ class JobsServer():
         self.job_state = JobState.Created
         self.running_crop_gen_job = None
 
-
     def retrieve_job(self):
         crop_gen_job = self.jobs_client.retrieve_new_job()
 
@@ -53,7 +52,8 @@ class JobsServer():
 
     def _set_job_state(self, job_state):
         if self.running_crop_gen_job:
-            todo = True
-            self.jobs_client.update_job_status(self.running_crop_gen_job.id, job_state)
+            todo_update_state = False
+            if todo_update_state:
+                self.jobs_client.update_job_status(self.running_crop_gen_job.id, job_state)
 
         self.job_state = job_state

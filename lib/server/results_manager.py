@@ -63,15 +63,13 @@ class ResultsManager:
         self.clear()
 
 
-    def write_all_individuals(self):
-        all_individuals_path = os.path.join(self.result_dir, "all_individuals.csv")
-        with open(all_individuals_path, mode='w', newline='') as file:
-            
+    def _write_individuals(self, file_path, results, get_individual_count):
+        with open(file_path, mode='w', newline='') as file:
             writer = csv.writer(file)
             first_row = True
 
-            for result in self.iteration_results:
-                for individual in range(self.crop_gen_job.individuals):
+            for result in results:
+                for individual in range(get_individual_count(result)):
                     header_row = []
                     row = []
 
@@ -85,43 +83,86 @@ class ResultsManager:
                         output_value = output.values[individual]
                         row.append(output_value)
 
-                    if first_row: 
+                    if first_row:
                         writer.writerow(header_row)
                         first_row = False
 
                     writer.writerow(row)
 
+    def write_all_individuals(self):
+        all_individuals_path = os.path.join(self.result_dir, "all_individuals.csv")
+        self._write_individuals(
+            all_individuals_path,
+            self.iteration_results,
+            lambda result: self.crop_gen_job.individuals
+        )
 
     def write_optimal_individuals(self):
         optimal_individuals_path = os.path.join(self.result_dir, "optimal_individuals.csv")
-        with open(optimal_individuals_path, mode='w', newline='') as file:
+        self._write_individuals(
+            optimal_individuals_path,
+            [self.final_result],
+            lambda result: min(len(result.inputs[0].values), len(result.outputs[0].values))
+        )
+
+
+    # def write_all_individuals(self):
+    #     all_individuals_path = os.path.join(self.result_dir, "all_individuals.csv")
+    #     with open(all_individuals_path, mode='w', newline='') as file:
             
-            writer = csv.writer(file)
-            first_row = True
+    #         writer = csv.writer(file)
+    #         first_row = True
 
-            input_rows = len(self.final_result.inputs[0].values)
-            output_rows = len(self.final_result.outputs[0].values)
+    #         for result in self.iteration_results:
+    #             for individual in range(self.crop_gen_job.individuals):
+    #                 header_row = []
+    #                 row = []
 
-            total_rows = min(input_rows, output_rows)
+    #                 for input in result.inputs:
+    #                     header_row.append(input.name)
+    #                     input_value = input.values[individual]
+    #                     row.append(input_value)
 
-            for current_row in range(total_rows):
-                header_row = []
-                row = []
+    #                 for output in result.outputs:
+    #                     header_row.append(output.name)
+    #                     output_value = output.values[individual]
+    #                     row.append(output_value)
 
-                for input in self.final_result.inputs:
-                    header_row.append(input.name)
-                    input_value = input.values[current_row]
-                    row.append(input_value)
+    #                 if first_row: 
+    #                     writer.writerow(header_row)
+    #                     first_row = False
 
-                for output in self.final_result.outputs:
-                    header_row.append(output.name)
-                    output_value = output.values[current_row]
-                    row.append(output_value)
+    #                 writer.writerow(row)
 
-                if first_row: 
-                    writer.writerow(header_row)
-                    first_row = False
 
-                writer.writerow(row)
-
+    # def write_optimal_individuals(self):
+    #     optimal_individuals_path = os.path.join(self.result_dir, "optimal_individuals.csv")
+    #     with open(optimal_individuals_path, mode='w', newline='') as file:
             
+    #         writer = csv.writer(file)
+    #         first_row = True
+
+    #         input_rows = len(self.final_result.inputs[0].values)
+    #         output_rows = len(self.final_result.outputs[0].values)
+
+    #         total_rows = min(input_rows, output_rows)
+
+    #         for current_row in range(total_rows):
+    #             header_row = []
+    #             row = []
+
+    #             for input in self.final_result.inputs:
+    #                 header_row.append(input.name)
+    #                 input_value = input.values[current_row]
+    #                 row.append(input_value)
+
+    #             for output in self.final_result.outputs:
+    #                 header_row.append(output.name)
+    #                 output_value = output.values[current_row]
+    #                 row.append(output_value)
+
+    #             if first_row: 
+    #                 writer.writerow(header_row)
+    #                 first_row = False
+
+    #             writer.writerow(row)            

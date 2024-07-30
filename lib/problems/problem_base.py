@@ -7,7 +7,6 @@ from lib.results_processors.single_year_results_processor import SingleYearResul
 from lib.results_processors.multi_year_results_processor import MultiYearResultsProcessor
 from lib.results_processors.empty_results_processor import EmptyResultsProcessor
 from lib.utils.constants import Constants
-#from lib.utils.results_publisher import ResultsPublisher
 from lib.socket.proto_zmq_client import ProtoZMQClient
 from lib.models.cgm.run_apsim_response import RunApsimResponse
 from lib.models.cgm.relay_apsim import RelayApsim
