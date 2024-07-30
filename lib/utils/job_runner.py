@@ -37,7 +37,8 @@ class JobRunner():
         self.results_manager.write_to_disk()
 
         # Log out how long the problem took to run.
-        logging.info("Problem run finished. Time taken: '%s'. ID: '%s', JobID: '%s', ApsimJobID: '%s', Name: '%s', Iterations: '%d', Individuals: '%d'", 
+        logging.info("Problem run finished. Results: %s. Time taken: '%s'. ID: '%s', JobID: '%s', ApsimJobID: '%s', Name: '%s', Iterations: '%d', Individuals: '%d'", 
+            self.results_manager.result_dir,
             DateTimeHelper.get_elapsed_time_since(run_start_time),
             self.crop_gen_job.id,
             self.crop_gen_job.jobId,

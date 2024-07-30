@@ -26,22 +26,20 @@ class JobsClientLocal:
 
     def parse_relay_ip_address_file(self):
         self.wait_for_file_or_give_up()
-
-        if self.relay_ip_file and os.path.isfile(self.relay_ip_file):
-            try:
-                with open(self.relay_ip_file, 'r') as file:
-                    file_contents = file.read()
-                    if file_contents:
-                        self.relay_ip_address = file_contents.strip()
-            except Exception as ex:
-                logging.error("Error reading Relay IP file: %s. Exception: %s", self.relay_ip_file, ex)
-                raise
+        
+        try:
+            with open(self.relay_ip_file, 'r') as file:
+                file_contents = file.read()
+                if file_contents:
+                    self.relay_ip_address = file_contents.strip()
+        except Exception as ex:
+            logging.error("Error reading Relay IP file: %s. Exception: %s", self.relay_ip_file, ex)
+            raise
 
 
     def wait_for_file_or_give_up(self):
-        initial_sleep_time_seconds = 1
         max_attempts = 30
-        sleep_time_seconds = initial_sleep_time_seconds
+        sleep_time_seconds = 1
         file_exists = False
         attempt = 0
 
@@ -56,7 +54,7 @@ class JobsClientLocal:
             attempt += 1
 
         if not file_exists:
-            raise FileNotFoundError(f"Failed to find relay IP file {max_attempts} attempts.")        
+            raise FileNotFoundError(f"Failed to find relay IP file after {max_attempts} attempts.")        
 
 
     def retrieve_cgm_relay_address(self):

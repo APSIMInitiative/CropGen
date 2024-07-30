@@ -89,6 +89,7 @@ class ResultsManager:
 
                     writer.writerow(row)
 
+
     def write_all_individuals(self):
         all_individuals_path = os.path.join(self.result_dir, "all_individuals.csv")
         self._write_individuals(
@@ -96,6 +97,7 @@ class ResultsManager:
             self.iteration_results,
             lambda result: self.crop_gen_job.individuals
         )
+        
 
     def write_optimal_individuals(self):
         optimal_individuals_path = os.path.join(self.result_dir, "optimal_individuals.csv")
@@ -104,65 +106,3 @@ class ResultsManager:
             [self.final_result],
             lambda result: min(len(result.inputs[0].values), len(result.outputs[0].values))
         )
-
-
-    # def write_all_individuals(self):
-    #     all_individuals_path = os.path.join(self.result_dir, "all_individuals.csv")
-    #     with open(all_individuals_path, mode='w', newline='') as file:
-            
-    #         writer = csv.writer(file)
-    #         first_row = True
-
-    #         for result in self.iteration_results:
-    #             for individual in range(self.crop_gen_job.individuals):
-    #                 header_row = []
-    #                 row = []
-
-    #                 for input in result.inputs:
-    #                     header_row.append(input.name)
-    #                     input_value = input.values[individual]
-    #                     row.append(input_value)
-
-    #                 for output in result.outputs:
-    #                     header_row.append(output.name)
-    #                     output_value = output.values[individual]
-    #                     row.append(output_value)
-
-    #                 if first_row: 
-    #                     writer.writerow(header_row)
-    #                     first_row = False
-
-    #                 writer.writerow(row)
-
-
-    # def write_optimal_individuals(self):
-    #     optimal_individuals_path = os.path.join(self.result_dir, "optimal_individuals.csv")
-    #     with open(optimal_individuals_path, mode='w', newline='') as file:
-            
-    #         writer = csv.writer(file)
-    #         first_row = True
-
-    #         input_rows = len(self.final_result.inputs[0].values)
-    #         output_rows = len(self.final_result.outputs[0].values)
-
-    #         total_rows = min(input_rows, output_rows)
-
-    #         for current_row in range(total_rows):
-    #             header_row = []
-    #             row = []
-
-    #             for input in self.final_result.inputs:
-    #                 header_row.append(input.name)
-    #                 input_value = input.values[current_row]
-    #                 row.append(input_value)
-
-    #             for output in self.final_result.outputs:
-    #                 header_row.append(output.name)
-    #                 output_value = output.values[current_row]
-    #                 row.append(output_value)
-
-    #             if first_row: 
-    #                 writer.writerow(header_row)
-    #                 first_row = False
-
-    #             writer.writerow(row)            
