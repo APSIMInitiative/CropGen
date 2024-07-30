@@ -50,6 +50,7 @@ class JobsServer():
     def _clear_running_job(self):
         self.running_crop_gen_job = None
 
+
     def _set_job_state(self, job_state):
         if self.running_crop_gen_job:
             todo_update_state = False

@@ -14,7 +14,8 @@
                 ""
             ],
             "env": {
-                "JobsServer": "http://localhost:8084"
+                "JobsServer2": "http://localhost:8084",
+                "RELAY_IP_FILE": "C:\\Projects\\CropGen\\runtime\\relay_ip_file.txt"
             }
         },
         {

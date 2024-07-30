@@ -3,8 +3,8 @@ import os
 import logging
 from typing import Optional
 
-from lib.models.run.crop_gen_job import CropGenJob
 from lib.server.job_state import JobState
+from lib.jobs_client.job_manager import JobFileManager
 
 class JobsClientLocal:
     
@@ -14,6 +14,7 @@ class JobsClientLocal:
         environment_variables_provider
     ):
         self.config = config
+        self.job_file_manager = JobFileManager(config)
         self._hpc_id = environment_variables_provider.get_hpc_id()
         self.relay_ip_file = environment_variables_provider.get_relay_ip_file()
         self.relay_ip_address = ""
@@ -25,8 +26,8 @@ class JobsClientLocal:
 
 
     def parse_relay_ip_address_file(self):
-        self.wait_for_file_or_give_up()
-        
+        self.wait_for_file_or_throw()
+
         try:
             with open(self.relay_ip_file, 'r') as file:
                 file_contents = file.read()
@@ -37,7 +38,7 @@ class JobsClientLocal:
             raise
 
 
-    def wait_for_file_or_give_up(self):
+    def wait_for_file_or_throw(self):
         max_attempts = 30
         sleep_time_seconds = 1
         file_exists = False
@@ -62,13 +63,7 @@ class JobsClientLocal:
     
 
     def retrieve_new_job(self):
-        url = f"{self._client.base_url}/api/queue/nextjob/{self._hpc_id}/cropgen"
-        job = self._retrieve_data_from_json(url)
-        if job:
-            crop_gen_job = CropGenJob()
-            crop_gen_job.parse_from_json_string(job)
-            return crop_gen_job
-        return None
+        self.job_file_manager.retrieve_new_job()
 
 
     def update_job_status(

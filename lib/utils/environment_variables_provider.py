@@ -74,7 +74,7 @@ class EnvironmentVariablesProvider:
     def create_env_var_mapping() -> Dict[str, Any]:
         return {
             EnvironmentVariablesProvider.WEB_SERVER_PORT_NUMBER: 80,
-            EnvironmentVariablesProvider.JOBS_SERVER: "https://jobs.cgmwgp.com",
+            EnvironmentVariablesProvider.JOBS_SERVER: "",
             EnvironmentVariablesProvider.HPC_ID: "debug",
             EnvironmentVariablesProvider.WORKER_ID: 0,
             EnvironmentVariablesProvider.UPDATE_FREQUENCY: 1,
