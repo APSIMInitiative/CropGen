@@ -11,14 +11,17 @@ class JsonHelper():
         json, 
         attribute_name, 
         errors,
-        value_if_not_present = None
+        ignore_case=True,
+        value_if_not_present=None
     ):
-        value = value_if_not_present
-        if attribute_name in json:
-            value = json[attribute_name]
-        else:
+        attribute_name_to_use = attribute_name.lower() if ignore_case else attribute_name
+        value = json.get(attribute_name_to_use, value_if_not_present)
+
+        if value is value_if_not_present:
             errors.append(f"No {attribute_name} specified")
+
         return value
+
     
     #
     # Safely extracts the attribute if it exists, or 

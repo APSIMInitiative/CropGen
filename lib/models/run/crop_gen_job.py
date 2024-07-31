@@ -30,43 +30,31 @@ class CropGenJob(Model):
     #
     # Parses the JSON data into this class.
     #
-    def parse_from_json_string(self, json_object):
+    def parse_from_json_object(self, json_data):
         self.errors = []
         try:
-            required_attributes = CropGenJob.get_required_attributes()
-            
-            # Process required attributes
-            for attribute in required_attributes:
-                attribute_value = JsonHelper.get_attribute(json_object, attribute, self.errors)
-                setattr(self, attribute, attribute_value)
+
+            lower_case_json_data = self.convert_to_lower_case_recursive(json_data)
+
+            self.id = JsonHelper.get_attribute(lower_case_json_data, 'id', self.errors)
+            self.jobId = JsonHelper.get_attribute(lower_case_json_data, 'jobId', self.errors)
+            self.name = JsonHelper.get_attribute(lower_case_json_data, 'name', self.errors)
+            self.iterations = JsonHelper.get_attribute(lower_case_json_data, 'iterations', self.errors)
+            self.individuals = JsonHelper.get_attribute(lower_case_json_data, 'individuals', self.errors)
+            self.reportName = JsonHelper.get_attribute(lower_case_json_data, 'reportName', self.errors)
+            self.apsimJobId = JsonHelper.get_attribute(lower_case_json_data, 'apsimJobId', self.errors)
+            self.apsimSimulationClockStartDate = JsonHelper.get_attribute(lower_case_json_data, 'apsimSimulationClockStartDate', self.errors)
+            self.maxSimulationsPerRequestd = JsonHelper.get_attribute(lower_case_json_data, 'maxSimulationsPerRequest', self.errors)
+            self.maxIndividualsPerRequest = JsonHelper.get_attribute(lower_case_json_data, 'maxIndividualsPerRequest', self.errors)
 
             # Process Inputs and Outputs
-            self.inputs = Input.parse_inputs(json_object, self.errors)
-            self.outputs = Output.parse_outputs(json_object, self.errors)
-            self.environmentTypes = self.parse_environment_types(json_object, self.errors)
+            self.inputs = Input.parse_from_json_object(lower_case_json_data, self.errors)
+            self.outputs = Output.parse_from_json_object(lower_case_json_data, self.errors)
+            self.environmentTypes = self.parse_environment_types(lower_case_json_data, self.errors)
 
         except Exception as error:
-            self.errors.append(f"Failed to parse {self.__class__.__name__} JSON: '{json_object}'. Error: '{error}'")
-    
-    
-    #
-    # Gets the list of fields that are required to construct a cropgen job.
-    #
-    @staticmethod 
-    def get_required_attributes():
-        return [
-            'id',
-            'jobId',
-            'name',
-            'iterations',
-            'individuals',
-            'reportName',
-            'apsimJobId',
-            'apsimSimulationClockStartDate',
-            'maxSimulationsPerRequest',
-            'maxIndividualsPerRequest'
-        ]
-    
+            self.errors.append(f"Failed to parse {self.__class__.__name__} JSON: '{lower_case_json_data}'. Error: '{error}'")
+
     
     #
     # Helper function to parse the environment types.

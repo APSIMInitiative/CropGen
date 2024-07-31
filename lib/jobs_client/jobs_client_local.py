@@ -63,7 +63,7 @@ class JobsClientLocal:
     
 
     def retrieve_new_job(self):
-        self.job_file_manager.retrieve_new_job()
+        return self.job_file_manager.retrieve_new_job()
 
 
     def update_job_status(

@@ -48,7 +48,7 @@ class JobsClientServer:
         job = self._retrieve_data_from_json(url)
         if job:
             crop_gen_job = CropGenJob()
-            crop_gen_job.parse_from_json_string(job)
+            crop_gen_job.parse_from_json_object(job)
             return crop_gen_job
         return None
 

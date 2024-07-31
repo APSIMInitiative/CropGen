@@ -36,7 +36,7 @@ class JobFileManager:
                     job_content = file.read()
 
                 crop_gen_job = CropGenJob()
-                crop_gen_job.parse_from_json_string(json.loads(job_content))
+                crop_gen_job.parse_from_json_object(json.loads(job_content))
                 self._create_lock_file(latest_job_file)
                 return crop_gen_job
 

@@ -17,8 +17,8 @@ class Input(Model):
     # Parses the inputs
     #
     @staticmethod
-    def parse_inputs(json_object, errors):
-        inputs = JsonHelper.get_attribute(json_object, 'inputs', errors)
+    def parse_from_json_object(lower_case_json_data, errors):
+        inputs = JsonHelper.get_attribute(lower_case_json_data, 'inputs', errors)
 
         if not inputs:
             errors.append("No inputs supplied.")
