@@ -4,10 +4,13 @@ import glob
 import json
 
 from lib.models.run.crop_gen_job import CropGenJob
+from lib.utils.date_time_helper import DateTimeHelper
 
 class JobFileManager:
     def __init__(self, config):
         self.config = config
+        self.job_file = ""
+        self.lock_file = ""
 
     def _get_job_files(self):
         job_files = glob.glob(os.path.join(self.config.jobs_dir, '*.json'))
@@ -26,6 +29,8 @@ class JobFileManager:
     
 
     def retrieve_new_job(self):
+        self.job_file = ""
+        self.lock_file = ""
         valid_job_files = self._get_job_files()
         valid_job_files.sort(key=lambda x: os.path.getmtime(x))
 
@@ -48,13 +53,13 @@ class JobFileManager:
     
 
     def _create_lock_file(self, job_file):
-        lock_file = self._get_lock_file_path(job_file)
-        with open(lock_file, 'w') as file:
-            file.write(f"Job started for: {job_file}\n")
+        self.job_file = job_file
+        self.lock_file = self._get_lock_file_path(job_file)
+        with open(self.lock_file, 'w') as file:
+            file.write(f"{DateTimeHelper.get_date_time_now_str()} - Job started for: {job_file}\n")
 
 
-    def append_to_lock_file(self, job_file, message):        
-        lock_file = self._get_lock_file_path(job_file)
-        if os.path.exists(lock_file):
-            with open(lock_file, 'a') as file:
+    def append_to_lock_file(self, message):
+        if os.path.exists(self.lock_file):
+            with open(self.lock_file, 'a') as file:
                 file.write(message + '\n')

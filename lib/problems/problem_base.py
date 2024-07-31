@@ -40,6 +40,10 @@ class ProblemBase(Problem):
         lower_bounds = self._construct_input_lower_bounds()
         upper_bounds = self._construct_input_upper_bounds()
 
+        self.start_time = DateTimeHelper.get_date_time()
+        self.seconds_taken_one_iteration = 0
+        self.estimated_seconds_remaining = 0
+
         logging.info(
             "Constructing Problem with %d inputs and %d outputs. Setting the lowerbounds to: %s and the upperbounds to: %s",
             total_inputs,
@@ -217,8 +221,12 @@ class ProblemBase(Problem):
         # Populate the iteration results with the outputs from each individual.
         iteration_results.add_outputs(self.crop_gen_job.get_display_output_names(), all_results_outputs)
 
+        self._calc_time_remaining()                
+
         # Append the iteration result to our list of results.
-        self.results_manager.add_iteration_result(iteration_results)
+        self.results_manager.add_iteration_result(iteration_results, self.seconds_taken_one_iteration)
+
+        self.current_iteration_id += 1
 
         return True
 
@@ -267,18 +275,23 @@ class ProblemBase(Problem):
             self.crop_gen_job.iterations,
             total_individuals
         )
+
+    #
+    # Calcs the remaining time.
+    #
+    def _calc_time_remaining(self):
+        self.seconds_taken_one_iteration = DateTimeHelper.get_elapsed_seconds_since(self.start_time)
+        self.estimated_seconds_remaining = (self.crop_gen_job.iterations - self.current_iteration_id) * self.seconds_taken_one_iteration
+
     
     #
     # Logs the remaining time.
     #
     def _log_time_remaining(self, start_time):
-        seconds_taken_one_iteration = DateTimeHelper.get_elapsed_seconds_since(start_time)
-        estimated_seconds_remaining = (self.crop_gen_job.iterations - self.current_iteration_id) * seconds_taken_one_iteration
-
         logging.info("Finished processing APSIM iteration: %d. Time taken: %s. %s",  
             self.current_iteration_id, 
-            DateTimeHelper.seconds_to_hhmmss_ms(seconds_taken_one_iteration),
-            self._generate_time_remaining_log(estimated_seconds_remaining)
+            DateTimeHelper.seconds_to_hhmmss_ms(self.seconds_taken_one_iteration),
+            self._generate_time_remaining_log(self.estimated_seconds_remaining)
         )
 
     #

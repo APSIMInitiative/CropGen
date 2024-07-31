@@ -27,18 +27,13 @@ class Problem(ProblemBase):
 
         super()._log_processing_iteration(len(variable_values_for_population))
 
-        start_time = DateTimeHelper.get_date_time()
+        self.start_time = DateTimeHelper.get_date_time()
 
         response = self._perform_relay_apsim_request(variable_values_for_population)
 
         if not super()._handle_evaluate_value_for_population(response, out_objective_values, variable_values_for_population):
             super()._initialize_algorithm_array(out_objective_values)
             return
-        
-        super()._log_time_remaining(start_time)
-
-        # Increment our iteration ID.
-        self.current_iteration_id += 1
 
     #
     # Creates request(s) and runs apsim.

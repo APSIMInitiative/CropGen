@@ -38,11 +38,6 @@ class EnvironmentTypingProblem(ProblemBase):
             super()._initialize_algorithm_array(out_objective_values)
             return
 
-        super()._log_time_remaining(start_time)
-
-        # Increment our iteration ID.
-        self.current_iteration_id += 1
-
     #
     # Creates request(s) and runs apsim.
     #

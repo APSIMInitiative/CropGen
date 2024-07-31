@@ -3,8 +3,9 @@ import logging
 from lib.server.job_state import JobState 
 
 class JobsServer():
-    def __init__(self, jobs_client):
+    def __init__(self, env_provider, jobs_client):
         self.jobs_client = jobs_client
+        self.update_frequency = env_provider.get_update_freq()
         self.job_state = JobState.Created
         self.running_crop_gen_job = None
 
@@ -58,3 +59,34 @@ class JobsServer():
                 self.jobs_client.update_job_status(self.running_crop_gen_job.id, job_state)
 
         self.job_state = job_state
+
+
+
+    def set_iteration_complete(self, iteration, avg_run_time):
+        if self.running_crop_gen_job:
+            if self.should_update_progress(iteration, self.running_crop_gen_job.iterations):
+                if iteration % self.update_frequency == 0:        
+                    self.jobs_client.update_job_status(
+                        self.running_crop_gen_job.jobId,
+                        JobState.Running,
+                        iteration,
+                        self.running_crop_gen_job.iterations,
+                        avg_run_time
+                    )
+
+    
+    def should_update_progress(self, current_iteration, total_iterations):
+        # If the update frequency is set to 1, or if it should report at this iteration
+        if self.update_frequency == 1:
+            return True
+        
+        # Determine if it is time to report based on the current/total iterations
+        return (
+            current_iteration <= 5 or
+            current_iteration >= total_iterations or
+            current_iteration % self.update_frequency == 0
+        )
+
+
+    def set_job_complete(self):
+        pass
