@@ -85,3 +85,5 @@ class JobsClientLocal:
         self.job_file_manager.append_to_lock_file(f"Job Errors")
         for error in errors:
             self.job_file_manager.append_to_lock_file(f"Error: {error}")
+
+        self.job_file_manager.rename_lock_to_error()

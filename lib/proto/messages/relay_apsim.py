@@ -94,15 +94,17 @@ class RelayApsim(ProtoRequest):
             relay_apsim_proto.Inputs.append(double_array_proto)
 
         # Populate the SimulationNames field
-        for name in self.simulationNames:
+        for name_kvp in self.simulationNames:
+            name = name_kvp[1]
             string_array_proto = Types_pb2.StringArrayProto()
             string_array_proto.Values.append(name)
             relay_apsim_proto.SimulationNames.append(string_array_proto)
 
         # Populate the SystemPropertyValues field
-        for value in self.systemPropertyValues:
+        for name_kvp in self.systemPropertyValues:            
+            name = name_kvp[1]
             string_array_proto = Types_pb2.StringArrayProto()
-            string_array_proto.Values.append(value)
+            string_array_proto.Values.append(name)
             relay_apsim_proto.SystemPropertyValues.append(string_array_proto)
 
         return relay_apsim_proto
