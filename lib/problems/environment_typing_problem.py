@@ -1,7 +1,7 @@
 import json
 import logging
 
-from lib.models.cgm.relay_apsim import RelayApsim
+from lib.proto.messages.relay_apsim  import RelayApsim
 from lib.problems.problem_base import ProblemBase
 from lib.utils.apsim_season_date_generator import APSIMSeasonDateGenerator
 from lib.utils.constants import Constants
@@ -29,7 +29,7 @@ class EnvironmentTypingProblem(ProblemBase):
 
         super()._log_processing_iteration(len(variable_values_for_population))
 
-        start_time = DateTimeHelper.get_date_time()
+        self.start_time = DateTimeHelper.get_date_time()
 
         response = self._perform_relay_apsim_request(variable_values_for_population)
         self._log_results_for_simulations(response)

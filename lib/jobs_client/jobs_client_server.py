@@ -78,6 +78,15 @@ class JobsClientServer:
             raise Exception("Invalid response when updating status")
 
 
+    def job_complete(self):
+        pass
+
+
+    def job_error(self, job_id, errors):
+        #TODO Report error.
+        pass
+
+
     def _retrieve_data_from_json(
         self,
         url: str

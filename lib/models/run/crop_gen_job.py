@@ -36,16 +36,16 @@ class CropGenJob(Model):
 
             lower_case_json_data = self.convert_to_lower_case_recursive(json_data)
 
-            self.id = JsonHelper.get_attribute(lower_case_json_data, 'id', self.errors)
-            self.jobId = JsonHelper.get_attribute(lower_case_json_data, 'jobId', self.errors)
-            self.name = JsonHelper.get_attribute(lower_case_json_data, 'name', self.errors)
-            self.iterations = JsonHelper.get_attribute(lower_case_json_data, 'iterations', self.errors)
-            self.individuals = JsonHelper.get_attribute(lower_case_json_data, 'individuals', self.errors)
-            self.reportName = JsonHelper.get_attribute(lower_case_json_data, 'reportName', self.errors)
-            self.apsimJobId = JsonHelper.get_attribute(lower_case_json_data, 'apsimJobId', self.errors)
-            self.apsimSimulationClockStartDate = JsonHelper.get_attribute(lower_case_json_data, 'apsimSimulationClockStartDate', self.errors)
-            self.maxSimulationsPerRequestd = JsonHelper.get_attribute(lower_case_json_data, 'maxSimulationsPerRequest', self.errors)
-            self.maxIndividualsPerRequest = JsonHelper.get_attribute(lower_case_json_data, 'maxIndividualsPerRequest', self.errors)
+            self.id = JsonHelper.get_attribute(lower_case_json_data, 'id', self.errors, True)
+            self.jobId = JsonHelper.get_attribute(lower_case_json_data, 'jobId', self.errors, True)
+            self.name = JsonHelper.get_attribute(lower_case_json_data, 'name', self.errors, True)
+            self.iterations = JsonHelper.get_attribute(lower_case_json_data, 'iterations', self.errors, True)
+            self.individuals = JsonHelper.get_attribute(lower_case_json_data, 'individuals', self.errors, True)
+            self.reportName = JsonHelper.get_attribute(lower_case_json_data, 'reportName', self.errors, True)
+            self.apsimJobId = JsonHelper.get_attribute(lower_case_json_data, 'apsimJobId', self.errors, True)
+            self.apsimSimulationClockStartDate = JsonHelper.get_attribute(lower_case_json_data, 'apsimSimulationClockStartDate', self.errors, True)
+            self.maxSimulationsPerRequestd = JsonHelper.get_attribute(lower_case_json_data, 'maxSimulationsPerRequest', self.errors, True)
+            self.maxIndividualsPerRequest = JsonHelper.get_attribute(lower_case_json_data, 'maxIndividualsPerRequest', self.errors, True)
 
             # Process Inputs and Outputs
             self.inputs = Input.parse_from_json_object(lower_case_json_data, self.errors)
@@ -61,7 +61,7 @@ class CropGenJob(Model):
     #
     @staticmethod
     def parse_environment_types(json_object, errors):
-        environment_types = JsonHelper.get_non_mandatory_attribute(json_object, 'environmentTypes', [])
+        environment_types = JsonHelper.get_non_mandatory_attribute(json_object, 'environmentTypes', True, [])
 
         if not environment_types: return []
         

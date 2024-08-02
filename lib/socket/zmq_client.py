@@ -22,7 +22,7 @@ class ZMQClient:
 
 
     def _generate_connection_string(self) -> str:
-        address = self.host_address if self.config.IS_RUNNING_IN_DOCKER else "localhost"
+        address = self.host_address if self.config.IS_RUNNING_IN_CONTAINER else "localhost"
         return f"tcp://{address}:{self.port}"
 
 

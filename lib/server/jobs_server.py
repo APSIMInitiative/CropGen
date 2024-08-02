@@ -15,18 +15,10 @@ class JobsServer():
         if not crop_gen_job: return None
 
         if crop_gen_job.errors:
-            self._log_job_errors(crop_gen_job.errors)
+            self.job_error(crop_gen_job.errors)
             return None
 
         return crop_gen_job
-    
-
-    def _log_job_errors(self, errors):
-        logging.error("CropGenJob has the following errors:")
-        for error in errors: logging.info(error)
-        logging.error("Setting job state as error.")
-
-        self.job_error()
 
 
     def job_pending(self, crop_gen_job):
@@ -43,8 +35,18 @@ class JobsServer():
         self._clear_running_job()
 
 
-    def job_error(self):        
+    def job_error(self, errors):
+        logging.error("CropGenJob has the following errors:")
+        for error in errors: logging.info(error)
+        logging.error("Setting job state as error.")
+        
         self._set_job_state(JobState.Error)
+
+        job_id = None 
+        if self.running_crop_gen_job: 
+            job_id = id
+            
+        self.jobs_client.job_error(job_id, errors)
         self._clear_running_job()
 
 
@@ -89,4 +91,4 @@ class JobsServer():
 
 
     def set_job_complete(self):
-        pass
+        self.jobs_client.job_complete()

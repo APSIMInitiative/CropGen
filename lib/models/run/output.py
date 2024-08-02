@@ -23,7 +23,7 @@ class Output(Model):
     #
     @staticmethod
     def parse_from_json_object(lower_case_json_data, errors):
-        outputs = JsonHelper.get_attribute(lower_case_json_data, 'outputs', errors)
+        outputs = JsonHelper.get_attribute(lower_case_json_data, 'outputs', errors, True)
 
         if not outputs:
             errors.append("No outputs supplied.")
@@ -32,10 +32,10 @@ class Output(Model):
         total_outputs_to_optimise = 0
         parsed_outputs = []
         for output_value in outputs:
-            apsim_output_name = JsonHelper.get_attribute(output_value, 'apsimOutputName', errors)
-            optimise = JsonHelper.get_non_mandatory_attribute(output_value, 'optimise', True)
-            maximise = JsonHelper.get_non_mandatory_attribute(output_value, 'maximise', False)
-            multiplier = JsonHelper.get_non_mandatory_attribute(output_value, 'multiplier', 1)
+            apsim_output_name = JsonHelper.get_attribute(output_value, 'apsimOutputName', errors, True)
+            optimise = JsonHelper.get_non_mandatory_attribute(output_value, 'optimise', True, True)
+            maximise = JsonHelper.get_non_mandatory_attribute(output_value, 'maximise', True, False)
+            multiplier = JsonHelper.get_non_mandatory_attribute(output_value, 'multiplier', True, 1)
             aggregate_functions = AggregateFunction.parse_aggregate_functions(output_value, errors)
 
             parsed_outputs.append(Output(

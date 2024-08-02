@@ -4,9 +4,9 @@ import csv
 from lib.utils.date_time_helper import DateTimeHelper
 
 class ResultsManager:
-    def __init__(self, config, server_state, crop_gen_job):
+    def __init__(self, config, jobs_server, crop_gen_job):
         self.config = config
-        self.server_state = server_state
+        self.jobs_server = jobs_server
         self.crop_gen_job = crop_gen_job
         self.iteration_results = []
         self.final_result = None
@@ -30,7 +30,7 @@ class ResultsManager:
         self.iteration_results.append(iteration_result)
         progress_str = iteration_result.to_progress_str()
         self.write_progress(progress_str)
-        self.server_state.set_iteration_complete(iteration_result.iterationID, avg_run_time)
+        self.jobs_server.set_iteration_complete(iteration_result.iterationID, avg_run_time)
 
 
     def add_final_result(self, final_result):
@@ -38,7 +38,7 @@ class ResultsManager:
             self.final_result = final_result
             progress_str = final_result.to_progress_str()
             self.write_progress(progress_str)
-            self.server_state.set_job_complete()
+            self.jobs_server.set_job_complete()
         else:
             raise ValueError("Final result has already been set.")
         

@@ -13,7 +13,7 @@ class Config(Model):
     RUNNING_IN_CONTAINER = 'RUNNING_IN_CONTAINER'
     CONFIG_FILE_FULL_PATH = os.path.join(os.path.dirname(__file__), 'config.json')
     OVERRIDE_CONFIG_FILE_FULL_PATH = os.path.join(os.path.dirname(__file__), 'config_override.json')
-    IS_RUNNING_IN_DOCKER = os.environ.get(RUNNING_IN_CONTAINER, False)
+    IS_RUNNING_IN_CONTAINER = os.environ.get(RUNNING_IN_CONTAINER, False)
 
     #
     # Constructor.
@@ -129,7 +129,7 @@ class Config(Model):
         container_override_config_key = f"{config_key}Container"
 
         # Check for a Docker config override key.
-        if self._get_config_exists(data, container_override_config_key) and Config.IS_RUNNING_IN_DOCKER:
+        if self._get_config_exists(data, container_override_config_key) and Config.IS_RUNNING_IN_CONTAINER:
             return self._get_config_value(data, container_override_config_key, default_if_not_present)
 
         return self._get_config_value(data, config_key, default_if_not_present)

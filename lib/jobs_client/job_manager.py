@@ -25,7 +25,7 @@ class JobFileManager:
     
 
     def _get_lock_file_path(self, job_file):
-        return job_file.replace('.json', '.lck')
+        return job_file.replace('.json', '.lock')
     
 
     def retrieve_new_job(self):
@@ -62,4 +62,4 @@ class JobFileManager:
     def append_to_lock_file(self, message):
         if os.path.exists(self.lock_file):
             with open(self.lock_file, 'a') as file:
-                file.write(message + '\n')
+                file.write(f"{DateTimeHelper.get_date_time_now_str()} - {message} \n")

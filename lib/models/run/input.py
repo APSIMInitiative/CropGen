@@ -18,7 +18,7 @@ class Input(Model):
     #
     @staticmethod
     def parse_from_json_object(lower_case_json_data, errors):
-        inputs = JsonHelper.get_attribute(lower_case_json_data, 'inputs', errors)
+        inputs = JsonHelper.get_attribute(lower_case_json_data, 'inputs', errors, True)
 
         if not inputs:
             errors.append("No inputs supplied.")
@@ -26,9 +26,9 @@ class Input(Model):
         
         parsed_inputs = [] 
         for input_value in inputs:
-            name = JsonHelper.get_attribute(input_value, 'name', errors)
-            min = JsonHelper.get_attribute(input_value, 'min', errors)
-            max = JsonHelper.get_attribute(input_value, 'max', errors)
+            name = JsonHelper.get_attribute(input_value, 'name', errors, True)
+            min = JsonHelper.get_attribute(input_value, 'min', errors, True)
+            max = JsonHelper.get_attribute(input_value, 'max', errors, True)
 
             parsed_inputs.append(Input(
                 name, 

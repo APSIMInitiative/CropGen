@@ -11,11 +11,11 @@ from lib.utils.constants import Constants
 
 class JobRunner():
 
-    def __init__(self, config, server_state, cgm_relay_address, crop_gen_job):
+    def __init__(self, config, jobs_server, cgm_relay_address, crop_gen_job):
         self.config = config
         self.cgm_relay_address = cgm_relay_address
         self.crop_gen_job = crop_gen_job
-        self.results_manager = ResultsManager(self.config, server_state, crop_gen_job)
+        self.results_manager = ResultsManager(self.config, jobs_server, crop_gen_job)
         self.zmq_client = ProtoZMQClient(config, self.cgm_relay_address, Constants.CGM_RELAY_SOCKET_SERVICE_PORT)
 
 

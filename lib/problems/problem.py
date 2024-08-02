@@ -41,6 +41,7 @@ class Problem(ProblemBase):
     def _perform_relay_apsim_request(self, variable_values_for_population):
 
         max_simulations = self.crop_gen_job.maxSimulationsPerRequest
+        max_individuals = self.crop_gen_job.maxIndividualsPerRequest
         apsim_data = APSimSimulationData()
         simulation_names = apsim_data.get_simulation_names(self.crop_gen_job.apsimJobId)
 

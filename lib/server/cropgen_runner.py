@@ -18,7 +18,7 @@ class CropGenRunner():
         if not self.cgm_relay_address:
             raise Exception(f"Failed to find {Constants.CGM_RELAY_APP_NAME}")
         
-        self.server_state = JobsServer(env_provider, self.jobs_client)
+        self.jobs_server = JobsServer(env_provider, self.jobs_client)
 
 
     def log_app_startup(self):
@@ -28,34 +28,39 @@ class CropGenRunner():
 
     def poll_for_job_and_run(self):
         try:
-            if (self.server_state.job_state == JobState.Running or
-                self.server_state.job_state == JobState.Pending
+            if (self.jobs_server.job_state == JobState.Running or
+                self.jobs_server.job_state == JobState.Pending
             ):
                 logging.debug("Job is currenly running")
             else:
-                crop_gen_job = self.server_state.retrieve_job()
+                crop_gen_job = self.jobs_server.retrieve_job()
 
-                if crop_gen_job and len(crop_gen_job.errors) == 0:
-                    self.server_state.job_pending(crop_gen_job)
-                    self.run_job(crop_gen_job)
+                if crop_gen_job:
+                    if len(crop_gen_job.errors) == 0:
+                        self.jobs_server.job_pending(crop_gen_job)
+                        self.run_job(crop_gen_job)
+                    else:
+                        self.jobs_server.job_error(crop_gen_job.errors)
+
             time.sleep(self.config.SleepBetweenJobsSeconds)
-        except:
-            self.server_state.job_error()
+        except Exception as e:
+            exception_details = [str(type(e).__name__), str(e)]
+            self.jobs_server.job_error(exception_details)
             raise
 
 
     def run_job(self, crop_gen_job):
         logging.info("Found CropGen job to run.")
 
-        self.server_state.job_running()
+        self.jobs_server.job_running()
         
         job_runner = JobRunner(
             self.config, 
-            self.server_state,
+            self.jobs_server,
             self.cgm_relay_address,
             crop_gen_job
         )
 
         job_runner.run()
 
-        self.server_state.job_finished()
+        self.jobs_server.job_finished()
