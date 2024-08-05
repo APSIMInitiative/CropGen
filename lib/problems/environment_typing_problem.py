@@ -60,7 +60,7 @@ class EnvironmentTypingProblem(ProblemBase):
             if simulation_name not in results_dict:
                 results_dict[simulation_name] = []
             results_dict[simulation_name].append({
-                "SimulationID": row.simulationId,
+                "SimulationID": row.simulationID,
                 "Values": row.values
             })
 

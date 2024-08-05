@@ -34,7 +34,7 @@ class MultiYearResultsProcessor():
             # If there is no output move onto the next one.
             if not request_output: continue
 
-            if request_output.AggregateFunctions:
+            if request_output.aggregateFunctions:
                 MultiYearResultsProcessor.process_output_aggregate_functions(
                     config,
                     request_output,

@@ -4,7 +4,7 @@ class ApsimResultHelper():
     @staticmethod
     def create_apsim_result(values):
         apsim_result = ApsimResult()
-        apsim_result.Values = values
+        apsim_result.values = values
         return apsim_result
     
     @staticmethod

@@ -34,7 +34,7 @@ class FailureRiskFunction:
         # Need to calculate the sum of our data set that is within the specified value.
         sum_within_operator_and_value = 0
         for apsim_result in results_for_individual:
-            if FailureRiskFunction._test_failure_risk_result_in_range(apsim_result.Values[apsim_output_index], operator, value):
+            if FailureRiskFunction._test_failure_risk_result_in_range(apsim_result.values[apsim_output_index], operator, value):
                 sum_within_operator_and_value += 1
         result = sum_within_operator_and_value / total_results_for_individuals
 
