@@ -146,5 +146,6 @@ class FinalResult(Model):
     #
     # Returns the type name.
     #
-    def get_type_name(self):
+    @staticmethod
+    def get_type_name():
         return __class__.__name__

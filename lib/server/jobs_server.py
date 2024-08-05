@@ -42,7 +42,7 @@ class JobsServer():
         
         self._set_job_state(JobState.Error)
 
-        job_id = self.running_crop_gen_job.job_id if self.running_crop_gen_job else None
+        job_id = self.running_crop_gen_job.jobId if self.running_crop_gen_job else None
             
         self.jobs_client.job_error(job_id, errors)
         self._clear_running_job()

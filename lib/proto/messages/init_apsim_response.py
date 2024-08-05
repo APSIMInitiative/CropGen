@@ -32,5 +32,6 @@ class InitApsimResponse(ProtoResponse):
         return InitApsimResponse_pb2.InitApsimResponseProto
     
 
-    def get_type_name(self):
+    @staticmethod
+    def get_type_name():
         return __class__.__name__ + "Proto"

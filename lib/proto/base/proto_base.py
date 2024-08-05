@@ -14,5 +14,7 @@ class ProtoBase:
 
         return json_str
     
-    def get_type_name(self):
+    
+    @staticmethod
+    def get_type_name():
         pass

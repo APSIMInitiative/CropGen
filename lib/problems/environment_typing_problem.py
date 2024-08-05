@@ -55,13 +55,13 @@ class EnvironmentTypingProblem(ProblemBase):
         if not response: return
         results_dict = {}
 
-        for row in response.Rows:
-            simulation_name = row.SimulationName
+        for row in response.rows:
+            simulation_name = row.simulationName
             if simulation_name not in results_dict:
                 results_dict[simulation_name] = []
             results_dict[simulation_name].append({
-                "SimulationID": row.SimulationID,
-                "Values": row.Values
+                "SimulationID": row.simulationId,
+                "Values": row.values
             })
 
         try:

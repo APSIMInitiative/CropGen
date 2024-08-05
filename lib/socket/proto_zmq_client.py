@@ -18,14 +18,19 @@ class ProtoZMQClient():
         cgm_message = self.wrap_proto(proto_request)
         data = cgm_message.SerializeToString()
         raw_response = self.zmq_client.send(data)
-        response = self.process_response_message(raw_response, proto_request.get_response_type())
+        response = self.process_response_message(raw_response, proto_request.get_response_type(), proto_request.get_type_name())
         return response
 
 
-    def process_response_message(self, raw_response, response_type):
+    def process_response_message(self, raw_response, response_type, request_type_name):
         response_cgm_message = CgmMessage_pb2.CgmMsg()
         response_cgm_message.ParseFromString(raw_response)
-        response = self.unwrap_proto(response_cgm_message, response_type.get_proto_type())
+        response = self.unwrap_proto(
+            response_cgm_message, 
+            response_type.get_proto_type(), 
+            request_type_name,
+            response_type.get_type_name()
+        )
         converted_response = response_type.from_proto(response)
         return converted_response
 
@@ -41,7 +46,13 @@ class ProtoZMQClient():
         return cgm_message
 
 
-    def unwrap_proto(self, cgm_message: CgmMessage_pb2.CgmMsg, response_type: type):
+    def unwrap_proto(
+        self, 
+        cgm_message: CgmMessage_pb2.CgmMsg, 
+        response_type: type,
+        request_type_name: str,
+        response_type_name: str
+    ):
         if not isinstance(cgm_message, CgmMessage_pb2.CgmMsg):
             raise TypeError("Expected a CgmMessage_pb2.CgmMsg instance.")
         
@@ -49,7 +60,7 @@ class ProtoZMQClient():
         message = response_type()
         
         if not any_message.Unpack(message):
-            raise ValueError("Failed to unpack message.")
+            raise ValueError(f"Failed to unpack {response_type_name} response message from {request_type_name} request.")
 
         return message
     

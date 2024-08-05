@@ -115,5 +115,6 @@ class RelayApsim(ProtoRequest):
         return RunApsimResponse
 
 
-    def get_type_name(self):
+    @staticmethod
+    def get_type_name():
         return __class__.__name__ + "Proto"
