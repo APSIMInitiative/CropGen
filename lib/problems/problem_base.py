@@ -8,6 +8,7 @@ from lib.results_processors.multi_year_results_processor import MultiYearResults
 from lib.results_processors.empty_results_processor import EmptyResultsProcessor
 from lib.utils.constants import Constants
 from lib.proto.messages.relay_apsim  import RelayApsim
+from lib.proto.messages.run_apsim_response import RunApsimResponse
 from lib.socket.proto_zmq_client import ProtoZMQClient
 from lib.utils.date_time_helper import DateTimeHelper
 
@@ -252,15 +253,15 @@ class ProblemBase(Problem):
         run_apsim_response = RunApsimResponse()
 
         for response in responses:            
-            run_apsim_response.ID = response.ID
+            run_apsim_response.id = response.id
 
-            if response.Fields:
-                for field in response.Fields:
-                    run_apsim_response.Fields.append(field)
+            if response.fields:
+                for field in response.fields:
+                    run_apsim_response.fields.append(field)
 
-            if response.Rows:
-                for row in response.Rows:
-                    run_apsim_response.Rows.append(row)
+            if response.rows:
+                for row in response.rows:
+                    run_apsim_response.rows.append(row)
 
         return run_apsim_response
     
