@@ -22,6 +22,10 @@ class InitApsimRequest(ProtoRequest):
         for input in self.crop_gen_job.inputs:
             apsim_config_proto.Inputs.append(input.name)
 
+        if self.crop_gen_job.get_is_environment_typing_run():
+            apsim_config_proto.SystemPropertyNames.append(self.config.ApsimClockStartDateYearInputName)
+            apsim_config_proto.SystemPropertyNames.append(self.config.ApsimClockEndDateYearInputName)
+
         report_config_proto = apsim_config_proto.ReportDetails.add()
         report_config_proto.ReportName = self.crop_gen_job.reportName
 

@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 import ReportConfig_pb2 as ReportConfig__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11\x41psimConfig.proto\x1a\x12ReportConfig.proto\"M\n\x10\x41psimConfigProto\x12\x0e\n\x06Inputs\x18\x01 \x03(\t\x12)\n\rReportDetails\x18\x02 \x03(\x0b\x32\x12.ReportConfigProtoB\x14\xaa\x02\x11protobuf.messagesb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11\x41psimConfig.proto\x1a\x12ReportConfig.proto\"j\n\x10\x41psimConfigProto\x12\x0e\n\x06Inputs\x18\x01 \x03(\t\x12)\n\rReportDetails\x18\x02 \x03(\x0b\x32\x12.ReportConfigProto\x12\x1b\n\x13SystemPropertyNames\x18\x03 \x03(\tB\x14\xaa\x02\x11protobuf.messagesb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,5 +34,5 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\252\002\021protobuf.messages'
   _globals['_APSIMCONFIGPROTO']._serialized_start=41
-  _globals['_APSIMCONFIGPROTO']._serialized_end=118
+  _globals['_APSIMCONFIGPROTO']._serialized_end=147
 # @@protoc_insertion_point(module_scope)

@@ -46,11 +46,17 @@ class RelayApsim(ProtoRequest):
     def add_inputs_for_env_type(self, environment_type, season_date_generator, input_id, input_values):
         for environment in environment_type.Environments:
             for season in environment.Seasons:
-                start_date = season_date_generator.generate_start_date_from_season(season)
-                end_date = season_date_generator.generate_end_date_from_season(season)
+                
+                self.systemPropertyValues.append([
+                    str(input_id), 
+                    season_date_generator.generate_start_date_from_season(season), 
+                    season_date_generator.generate_end_date_from_season(season)
+                ])
 
-                self.systemPropertyValues.append([str(input_id), start_date, end_date])
-                self.simulationNames.append([str(input_id), environment_type.Name])
+                self.simulationNames.append([
+                    str(input_id), 
+                    environment_type.Name]
+                )
 
                 self.add_inputs_for_individual(input_id, input_values)
     
@@ -94,17 +100,15 @@ class RelayApsim(ProtoRequest):
             relay_apsim_proto.Inputs.append(double_array_proto)
 
         # Populate the SimulationNames field
-        for name_kvp in self.simulationNames:
-            name = name_kvp[1]
+        for sim_names in self.simulationNames:
             string_array_proto = Types_pb2.StringArrayProto()
-            string_array_proto.Values.append(name)
+            string_array_proto.Values.extend(sim_names)
             relay_apsim_proto.SimulationNames.append(string_array_proto)
 
         # Populate the SystemPropertyValues field
-        for name_kvp in self.systemPropertyValues:            
-            name = name_kvp[1]
+        for system_property_names in self.systemPropertyValues:
             string_array_proto = Types_pb2.StringArrayProto()
-            string_array_proto.Values.append(name)
+            string_array_proto.Values.extend(system_property_names)
             relay_apsim_proto.SystemPropertyValues.append(string_array_proto)
 
         return relay_apsim_proto
