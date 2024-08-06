@@ -46,11 +46,7 @@ class Problem(ProblemBase):
         simulation_names = apsim_data.get_simulation_names(self.crop_gen_job.apsimJobId)
 
         if (max_simulations and max_simulations > 0):
-            # If we're being asked to split the simulation names up, but there is no simulation names configured, throw.
-            if not simulation_names: 
-                raise Exception("MaxSimulations set but cannot find simulation names for JobID: %s", self.run_job_request.JobID)
-
-            return self._perform_relay_apsim_simulation_split(variable_values_for_population, simulation_names, max_simulations, max_individuals)
+            return self._perform_relay_apsim_simulation_split(variable_values_for_population, simulation_names, max_simulations)
         elif (max_individuals and max_individuals > 0):
             return self._perform_relay_apsim_individuals_split(variable_values_for_population, max_individuals)
         else:
@@ -59,7 +55,12 @@ class Problem(ProblemBase):
     #
     # Creates request(s) and runs apsim.
     #
-    def _perform_relay_apsim_simulation_split(self, variable_values_for_population, simulation_names, max_simulations, max_individuals):
+    def _perform_relay_apsim_simulation_split(self, variable_values_for_population, simulation_names, max_simulations):
+
+        # If we're being asked to split the simulation names up, but there is no simulation names configured, throw.
+        if not simulation_names: 
+            raise Exception("MaxSimulations set but cannot find simulation names for JobID: %s", self.run_job_request.JobID)
+            
         split_simulation_names = ArrayUtils._split_arr(simulation_names, max_simulations)
         total_relay_apsim_requests = len(split_simulation_names)
 

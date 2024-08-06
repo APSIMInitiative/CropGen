@@ -20,7 +20,7 @@ class JobRunner():
 
 
     def run(self):
-        logging.info("Running job request for id: %s", self.crop_gen_job.id)        
+        logging.info("Running CropGenJob: %s (%s)", self.crop_gen_job.name, self.crop_gen_job.id)        
         logging.info("Job request: %s", self.crop_gen_job.to_json(self.config.PrettyPrintJsonInLogs))
 
         run_start_time = DateTimeHelper.get_date_time()
@@ -34,10 +34,10 @@ class JobRunner():
         # Now run the problem code, pass in the CGM factory class for 
         problem.run()
 
-        self.results_manager.write_to_disk()
+        results_dir = self.results_manager.write_to_disk()
 
         # Log out how long the problem took to run.
-        logging.info("Problem run finished. Results: %s. Time taken: '%s'. ID: '%s', JobID: '%s', ApsimJobID: '%s', Name: '%s', Iterations: '%d', Individuals: '%d'", 
+        logging.info("Problem run finished. Results: %s. Time taken: '%s'. ID: '%s', JobID: '%s', ApsimJobID: '%s', Name: '%s', Iterations: '%d', Individuals: '%d'. Results saved here: '%s'", 
             self.results_manager.result_dir,
             DateTimeHelper.get_elapsed_time_since(run_start_time),
             self.crop_gen_job.id,
@@ -45,7 +45,8 @@ class JobRunner():
             self.crop_gen_job.apsimJobId,
             self.crop_gen_job.name,
             self.crop_gen_job.iterations,
-            self.crop_gen_job.individuals
+            self.crop_gen_job.individuals,
+            results_dir
         )
 
 

@@ -25,6 +25,7 @@
     "InitWorkersPreRunSimulations": false,
     "AlwaysResetRunner": true,
     "SleepBetweenJobsSeconds": 60,
+    "CopyLogsToResults": true,
     
     "ContainerOverrides": "______________________",
     "SocketServerHostContainer": "0.0.0.0",

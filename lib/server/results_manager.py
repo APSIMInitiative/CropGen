@@ -1,4 +1,6 @@
 import os
+import shutil
+import zipfile
 import csv
 
 from lib.utils.date_time_helper import DateTimeHelper
@@ -11,6 +13,7 @@ class ResultsManager:
         self.iteration_results = []
         self.final_result = None
         self.result_dir = self.create_results_dir()
+        self.zip_file_dir = self.create_results_zip_file_path()
         self.progress_file = os.path.join(self.result_dir, "progress.txt")
 
 
@@ -24,6 +27,13 @@ class ResultsManager:
         os.makedirs(results_dir, exist_ok=True)
 
         return results_dir
+    
+
+    def create_results_zip_file_path(self):
+        return os.path.join(
+            self.config.results_dir, 
+            f"{self.crop_gen_job.jobId}.zip"
+        )
 
 
     def add_iteration_result(self, iteration_result, avg_run_time):
@@ -63,7 +73,9 @@ class ResultsManager:
 
         self.write_all_individuals()
         self.write_optimal_individuals()
+        self.create_results_zip_file()
         self.clear()
+        return self.zip_file_dir
 
 
     def _write_individuals(self, file_path, results, get_individual_count):
@@ -109,3 +121,26 @@ class ResultsManager:
             [self.final_result],
             lambda result: min(len(result.inputs[0].values), len(result.outputs[0].values))
         )
+
+
+    def create_results_zip_file(self):
+        self.copy_logs_to_results()
+        
+        # Delete results zip file if it already exists.
+        if os.path.exists(self.zip_file_dir): os.remove(self.zip_file_dir)
+
+        # Create a zip file and add the contents of result_dir
+        with zipfile.ZipFile(self.zip_file_dir, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, dirs, files in os.walk(self.result_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, start=self.result_dir)
+                    zipf.write(file_path, arcname)
+
+
+    def copy_logs_to_results(self):
+        if not self.config.CopyLogsToResults: return
+
+        log_destination_dir_path = os.path.join(self.result_dir, 'logs')
+        if os.path.exists(log_destination_dir_path): shutil.rmtree(log_destination_dir_path) 
+        shutil.copytree(self.config.log_dir, log_destination_dir_path)
