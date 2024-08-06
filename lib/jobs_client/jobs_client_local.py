@@ -19,6 +19,7 @@ class JobsClientLocal:
         self.relay_ip_file = environment_variables_provider.get_relay_ip_file()
         self.relay_ip_address = ""
 
+        logging.info(f"Creating JobsClientLocal - Running in Standalone mode")
         logging.info(f"HPC ID: {self._hpc_id}")
         logging.info(f"RELAY IP FILE: {self.relay_ip_file}")
 

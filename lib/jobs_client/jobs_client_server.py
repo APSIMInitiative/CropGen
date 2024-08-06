@@ -20,6 +20,7 @@ class JobsClientServer:
         base_url = environment_variables_provider.get_jobs_server_address()
         self._client.base_url = base_url
 
+        logging.info(f"Creating JobsClientServer - Running with JobsServer")
         logging.info(f"HPC ID: {self._hpc_id}")
         logging.info(f"Base URL: {base_url}")
 

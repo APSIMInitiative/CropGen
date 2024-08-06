@@ -20,7 +20,7 @@ class JobRunner():
 
 
     def run(self):
-        logging.info("Running CropGenJob: %s (%s)", self.crop_gen_job.name, self.crop_gen_job.id)        
+        logging.info("Running CropGenJob: '%s' (JobID: %s)", self.crop_gen_job.name, self.crop_gen_job.id)        
         logging.info("Job request: %s", self.crop_gen_job.to_json(self.config.PrettyPrintJsonInLogs))
 
         run_start_time = DateTimeHelper.get_date_time()
