@@ -73,19 +73,18 @@ class JobsClientServer:
         json_data = json.dumps(update_job_status_request)
         response = self._client.put(url, data=json_data, headers={"Content-Type": "application/json"})
 
-        if response.status_code == 200:
+        if 200 <= response.status_code < 300:
             return response.json()
         else:
-            raise Exception("Invalid response when updating status")
+            logging.error("Invalid response '%d' when updating status", response.status_code)
 
 
     def job_complete(self):
         pass
 
 
-    def job_error(self, job_id, errors):
-        #TODO Report error.
-        pass
+    def job_error(self, id, _):
+        self.jobs_client.update_job_status(id, JobState.Error)        
 
 
     def _retrieve_data_from_json(

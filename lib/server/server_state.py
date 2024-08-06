@@ -2,7 +2,7 @@ import logging
 
 from lib.server.job_state import JobState 
 
-class JobsServer():
+class ServerState():
     def __init__(self, env_provider, jobs_client):
         self.jobs_client = jobs_client
         self.update_frequency = env_provider.get_update_freq()
@@ -42,9 +42,9 @@ class JobsServer():
         
         self._set_job_state(JobState.Error)
 
-        job_id = self.running_crop_gen_job.jobId if self.running_crop_gen_job else None
+        id = self.running_crop_gen_job.id if self.running_crop_gen_job else None
             
-        self.jobs_client.job_error(job_id, errors)
+        self.jobs_client.job_error(id, errors)
         self._clear_running_job()
 
 
@@ -53,21 +53,18 @@ class JobsServer():
 
 
     def _set_job_state(self, job_state):
-        if self.running_crop_gen_job:
-            todo_update_state = False
-            if todo_update_state:
-                self.jobs_client.update_job_status(self.running_crop_gen_job.id, job_state)
-
         self.job_state = job_state
-
+        if self.running_crop_gen_job:
+            self.jobs_client.update_job_status(self.running_crop_gen_job.id, job_state)
 
 
     def set_iteration_complete(self, iteration, avg_run_time):
         if self.running_crop_gen_job:
             if self.should_update_progress(iteration, self.running_crop_gen_job.iterations):
-                if iteration % self.update_frequency == 0:        
-                    self.jobs_client.update_job_status(
-                        self.running_crop_gen_job.jobId,
+                if iteration % self.update_frequency == 0:
+                    self.jobs_client.update_job_status
+                    (
+                        self.running_crop_gen_job.id,
                         JobState.Running,
                         iteration,
                         self.running_crop_gen_job.iterations,
