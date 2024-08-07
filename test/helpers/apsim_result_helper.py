@@ -1,10 +1,10 @@
-from lib.models.cgm.apsim_result import ApsimResult
+from lib.proto.messages.apsim_result import ApsimResult
 
 class ApsimResultHelper():
     @staticmethod
     def create_apsim_result(values):
         apsim_result = ApsimResult()
-        apsim_result.Values = values
+        apsim_result.values = values
         return apsim_result
     
     @staticmethod

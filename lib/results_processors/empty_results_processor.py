@@ -27,7 +27,7 @@ class EmptyResultsProcessor():
         algorithm_outputs = []
 
         first_result = results_for_individual[0]
-        apsim_output = ApsimOutput(first_result.SimulationID, first_result.SimulationName)
+        apsim_output = ApsimOutput(first_result.simulationID, first_result.simulationName)
 
         for output_index in range(0, total_outputs):
             request_output = run_job_request.get_output_by_index(output_index)

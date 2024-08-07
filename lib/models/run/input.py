@@ -9,26 +9,26 @@ class Input(Model):
     # Constructor
     #
     def __init__(self, name, min, max):        
-        self.Name = name
-        self.Min = min
-        self.Max = max
+        self.name = name
+        self.min = min
+        self.max = max
 
     #
     # Parses the inputs
     #
     @staticmethod
-    def parse_inputs(json_object, errors):
-        inputs = JsonHelper.get_attribute(json_object, 'Inputs', errors)
+    def parse_from_json_object(lower_case_json_data, errors):
+        inputs = JsonHelper.get_attribute(lower_case_json_data, 'inputs', errors, True)
 
         if not inputs:
             errors.append("No inputs supplied.")
             return []
         
         parsed_inputs = [] 
-        for output_value in inputs:
-            name = JsonHelper.get_attribute(output_value, 'Name', errors)
-            min = JsonHelper.get_attribute(output_value, 'Min', errors)
-            max = JsonHelper.get_attribute(output_value, 'Max', errors)
+        for input_value in inputs:
+            name = JsonHelper.get_attribute(input_value, 'name', errors, True)
+            min = JsonHelper.get_attribute(input_value, 'min', errors, True)
+            max = JsonHelper.get_attribute(input_value, 'max', errors, True)
 
             parsed_inputs.append(Input(
                 name, 
@@ -41,5 +41,6 @@ class Input(Model):
     #
     # Returns the type name.
     #
-    def get_type_name(self):
+    @staticmethod
+    def get_type_name():
         return __class__.__name__

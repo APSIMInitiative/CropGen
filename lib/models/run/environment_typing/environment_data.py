@@ -17,12 +17,13 @@ class EnvironmentData(Model):
     #
     @staticmethod
     def parse(json_object, errors):
-        type = JsonHelper.get_attribute(json_object, 'Type', errors)
-        seasons = JsonHelper.get_attribute(json_object, 'Seasons', errors)            
+        type = JsonHelper.get_attribute(json_object, 'type', errors, True)
+        seasons = JsonHelper.get_attribute(json_object, 'seasons', errors, True)
         return EnvironmentData(type, seasons)
 
     #
     # Returns the type name.
     #
-    def get_type_name(self):
+    @staticmethod
+    def get_type_name():
         return __class__.__name__

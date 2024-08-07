@@ -1,7 +1,7 @@
 import json
 import logging
 
-from lib.models.cgm.relay_apsim import RelayApsim
+from lib.proto.messages.relay_apsim  import RelayApsim
 from lib.problems.problem_base import ProblemBase
 from lib.utils.apsim_season_date_generator import APSIMSeasonDateGenerator
 from lib.utils.constants import Constants
@@ -15,9 +15,9 @@ class EnvironmentTypingProblem(ProblemBase):
     #
     # Construct problem with the given dimensions and variable ranges
     #
-    def __init__(self, config, run_job_request, cgm_server_client):
+    def __init__(self, config, crop_gen_job, cgm_relay_address, results_manager):
         logging.info("%s has received a request for an Environment Typing run.", Constants.APPLICATION_NAME)
-        super().__init__(config, run_job_request, cgm_server_client)
+        super().__init__(config, crop_gen_job, cgm_relay_address, results_manager)
 
     #
     # Iterate over each population and perform calculations
@@ -29,7 +29,7 @@ class EnvironmentTypingProblem(ProblemBase):
 
         super()._log_processing_iteration(len(variable_values_for_population))
 
-        start_time = DateTimeHelper.get_date_time()
+        self.start_time = DateTimeHelper.get_date_time()
 
         response = self._perform_relay_apsim_request(variable_values_for_population)
         self._log_results_for_simulations(response)
@@ -38,18 +38,13 @@ class EnvironmentTypingProblem(ProblemBase):
             super()._initialize_algorithm_array(out_objective_values)
             return
 
-        super()._log_time_remaining(start_time)
-
-        # Increment our iteration ID.
-        self.current_iteration_id += 1
-
     #
     # Creates request(s) and runs apsim.
     #
     def _perform_relay_apsim_request(self, variable_values_for_population):
-        season_date_generator = APSIMSeasonDateGenerator(self.config, self.run_job_request.APSIMSimulationClockStartDate)
-        relay_apsim_request = RelayApsim(self.run_job_request.JobID, self.run_job_request.Individuals)
-        relay_apsim_request.add_inputs_for_env_typing(self.run_job_request.EnvironmentTypes, season_date_generator, variable_values_for_population)
+        season_date_generator = APSIMSeasonDateGenerator(self.config, self.crop_gen_job.apsimSimulationClockStartDate)
+        relay_apsim_request = RelayApsim(self.crop_gen_job.jobId, self.crop_gen_job.individuals)
+        relay_apsim_request.add_inputs_for_env_typing(self.crop_gen_job.environmentTypes, season_date_generator, variable_values_for_population)
         response = super()._call_relay_apsim(relay_apsim_request)
         return response
     
@@ -60,13 +55,13 @@ class EnvironmentTypingProblem(ProblemBase):
         if not response: return
         results_dict = {}
 
-        for row in response.Rows:
-            simulation_name = row.SimulationName
+        for row in response.rows:
+            simulation_name = row.simulationName
             if simulation_name not in results_dict:
                 results_dict[simulation_name] = []
             results_dict[simulation_name].append({
-                "SimulationID": row.SimulationID,
-                "Values": row.Values
+                "SimulationID": row.simulationID,
+                "Values": row.values
             })
 
         try:

@@ -23,7 +23,7 @@ class AggregateFunctionCalculator:
     # for an individual and the specified calc type.
     #
     def calculate_output_value(self, results_for_individual, apsim_output_index):
-        calc_type = self.aggregate_function.CalcType.lower().strip()
+        calc_type = self.aggregate_function.calcType.lower().strip()
         output_value = None
         
         logging.debug("Calling calculate_output_value with a calc_type of: %s for results containing the following APSIM simulations: %s", 

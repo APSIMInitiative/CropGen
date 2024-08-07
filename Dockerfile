@@ -1,3 +1,4 @@
+# For more information, please refer to https://aka.ms/vscode-docker-python
 FROM python:3.11-slim
 
 # Set our working directory to the CropGen root folder.
@@ -22,7 +23,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Setup environment variables
-ENV RUNNING_IN_DOCKER Yes
+ENV RUNNING_IN_CONTAINER Yes
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 CMD ["python", "main.py"]

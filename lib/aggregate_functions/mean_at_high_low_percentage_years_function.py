@@ -15,7 +15,7 @@ class MeanAtHighLowPercentageYears:
         total_years = len(results_for_individual)
 
         if total_years == 1:
-            return results_for_individual[0].Values[apsim_output_index]
+            return results_for_individual[0].values[apsim_output_index]
 
         high_low = aggregate_function.get_param_by_index(Constants.MEAN_AT_PARAM_HIGH_LOW)
         percentage = float(aggregate_function.get_param_by_index(Constants.MEAN_AT_PARAM_PERCENT))
@@ -79,7 +79,7 @@ class MeanAtHighLowPercentageYears:
     def _extract_years_of_interest(results_for_individual, apsim_output_index, high_low, percentage, total_years, round_up_years):
         sorted_list = list()
         for apsim_result in results_for_individual:
-            sorted_list.append(apsim_result.Values[apsim_output_index])
+            sorted_list.append(apsim_result.values[apsim_output_index])
         sorted_list.sort()
         
         years = (total_years * (percentage/100))
