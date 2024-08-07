@@ -1,4 +1,4 @@
-from lib.models.cgm.apsim_result import ApsimResult
+from lib.proto.messages.apsim_result import ApsimResult
 
 class ApsimResultHelper():
     @staticmethod
