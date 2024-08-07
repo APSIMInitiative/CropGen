@@ -17,6 +17,8 @@ class InitApsimRequest(ProtoRequest):
         init_proto.Url = ""
         init_proto.PreRunSimulations = self.config.InitWorkersPreRunSimulations
         init_proto.ResetRunner = self.config.AlwaysResetRunner
+        init_proto.WaitForJobsTimeoutSeconds = self.crop_gen_job.waitForJobsTimeoutSeconds
+
         apsim_config_proto = ApsimConfig_pb2.ApsimConfigProto()
 
         for input in self.crop_gen_job.inputs:

@@ -46,6 +46,7 @@ class CropGenJob(Model):
             self.apsimSimulationClockStartDate = JsonHelper.get_attribute(lower_case_json_data, 'apsimSimulationClockStartDate', self.errors, True)
             self.maxSimulationsPerRequest = JsonHelper.get_attribute(lower_case_json_data, 'maxSimulationsPerRequest', self.errors, True)
             self.maxIndividualsPerRequest = JsonHelper.get_attribute(lower_case_json_data, 'maxIndividualsPerRequest', self.errors, True)
+            self.waitForJobsTimeoutSeconds = JsonHelper.get_non_mandatory_attribute(lower_case_json_data, 'waitForJobsTimeoutSeconds', True, 60 * 60)
 
             # Process Inputs and Outputs
             self.inputs = Input.parse_from_json_object(lower_case_json_data, self.errors)
