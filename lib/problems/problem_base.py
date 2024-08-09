@@ -221,7 +221,7 @@ class ProblemBase(Problem):
         # Populate the iteration results with the outputs from each individual.
         iteration_results.add_outputs(self.crop_gen_job.get_display_output_names(), all_results_outputs)
 
-        self._calc_time_remaining()                
+        self._calc_time_remaining()
 
         # Append the iteration result to our list of results.
         self.results_manager.add_iteration_result(iteration_results, self.seconds_taken_one_iteration)
@@ -282,12 +282,13 @@ class ProblemBase(Problem):
     def _calc_time_remaining(self):
         self.seconds_taken_one_iteration = DateTimeHelper.get_elapsed_seconds_since(self.start_time)
         self.estimated_seconds_remaining = (self.crop_gen_job.iterations - self.current_iteration_id) * self.seconds_taken_one_iteration
+        self._log_time_remaining()
 
     
     #
     # Logs the remaining time.
     #
-    def _log_time_remaining(self, start_time):
+    def _log_time_remaining(self):
         logging.info("Finished processing APSIM iteration: %d. Time taken: %s. %s",  
             self.current_iteration_id, 
             DateTimeHelper.seconds_to_hhmmss_ms(self.seconds_taken_one_iteration),
