@@ -14,7 +14,7 @@ class MultiYearResultsProcessor():
     #
     @staticmethod
     def process_results(
-        run_job_request,
+        crop_gen_job,
         config, 
         apsim_simulation_id_str, 
         apsim_simulation_name_str,
@@ -23,13 +23,13 @@ class MultiYearResultsProcessor():
         all_results_outputs,
         is_first
     ):
-        total_outputs = run_job_request.get_total_outputs()
+        total_outputs = crop_gen_job.get_total_outputs()
         algorithm_outputs = []
         
         apsim_output = ApsimOutput(apsim_simulation_id_str, apsim_simulation_name_str)
 
         for output_index in range(0, total_outputs):
-            request_output = run_job_request.get_output_by_index(output_index)
+            request_output = crop_gen_job.get_output_by_index(output_index)
 
             # If there is no output move onto the next one.
             if not request_output: continue
