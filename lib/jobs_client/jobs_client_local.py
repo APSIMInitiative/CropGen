@@ -75,7 +75,8 @@ class JobsClientLocal:
         total_iterations: Optional[int] = 0, 
         avg_run_time: Optional[float] = 0
     ):
-        self.job_file_manager.append_to_lock_file(f"Id: {id} Iteration {current_iteration}/{total_iterations}. Average runtime: {avg_run_time} seconds")
+        if current_iteration > 0:
+            self.job_file_manager.append_to_lock_file(f"Id: {id} Iteration {current_iteration}/{total_iterations}. Average runtime: {avg_run_time} seconds")
 
 
     def job_complete(self):

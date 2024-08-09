@@ -14,7 +14,7 @@ class EmptyResultsProcessor():
     @staticmethod
     def process_results(
         individual,
-        run_job_request,
+        crop_gen_job,
         results_for_individual,
         all_algorithm_outputs,
         all_results_outputs
@@ -23,14 +23,14 @@ class EmptyResultsProcessor():
 
         logging.warn("Processing empty results for individual: '%d'", individual + 1)
 
-        total_outputs = run_job_request.get_total_outputs()
+        total_outputs = crop_gen_job.get_total_outputs()
         algorithm_outputs = []
 
         first_result = results_for_individual[0]
         apsim_output = ApsimOutput(first_result.simulationID, first_result.simulationName)
 
         for output_index in range(0, total_outputs):
-            request_output = run_job_request.get_output_by_index(output_index)
+            request_output = crop_gen_job.get_output_by_index(output_index)
 
             # If there is no output move onto the next one.
             if not request_output: continue
