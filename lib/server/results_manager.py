@@ -137,6 +137,8 @@ class ResultsManager:
                     arcname = os.path.relpath(file_path, start=self.result_dir)
                     zipf.write(file_path, arcname)
 
+        self.remove_results_dir()
+
 
     def copy_logs_to_results(self):
         if not self.config.CopyLogsToResults: return
@@ -144,3 +146,11 @@ class ResultsManager:
         log_destination_dir_path = os.path.join(self.result_dir, 'logs')
         if os.path.exists(log_destination_dir_path): shutil.rmtree(log_destination_dir_path) 
         shutil.copytree(self.config.log_dir, log_destination_dir_path)
+
+
+    def remove_results_dir(self):
+        if not os.path.exists(self.zip_file_dir): return
+        if not self.config.DeleteResultsDirAfterZip: return
+
+        if os.path.exists(self.result_dir):
+            shutil.rmtree(self.result_dir)

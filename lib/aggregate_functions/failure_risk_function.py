@@ -24,21 +24,12 @@ class FailureRiskFunction:
 
         total_results_for_individuals = len(results_for_individual)
 
-        logging.debug("Calling %s for: '%d' individuals. Using operator: '%s' and value: '%f'",
-            __class__.__name__, 
-            total_results_for_individuals,
-            operator,
-            value
-        )
-
         # Need to calculate the sum of our data set that is within the specified value.
         sum_within_operator_and_value = 0
         for apsim_result in results_for_individual:
             if FailureRiskFunction._test_failure_risk_result_in_range(apsim_result.values[apsim_output_index], operator, value):
                 sum_within_operator_and_value += 1
         result = sum_within_operator_and_value / total_results_for_individuals
-
-        logging.debug("Result: '%f' (%d/%d).", result, sum_within_operator_and_value,total_results_for_individuals)
 
         return result
     

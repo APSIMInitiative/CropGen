@@ -12,8 +12,6 @@ class MeanFunction:
 
         total_results_for_individuals = len(results_for_individual)
 
-        logging.debug("Calling %s for: '%d' individuals.", __class__.__name__, total_results_for_individuals)
-
         if total_results_for_individuals == 0:
             return 0
 
@@ -24,6 +22,5 @@ class MeanFunction:
             total += apsim_result.values[apsim_output_index]
 
         result = total / total_results_for_individuals
-        logging.debug("Result: '%f' (Total %f)", result, total)
         
         return result

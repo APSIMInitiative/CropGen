@@ -28,15 +28,6 @@ class MeanAtHighLowPercentageYears:
             raise Exception(f"{Constants.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. Unknown high/low specifier: '{high_low}'")
         if not MeanAtHighLowPercentageYears._is_supported_percentage(percentage): 
             raise Exception(f"{Constants.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. Unknown percentage: '{percentage}'")
-        
-
-        logging.debug("Calling %s for: '%d' individuals. Using high/low: '%s', percentage: '%f' and round up years: %s",
-            __class__.__name__, 
-            total_years,
-            high_low,
-            percentage,
-            str(round_up_years)
-        )
 
         # Create a sorted list for these values.
         sorted_list = MeanAtHighLowPercentageYears._extract_years_of_interest(results_for_individual, apsim_output_index, high_low, percentage, total_years, round_up_years)
@@ -47,9 +38,7 @@ class MeanAtHighLowPercentageYears:
             for value in sorted_list: 
                 result += value
             result = result / sorted_list_length
-
-        logging.debug("Result: '%f' total: '%d' total years: %d years in %d calculation: %d.", result, result, total_years, percentage, sorted_list_length)
-
+            
         return result
     
     #

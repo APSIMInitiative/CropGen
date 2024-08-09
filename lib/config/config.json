@@ -26,6 +26,7 @@
     "AlwaysResetRunner": true,
     "SleepBetweenJobsSeconds": 60,
     "CopyLogsToResults": true,
+    "DeleteResultsDirAfterZip": true,
     
     "ContainerOverrides": "______________________",
     "SocketServerHostContainer": "0.0.0.0",

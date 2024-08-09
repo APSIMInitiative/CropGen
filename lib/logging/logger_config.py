@@ -69,8 +69,8 @@ class LoggerConfig:
          # File handler
         file_handler = logging.handlers.RotatingFileHandler(
             self.log_file,
-            # 20 MB
-            maxBytes=20 * (1024 * 1024),
+            # 50 MB
+            maxBytes=50 * (1024 * 1024),
             backupCount=5
         )
 

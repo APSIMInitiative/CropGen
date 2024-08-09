@@ -26,11 +26,6 @@ class AggregateFunctionCalculator:
         calc_type = self.aggregate_function.calcType.lower().strip()
         output_value = None
         
-        logging.debug("Calling calculate_output_value with a calc_type of: %s for results containing the following APSIM simulations: %s", 
-            calc_type, 
-            self.apsim_simulation_names_str
-        )
-
         if calc_type == Constants.TYPE_FAILURE_RISK:
             output_value = FailureRiskFunction.calculate(self.aggregate_function, results_for_individual, apsim_output_index)
         elif calc_type == Constants.TYPE_MEAN:
