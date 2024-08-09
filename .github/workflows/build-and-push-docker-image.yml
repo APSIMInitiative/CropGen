@@ -117,17 +117,34 @@ jobs:
         name: Log out the new DOCKER_NEW_IMAGE_TAG
         run: |
             echo "Using DOCKER_NEW_IMAGE_TAG: ${{ env.DOCKER_NEW_IMAGE_TAG }}"
-            
+
 
     # Step 9
+    # Install docker-compose
+    - 
+        name: Set up Docker Compose
+        run: |
+              sudo apt-get update
+              sudo apt-get install -y docker-compose            
+    
+
+    # Step 10
+    # Verify the install
+    - 
+        name: Verify Docker Compose Installation
+        run: |
+              docker-compose --version
+
+
+    # Step 11
     # Builds the docker image, using the compose file.
     - 
         name: Build Docker Image
         run: |
-            docker-compose build --no-cache
+            docker compose build --no-cache
             
     
-    # Step 10
+    # Step 12
     # Tag the newly created docker image, prior to pushing it.
     - 
         name: Tag Docker image
@@ -135,7 +152,7 @@ jobs:
             docker tag ${{ env.DOCKER_REPOSITORY }}:${{ env.DOCKER_DEFAULT_IMAGE_TAG }} ${{ secrets.DHUB_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{ env.DOCKER_NEW_IMAGE_TAG }}
             
     
-    # Step 11
+    # Step 13
     # For diagnostics, prints the list of docker images on disk that match that tag.
     - 
         name: Log out built Docker Images
@@ -143,7 +160,7 @@ jobs:
             docker images ${{ secrets.DHUB_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{ env.DOCKER_NEW_IMAGE_TAG }}
 
 
-    # Step 12
+    # Step 14
     # Finally, push the newly created and tagged, docker image.
     - 
         name: Push to Docker Hub
