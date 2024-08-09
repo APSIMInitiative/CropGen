@@ -23,6 +23,8 @@ if __name__ == "__main__":
             except KeyboardInterrupt:
                 logging.info("Keyboard interrupt. Exiting...")
                 break
+            except Exception as e:
+                logging.error("An error occurred: %s. Continuing polling loop...", e)
 
         logging.info("Closing CropGen application")
     except:
