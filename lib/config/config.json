@@ -33,6 +33,7 @@
     "SocketTimeoutTestConnectionSecondsContainer": 5.0,
     "PublishResultsContainer": true,
     "PrettyPrintJsonInLogsContainer": false,
-    "RemoteLoggerUrlContainer": "https://jobs.cgmwgp.com/api/CropGen/logs",
+    "_RemoteLoggerUrlContainer": "https://jobs.cgmwgp.com/api/CropGen/logs",
+    "RemoteLoggerUrlContainer": "",
     "EndOfContainerOverrides": "______________________"
 }
