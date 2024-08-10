@@ -11,12 +11,13 @@ from lib.utils.constants import Constants
 
 class JobRunner():
 
-    def __init__(self, config, server_state, cgm_relay_address, crop_gen_job):
+    def __init__(self, env_provider, config, server_state, cgm_relay_address, crop_gen_job):
+        self.env_provider = env_provider
         self.config = config
         self.cgm_relay_address = cgm_relay_address
         self.crop_gen_job = crop_gen_job
         self.results_manager = ResultsManager(self.config, server_state, crop_gen_job)
-        self.zmq_client = ProtoZMQClient(config, self.cgm_relay_address, Constants.CGM_RELAY_SOCKET_SERVICE_PORT)
+        self.zmq_client = ProtoZMQClient(config, self.cgm_relay_address, env_provider.get_cgm_relay_socket_service_port())
 
 
     def run(self):
@@ -29,7 +30,7 @@ class JobRunner():
             logging.error("Failed to initialise %s. Run message will not be processed.", Constants.CGM_SERVER)
             return
 
-        problem = ProblemVisualisation(self.config, self.crop_gen_job, self.cgm_relay_address, self.results_manager)
+        problem = ProblemVisualisation(self.env_provider, self.config, self.crop_gen_job, self.cgm_relay_address, self.results_manager)
         
         # Now run the problem code, pass in the CGM factory class for 
         problem.run()

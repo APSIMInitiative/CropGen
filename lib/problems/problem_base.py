@@ -19,7 +19,8 @@ class ProblemBase(Problem):
     #
     # Constructor
     #
-    def __init__(self, config, crop_gen_job, cgm_relay_address, results_manager):
+    def __init__(self, env_provider, config, crop_gen_job, cgm_relay_address, results_manager):
+        self.env_provider = env_provider
         self.config = config
         self.crop_gen_job = crop_gen_job
         self.run_errors = []
@@ -32,7 +33,7 @@ class ProblemBase(Problem):
         self.apsim_simulation_name_str = ''
 
         self.cgm_relay_address = cgm_relay_address
-        self.zmq_client = ProtoZMQClient(config, self.cgm_relay_address, Constants.CGM_RELAY_SOCKET_SERVICE_PORT)
+        self.zmq_client = ProtoZMQClient(config, self.cgm_relay_address, self.env_provider.get_cgm_relay_socket_service_port())
         self.results_manager = results_manager
 
         total_inputs = crop_gen_job.get_total_inputs()

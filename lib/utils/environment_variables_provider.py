@@ -12,6 +12,10 @@ class EnvironmentVariablesProvider:
     PROXY_IP_FILE = "PROXY_IP_FILE"
     RELAY_IP_FILE = "RELAY_IP_FILE"
     HPC_ROOT_DIR = "HPC_ROOT_DIR"
+    CGM_RELAY_SOCKET_SERVICE_PORT = "CGM_RELAY_SOCKET_SERVICE_PORT"
+    CGM_RELAY_PUSH_PORT = "CGM_RELAY_PUSH_PORT"
+    CGM_RELAY_PULL_PORT = "CGM_RELAY_PULL_PORT"
+    TOTAL_CLIENTS = "TOTAL_CLIENTS"
     
 
     def __init__(self):
@@ -50,6 +54,22 @@ class EnvironmentVariablesProvider:
     def get_hpc_root_dir(self) -> str:
         return self.get_variable(str, self.HPC_ROOT_DIR).strip()
     
+    
+    def get_cgm_relay_socket_service_port(self) -> int:
+        return self.get_variable(int, self.CGM_RELAY_SOCKET_SERVICE_PORT)
+    
+    
+    def get_cgm_relay_push_port(self) -> int:
+        return self.get_variable(int, self.CGM_RELAY_PUSH_PORT)
+    
+    
+    def get_cgm_relay_pull_port(self) -> int:
+        return self.get_variable(int, self.CGM_RELAY_PULL_PORT)
+    
+    
+    def get_total_clients(self) -> int:
+        return self.get_variable(int, self.TOTAL_CLIENTS)
+    
 
     def get_variable(self, var_type: Type[T], name: str) -> T:
         if name not in self._env_variable_values:
@@ -81,4 +101,8 @@ class EnvironmentVariablesProvider:
             EnvironmentVariablesProvider.PROXY_IP_FILE: "",
             EnvironmentVariablesProvider.RELAY_IP_FILE: "",
             EnvironmentVariablesProvider.HPC_ROOT_DIR: "",
+            EnvironmentVariablesProvider.CGM_RELAY_SOCKET_SERVICE_PORT: 5555,
+            EnvironmentVariablesProvider.CGM_RELAY_PUSH_PORT: 5557,
+            EnvironmentVariablesProvider.CGM_RELAY_PULL_PORT: 5558,
+            EnvironmentVariablesProvider.TOTAL_CLIENTS: 0,
         }

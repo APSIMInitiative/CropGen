@@ -10,7 +10,6 @@ class Constants():
     OBJECTIVE_VALUES_ARRAY_INDEX = 'F'
     CGM_SERVER = 'CGM Server'
     CGM_RELAY_APP_NAME = "CGMRelay"
-    CGM_RELAY_SOCKET_SERVICE_PORT = 5555
 
     # Messages - Comparisons are made after converting the value to test to lowercase.
     RUN_MESSAGE = 'runcropgen'

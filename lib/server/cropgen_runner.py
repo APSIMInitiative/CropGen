@@ -56,6 +56,7 @@ class CropGenRunner():
         self.server_state.job_running()
         
         job_runner = JobRunner(
+            self.env_provider,
             self.config, 
             self.server_state,
             self.cgm_relay_address,
