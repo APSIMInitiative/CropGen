@@ -1,4 +1,6 @@
+import logging
 import os
+
 from typing import Dict, Any, Type, TypeVar
 
 T = TypeVar('T')
@@ -79,7 +81,7 @@ class EnvironmentVariablesProvider:
         try:
             return var_type(value)
         except ValueError:
-            print(f"Failed to convert environment variable '{name}' to type '{var_type}'")
+            logging.error(f"Failed to convert environment variable '{name}' to type '{var_type}'")
             raise
 
 
@@ -87,6 +89,7 @@ class EnvironmentVariablesProvider:
         for name in self._env_variable_values.keys():
             env_var_value = os.getenv(name)
             if env_var_value is not None:
+                logging.info(f"Found override env var: '{name}'. Setting value to '{env_var_value}'")
                 self._env_variable_values[name] = env_var_value
 
 
