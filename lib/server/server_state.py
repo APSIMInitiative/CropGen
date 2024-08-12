@@ -61,15 +61,13 @@ class ServerState():
     def set_iteration_complete(self, iteration, avg_run_time):
         if self.running_crop_gen_job:
             if self.should_update_progress(iteration, self.running_crop_gen_job.iterations):
-                if iteration % self.update_frequency == 0:
-                    self.jobs_client.update_job_status
-                    (
-                        self.running_crop_gen_job.id,
-                        JobState.Running,
-                        iteration,
-                        self.running_crop_gen_job.iterations,
-                        avg_run_time
-                    )
+                self.jobs_client.update_job_status(
+                    self.running_crop_gen_job.id,
+                    JobState.Running,
+                    iteration,
+                    self.running_crop_gen_job.iterations,
+                    avg_run_time
+                )
 
     
     def should_update_progress(self, current_iteration, total_iterations):
