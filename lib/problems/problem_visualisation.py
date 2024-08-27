@@ -53,7 +53,7 @@ class ProblemVisualisation():
         # Objective values for non-dominated individuals in the last generation
         objective_values_non_dominated_individuals = minimize_result.F
 
-        final_results = FinalResult(
+        final_result = FinalResult(
             self.crop_gen_job, 
             variable_values_non_dominated_individuals,
             objective_values_non_dominated_individuals,
@@ -62,4 +62,4 @@ class ProblemVisualisation():
         )
 
         # Store the final results.
-        self.results_manager.add_final_result(final_results)
+        self.results_manager.write_final_result(final_result)

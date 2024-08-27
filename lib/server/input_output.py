@@ -24,8 +24,8 @@ class InputOutput(Model):
     #
     def to_progress_str(self):
         progress_str = (
-            f"Name: {self.name}\n"
-            f"Values: [{', '.join(str(v) for v in self.values)}]"
+            f"{self.name}\n"
+            f"[{', '.join(str(v) for v in self.values)}]"
         )
 
         if self.simulationId is not None:

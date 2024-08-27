@@ -35,11 +35,11 @@ class JobRunner():
         # Now run the problem code, pass in the CGM factory class for 
         problem.run()
 
-        results_dir = self.results_manager.write_to_disk()
+        results_dir = self.results_manager.zip_results()
 
         # Log out how long the problem took to run.
         logging.info("Problem run finished. Results: %s. Time taken: '%s'. ID: '%s', JobID: '%s', ApsimJobID: '%s', Name: '%s', Iterations: '%d', Individuals: '%d'. Results saved here: '%s'", 
-            self.results_manager.result_dir,
+            self.results_manager.job_results_dir,
             DateTimeHelper.get_elapsed_time_since(run_start_time),
             self.crop_gen_job.id,
             self.crop_gen_job.jobId,

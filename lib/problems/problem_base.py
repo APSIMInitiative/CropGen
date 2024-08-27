@@ -41,7 +41,7 @@ class ProblemBase(Problem):
         lower_bounds = self._construct_input_lower_bounds()
         upper_bounds = self._construct_input_upper_bounds()
 
-        self.start_time = DateTimeHelper.get_date_time()
+        self.iteration_start_time = DateTimeHelper.get_date_time()
         self.seconds_taken_one_iteration = 0
         self.estimated_seconds_remaining = 0
 
@@ -203,14 +203,8 @@ class ProblemBase(Problem):
 
             elif self.is_multi_year:
                 MultiYearResultsProcessor.process_results(
-                    self.crop_gen_job, 
-                    self.config, 
-                    self.apsim_simulation_id_str, 
-                    self.apsim_simulation_name_str,
-                    results_for_individual, 
-                    all_algorithm_outputs, 
-                    all_results_outputs,
-                    is_first
+                    self.crop_gen_job, self.config, self.apsim_simulation_id_str, self.apsim_simulation_name_str, results_for_individual, 
+                    all_algorithm_outputs, all_results_outputs,is_first
                 )
 
             else:
@@ -225,7 +219,7 @@ class ProblemBase(Problem):
         self._calc_time_remaining()
 
         # Append the iteration result to our list of results.
-        self.results_manager.add_iteration_result(iteration_results, self.seconds_taken_one_iteration)
+        self.results_manager.write_iteration_result(iteration_results, self.seconds_taken_one_iteration)
 
         self.current_iteration_id += 1
 
@@ -281,7 +275,7 @@ class ProblemBase(Problem):
     # Calcs the remaining time.
     #
     def _calc_time_remaining(self):
-        self.seconds_taken_one_iteration = DateTimeHelper.get_elapsed_seconds_since(self.start_time)
+        self.seconds_taken_one_iteration = DateTimeHelper.get_elapsed_seconds_since(self.iteration_start_time)
         self.estimated_seconds_remaining = (self.crop_gen_job.iterations - self.current_iteration_id) * self.seconds_taken_one_iteration
         self._log_time_remaining()
 

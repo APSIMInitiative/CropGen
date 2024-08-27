@@ -29,7 +29,7 @@ class EnvironmentTypingProblem(ProblemBase):
 
         super()._log_processing_iteration(len(variable_values_for_population))
 
-        self.start_time = DateTimeHelper.get_date_time()
+        self.iteration_start_time = DateTimeHelper.get_date_time()
 
         response = self._perform_relay_apsim_request(variable_values_for_population)
         self._log_results_for_simulations(response)
