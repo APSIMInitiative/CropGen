@@ -9,3 +9,4 @@ __pycache__/
 /lib/utility_scripts/output
 /lib/config/config_override.json
 /runtime
+/.venv
