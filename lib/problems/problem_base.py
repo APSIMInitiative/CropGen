@@ -232,9 +232,11 @@ class ProblemBase(Problem):
     # Logs the application memory usage.
     #
     def log_memory_usage(self):
-        if logging.getLogger().isEnabledFor(logging.DEBUG):
+        log_level = logging.INFO
+    
+        if logging.getLogger().isEnabledFor(log_level):
             self.memory_usage_tracker.capture_memory_usage_snapshot()
-            logging.debug(self.memory_usage_tracker)
+            logging.log(log_level, self.memory_usage_tracker)
 
     #
     # Call APSIM and return the APSIM Response.
