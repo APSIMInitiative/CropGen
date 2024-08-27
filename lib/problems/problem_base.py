@@ -19,7 +19,7 @@ class ProblemBase(Problem):
     #
     # Constructor
     #
-    def __init__(self, env_provider, config, crop_gen_job, cgm_relay_address, results_manager):
+    def __init__(self, env_provider, config, crop_gen_job, cgm_relay_address, results_manager, memory_usage_tracker):
         self.env_provider = env_provider
         self.config = config
         self.crop_gen_job = crop_gen_job
@@ -35,6 +35,7 @@ class ProblemBase(Problem):
         self.cgm_relay_address = cgm_relay_address
         self.zmq_client = ProtoZMQClient(config, self.cgm_relay_address, self.env_provider.get_cgm_relay_socket_service_port())
         self.results_manager = results_manager
+        self.memory_usage_tracker = memory_usage_tracker
 
         total_inputs = crop_gen_job.get_total_inputs()
         total_outputs = crop_gen_job.get_total_outputs_for_optimisation()
@@ -221,9 +222,19 @@ class ProblemBase(Problem):
         # Append the iteration result to our list of results.
         self.results_manager.write_iteration_result(iteration_results, self.seconds_taken_one_iteration)
 
+        self.log_memory_usage()
+
         self.current_iteration_id += 1
 
         return True
+    
+    #
+    # Logs the application memory usage.
+    #
+    def log_memory_usage(self):
+        if logging.getLogger().isEnabledFor(logging.DEBUG):
+            self.memory_usage_tracker.capture_memory_usage_snapshot()
+            logging.debug(self.memory_usage_tracker)
 
     #
     # Call APSIM and return the APSIM Response.

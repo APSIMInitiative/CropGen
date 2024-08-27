@@ -14,8 +14,8 @@ class Problem(ProblemBase):
     #
     # Construct problem with the given dimensions and variable ranges
     #
-    def __init__(self, env_provider, config, crop_gen_job, cgm_relay_address, results_manager):
-        super().__init__(env_provider, config, crop_gen_job, cgm_relay_address, results_manager)
+    def __init__(self, env_provider, config, crop_gen_job, cgm_relay_address, results_manager, memory_usage_tracker):
+        super().__init__(env_provider, config, crop_gen_job, cgm_relay_address, results_manager, memory_usage_tracker)
 
     #
     # Iterate over each population and perform calculations.

@@ -14,12 +14,13 @@ class ProblemVisualisation():
     #
     # Construct problem with the given dimensions and variable ranges
     #
-    def __init__(self, env_provider, config, crop_gen_job, cgm_relay_address, results_manager):
+    def __init__(self, env_provider, config, crop_gen_job, cgm_relay_address, results_manager, memory_usage_tracker):
         self.env_provider = env_provider
         self.config = config
         self.crop_gen_job = crop_gen_job
         self.cgm_relay_address = cgm_relay_address
         self.results_manager = results_manager
+        self.memory_usage_tracker = memory_usage_tracker    
 
     #
     # Invokes the running of the problem.
@@ -27,7 +28,7 @@ class ProblemVisualisation():
     def run(self):
         self.current_iteration_id = 1
         algorithm = AlgorithmGenerator.create_nsga2_algorithm(self.crop_gen_job.individuals)
-        problem = ProblemFactory.create(self.env_provider, self.config, self.crop_gen_job, self.cgm_relay_address, self.results_manager)
+        problem = ProblemFactory.create(self.env_provider, self.config, self.crop_gen_job, self.cgm_relay_address, self.results_manager, self.memory_usage_tracker)
 
         # Run the optimisation algorithm on the defined problem. Note: framework only performs minimisation,
         # so problems must be framed such that each objective is minimised

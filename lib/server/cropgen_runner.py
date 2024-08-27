@@ -6,6 +6,7 @@ from lib.jobs_client.jobs_client_factory import JobsClientFactory
 from lib.server.server_state import ServerState
 from lib.server.job_state import JobState
 from lib.utils.constants import Constants
+from lib.utils.memory_usage_tracker import MemoryUsageTracker
 
 class CropGenRunner():
 
@@ -14,6 +15,7 @@ class CropGenRunner():
         self.env_provider = env_provider
         self.jobs_client = JobsClientFactory.create(config, env_provider)
         self.cgm_relay_address = self.jobs_client.retrieve_cgm_relay_address()
+        self.memory_usage_tracker = MemoryUsageTracker()
         
         if not self.cgm_relay_address:
             raise Exception(f"Failed to find {Constants.CGM_RELAY_APP_NAME}")
@@ -60,7 +62,8 @@ class CropGenRunner():
             self.config, 
             self.server_state,
             self.cgm_relay_address,
-            crop_gen_job
+            crop_gen_job,
+            self.memory_usage_tracker
         )
 
         job_runner.run()
