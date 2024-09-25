@@ -4,5 +4,5 @@ requests
 parameterized
 tzlocal
 pyzmq
-protobuf
+protobuf==5.28.1
 psutil
