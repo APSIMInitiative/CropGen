@@ -59,7 +59,7 @@ class Problem(ProblemBase):
 
         # If we're being asked to split the simulation names up, but there is no simulation names configured, throw.
         if not simulation_names: 
-            raise Exception("MaxSimulations set but cannot find simulation names for JobID: %s", self.crop_gen_job.jobId)
+            raise Exception("MaxSimulations set but cannot find simulation names for JobID: %s ApsimJobId: %s", self.crop_gen_job.jobId, self.crop_gen_job.apsimJobId)
             
         split_simulation_names = ArrayUtils._split_arr(simulation_names, max_simulations)
         total_relay_apsim_requests = len(split_simulation_names)
