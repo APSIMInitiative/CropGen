@@ -20,7 +20,7 @@ class CropGenRunner():
         if not self.cgm_relay_address:
             raise Exception(f"Failed to find {Constants.CGM_RELAY_APP_NAME}")
         
-        self.server_state = ServerState(env_provider, self.jobs_client)
+        self.server_state = ServerState(config, env_provider, self.jobs_client)
 
 
     def log_app_startup(self):

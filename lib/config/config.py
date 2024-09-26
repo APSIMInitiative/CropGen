@@ -21,6 +21,7 @@ class Config(Model):
     def __init__(self, env_provider) -> None:
         super().__init__()
         self.env_provider = env_provider
+        self.job_running_filename = ""
         self.cropgen_runtime_dir = self.create_runtime_dir()
         self.log_dir = os.path.join(self.cropgen_runtime_dir, "logs")
         self.results_dir = os.path.join(self.cropgen_runtime_dir, "results")
@@ -32,10 +33,12 @@ class Config(Model):
     # Creates a runtime directory for CropGen to use.
     #
     def create_runtime_dir(self):
-        runtime_dir = self.env_provider.get_hpc_root_dir()
+        runtime_dir = self.env_provider.get_hpc_root_dir()        
         if not runtime_dir:
             this_script_path = os.path.dirname(os.path.abspath(__file__))
             runtime_dir = os.path.join(this_script_path, "..", "..", "runtime")
+
+        self.job_running_filename = os.path.join(runtime_dir, "job_running.lock")
 
         runtime_dir = os.path.join(runtime_dir, Constants.APPLICATION_NAME.lower())
         runtime_dir = os.path.abspath(runtime_dir)

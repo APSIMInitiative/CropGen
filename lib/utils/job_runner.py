@@ -56,4 +56,5 @@ class JobRunner():
         init_apsim = InitApsimRequest(self.config, crop_gen_job)
         init_apsim_response = self.zmq_client.send_proto_message(init_apsim)
         logging.info("Received %s: %s", init_apsim_response.get_type_name(), init_apsim_response.to_json(self.config.PrettyPrintJsonInLogs))
-        return init_apsim_response != None
+        return init_apsim_response != None     
+        

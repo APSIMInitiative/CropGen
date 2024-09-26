@@ -1,9 +1,11 @@
 import logging
+import os
 
 from lib.server.job_state import JobState 
 
 class ServerState():
-    def __init__(self, env_provider, jobs_client):
+    def __init__(self, config, env_provider, jobs_client):
+        self.config = config
         self.jobs_client = jobs_client
         self.update_frequency = env_provider.get_update_freq()
         self.job_state = JobState.Created
@@ -28,6 +30,19 @@ class ServerState():
 
     def job_running(self):
         self._set_job_state(JobState.Running)
+        self._create_job_started_file()
+
+
+    def _create_job_started_file(self):
+        self._remove_job_started_file()
+
+        with open(self.config.job_running_filename, 'a') as file:
+            file.write(self.running_crop_gen_job.to_json(True))
+
+    
+    def _remove_job_started_file(self):
+        if os.path.exists(self.config.job_running_filename):
+            os.remove(self.config.job_running_filename)
 
 
     def job_finished(self):
@@ -50,6 +65,7 @@ class ServerState():
 
     def _clear_running_job(self):
         self.running_crop_gen_job = None
+        self._remove_job_started_file()
 
 
     def _set_job_state(self, job_state):
