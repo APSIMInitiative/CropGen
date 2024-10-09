@@ -87,8 +87,6 @@ class EnvironmentTypingProblem(ProblemBase):
                 self.crop_gen_job.individuals
             )
 
-            logging.debug(relay_apsim_request.to_json(True))
-
             # Call relay apsim for the current chunk and store the response
             response = self._call_relay_apsim(relay_apsim_request)
             if not response: return None
