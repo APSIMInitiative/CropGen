@@ -6,6 +6,7 @@ from lib.problems.problem_base import ProblemBase
 from lib.utils.apsim_season_date_generator import APSIMSeasonDateGenerator
 from lib.utils.constants import Constants
 from lib.utils.date_time_helper import DateTimeHelper
+from lib.utils.array_utils import ArrayUtils
 
 #
 # Represents an Environment Typing Problem
@@ -42,11 +43,72 @@ class EnvironmentTypingProblem(ProblemBase):
     # Creates request(s) and runs apsim.
     #
     def _perform_relay_apsim_request(self, variable_values_for_population):
+        max_simulations = self.crop_gen_job.maxSimulationsPerRequest
+
+        if (max_simulations and max_simulations > 0):
+            return self._perform_relay_apsim_simulation_split(variable_values_for_population, max_simulations)
+        else:
+            return self._perform_relay_apsim_one_request(variable_values_for_population)
+
+    #
+    # Creates request(s) and runs apsim.
+    #
+    def _perform_relay_apsim_simulation_split(self, variable_values_for_population, max_simulations):
+        split_environment_types = ArrayUtils._split_arr(self.crop_gen_job.environmentTypes, max_simulations)
+        total_relay_apsim_requests = len(split_environment_types)
+
+        logging.info("Relay Apsim requests are being split into %d requests. MaxSimulations has been set to: %d. TotalSimulations: %d", 
+            total_relay_apsim_requests,
+            max_simulations,
+            len(self.crop_gen_job.environmentTypes)
+        )
+        
+        responses = []
+        current_relay_apsim_request = 1
+        season_date_generator = APSIMSeasonDateGenerator(self.config, self.crop_gen_job.apsimSimulationClockStartDate)
+
+        for environment_types in split_environment_types:
+
+            relay_apsim_request = RelayApsim(self.crop_gen_job.jobId, self.crop_gen_job.individuals)
+            relay_apsim_request.add_inputs_for_env_typing(environment_types, season_date_generator, variable_values_for_population)
+            unique_simulation_names = list({name[1] for name in relay_apsim_request.simulationNames})
+            seasons = [season for env_type in environment_types 
+                  for env in env_type.Environments 
+                  for season in env.Seasons]
+            
+            logging.info("Relay Apsim request %d of %d. Iteration: %d. SimulationNames: %s. Total Inputs for request: %d (TotalSimulationYears: '%d' (from %d simulations) X TotalIndividuals: '%d' )", 
+                current_relay_apsim_request,
+                total_relay_apsim_requests,
+                self.current_iteration_id,
+                ",".join(unique_simulation_names),
+                len(relay_apsim_request.inputs),
+                len(seasons),                
+                max_simulations,
+                self.crop_gen_job.individuals
+            )
+
+            logging.debug(relay_apsim_request.to_json(True))
+
+            # Call relay apsim for the current chunk and store the response
+            response = self._call_relay_apsim(relay_apsim_request)
+            if not response: return None
+            responses.append(response)
+
+            current_relay_apsim_request += 1        
+
+        response = super()._stitch_responses_together(responses)
+        return response
+    
+    #
+    # Creates request and runs apsim.
+    #
+    def _perform_relay_apsim_one_request(self, variable_values_for_population):
+
         season_date_generator = APSIMSeasonDateGenerator(self.config, self.crop_gen_job.apsimSimulationClockStartDate)
         relay_apsim_request = RelayApsim(self.crop_gen_job.jobId, self.crop_gen_job.individuals)
         relay_apsim_request.add_inputs_for_env_typing(self.crop_gen_job.environmentTypes, season_date_generator, variable_values_for_population)
-        response = super()._call_relay_apsim(relay_apsim_request)
-        return response
+        run_apsim_response = super()._call_relay_apsim(relay_apsim_request)
+        return run_apsim_response
     
     #
     # Logs the results for the simulations so that we can easily see the returned seasons.
