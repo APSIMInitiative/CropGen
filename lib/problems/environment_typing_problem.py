@@ -76,7 +76,7 @@ class EnvironmentTypingProblem(ProblemBase):
                   for env in env_type.Environments 
                   for season in env.Seasons]
             
-            logging.info("Relay Apsim request %d of %d. Iteration: %d. SimulationNames: %s. Total Inputs for request: %d (TotalSimulationYears: '%d' (from %d simulations) X TotalIndividuals: '%d' )", 
+            logging.info("Relay Apsim request %d of %d. Iteration: %d. SimulationNames: %s. Total Inputs for request: %d (TotalSimulationYears: '%d' (from %d simulation(s)) X TotalIndividuals: '%d' )", 
                 current_relay_apsim_request,
                 total_relay_apsim_requests,
                 self.current_iteration_id,
