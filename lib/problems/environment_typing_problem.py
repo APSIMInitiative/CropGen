@@ -33,7 +33,7 @@ class EnvironmentTypingProblem(ProblemBase):
         self.iteration_start_time = DateTimeHelper.get_date_time()
 
         response = self._perform_relay_apsim_request(variable_values_for_population)
-        self._log_results_for_simulations(response)
+        #self._log_results_for_simulations(response)
 
         if not super()._handle_evaluate_value_for_population(response, out_objective_values, variable_values_for_population):
             super()._initialize_algorithm_array(out_objective_values)
