@@ -28,7 +28,7 @@ class JobRunner():
         run_start_time = DateTimeHelper.get_date_time()
 
         if not self._init_cgm(self.crop_gen_job):
-            logging.error("Failed to initialise %s. Run message will not be processed.", Constants.CGM_SERVER)
+            logging.error("Failed to initialise %s. Run message will not be processed.", Constants.CGM_RELAY_APP_NAME)
             return
 
         problem = ProblemVisualisation(self.env_provider, self.config, self.crop_gen_job, self.cgm_relay_address, self.results_manager, self.memory_usage_tracker)

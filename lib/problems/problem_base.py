@@ -243,7 +243,6 @@ class ProblemBase(Problem):
     #
     def _call_relay_apsim(self, relay_apsim_request):
         run_apsim_response = self.zmq_client.send_proto_message(relay_apsim_request)
-        #logging.debug("Received %s: %s", run_apsim_response.get_type_name(), run_apsim_response.to_json(self.config.PrettyPrintJsonInLogs))
 
         if not self._get_contains_results(run_apsim_response):
             error = Constants.NO_APSIM_RESULTS

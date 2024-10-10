@@ -88,5 +88,3 @@ class JobFileManager:
             error_file = self.lock_file.replace(f'.{JobFileManager.LOCK_FILE_EXT}', f'.{JobFileManager.ERROR_FILE_EXT}')
             os.rename(self.lock_file, error_file)
             self.lock_file = error_file
-
-
