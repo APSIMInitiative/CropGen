@@ -75,7 +75,9 @@ class EnvironmentTypingProblem(ProblemBase):
             relay_apsim_request = RelayApsim(self.crop_gen_job.jobId, self.crop_gen_job.individuals)
             relay_apsim_request.add_inputs_for_env_typing(environment_types, season_date_generator, variable_values_for_population)
             unique_simulation_names = relay_apsim_request.get_unique_simulation_names()
-            seasons = self.get_seasons(environment_types)
+            seasons = [season for env_type in environment_types 
+                  for env in env_type.Environments 
+                  for season in env.Seasons]
             
             logging.info("Relay Apsim request %d of %d. Iteration: %d. SimulationNames: [%s]. Total Inputs for request: %d (TotalSimulationYears: '%d' (from %d simulation(s)) X TotalIndividuals: '%d' )", 
                 current_relay_apsim_request,
