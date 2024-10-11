@@ -27,46 +27,59 @@ class RelayApsim(ProtoRequest):
         self.systemPropertyValues = []
 
 
+    def get_unique_simulation_names(self):
+        unique_simulation_names = list({name[1] for name in self.simulationNames})
+        return unique_simulation_names
+
     #
     # Adds all of the input values, simulation names and system property values, for all of the env types.
     #
-    def add_inputs_for_env_typing(self, environment_types, season_date_generator, generated_input_values):
-        for input_id in range(0, len(generated_input_values)):
+    def add_inputs_for_env_typing(self, environment_types, season_date_generator, variable_values_for_population):
+        for input_id in range(0, len(variable_values_for_population)):
 
-            input_values = generated_input_values[input_id]
+            input_values = variable_values_for_population[input_id]
 
             # Iterate over each environment type that was supplied.
-            for environment_type in environment_types:
-                self.add_inputs_for_env_type(environment_type, season_date_generator, input_id, input_values)
+            for simulation in environment_types:
+                self.add_inputs_for_env_type(simulation, season_date_generator, input_id, input_values)
 
 
     #
     # Adds all of the input values, simulation names and system property values, for a specific env type.
     #
-    def add_inputs_for_env_type(self, environment_type, season_date_generator, input_id, input_values):
-        for environment in environment_type.Environments:
+    def add_inputs_for_env_type(self, simulation, season_date_generator, input_id, input_values):
+        for environment in simulation.Environments:
             for season in environment.Seasons:
-                
-                self.systemPropertyValues.append([
-                    str(input_id), 
-                    season_date_generator.generate_start_date_from_season(season), 
-                    season_date_generator.generate_end_date_from_season(season)
-                ])
 
-                self.simulationNames.append([
-                    str(input_id), 
-                    environment_type.Name]
-                )
-
+                self.add_season(input_id, season_date_generator, season)
+                self.add_simulation_name(input_id, simulation.Name)
                 self.add_inputs_for_individual(input_id, input_values)
-    
+
+    #
+    # Adds the season.
+    #
+    def add_season(self, input_id, season_date_generator, season):
+        self.systemPropertyValues.append([
+            str(input_id), 
+            season_date_generator.generate_start_date_from_season(season), 
+            season_date_generator.generate_end_date_from_season(season)
+        ])
+
+    #
+    # Adds the simulation name.
+    #
+    def add_simulation_name(self, input_id, simulation_name):
+        self.simulationNames.append([
+            str(input_id), 
+            simulation_name
+        ])
 
     #
     # Adds all of the inputs.
     #
-    def add_inputs(self, generated_input_values):
-        for individual in range(RelayApsim.INPUT_START_INDEX, len(generated_input_values)):
-            self.add_inputs_for_individual(individual, generated_input_values[individual])
+    def add_inputs(self, variable_values_for_population):
+        for individual in range(RelayApsim.INPUT_START_INDEX, len(variable_values_for_population)):
+            self.add_inputs_for_individual(individual, variable_values_for_population[individual])
 
 
     #

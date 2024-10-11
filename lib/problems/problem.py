@@ -72,7 +72,6 @@ class Problem(ProblemBase):
 
         # Initialize an empty list to store the responses
         responses = []
-              
         current_relay_apsim_request = 1
 
         for simulation_names in split_simulation_names:
@@ -110,20 +109,19 @@ class Problem(ProblemBase):
     # Creates request(s) and runs apsim.
     #
     def _perform_relay_apsim_individuals_split(self, variable_values_for_population, max_individuals):
-        # Calculate the number of chunks based on the max_individuals value
-        num_chunks = (len(variable_values_for_population) + max_individuals - 1) // max_individuals
-
-        logging.info("Splitting individuals into %d RelayApsim request(s)", num_chunks)
+        variable_values_for_population_len = len(variable_values_for_population)
+        total_relay_apsim_requests = (self.crop_gen_job.total_inputs_per_iteration + max_individuals - 1) // max_individuals
+        logging.info("Splitting %d Individuals for Iteration %d into %d RelayApsim request(s). Algorithm Variable Values For Population Length: %d", self.crop_gen_job.total_inputs_per_iteration, self.current_iteration_id, total_relay_apsim_requests, variable_values_for_population_len)
 
         # Initialize an empty list to store the responses
         responses = []
         individual = RelayApsim.INPUT_START_INDEX
 
         # Split the variable_values_for_population into chunks and process each chunk
-        for chunk_index in range(num_chunks):
+        for chunk_index in range(total_relay_apsim_requests):
             # Calculate the start and end index for each chunk
             start_index = chunk_index * max_individuals
-            end_index = min((chunk_index + 1) * max_individuals, len(variable_values_for_population))
+            end_index = min((chunk_index + 1) * max_individuals, variable_values_for_population_len)
             inputs_to_process = variable_values_for_population[start_index:end_index]
 
             # Create a new RelayApsim object for each chunk
@@ -135,8 +133,7 @@ class Problem(ProblemBase):
 
             # Call _call_relay_apsim for the current chunk and store the response
             response = self._call_relay_apsim(relay_apsim_request)
-            if not response:
-                return None
+            if not response: return None
             responses.append(response)
 
         # Stitch the responses together

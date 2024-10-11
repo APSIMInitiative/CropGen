@@ -44,9 +44,12 @@ class EnvironmentTypingProblem(ProblemBase):
     #
     def _perform_relay_apsim_request(self, variable_values_for_population):
         max_simulations = self.crop_gen_job.maxSimulationsPerRequest
+        max_individuals = self.crop_gen_job.maxIndividualsPerRequest
 
         if (max_simulations and max_simulations > 0):
             return self._perform_relay_apsim_simulation_split(variable_values_for_population, max_simulations)
+        elif (max_individuals and max_individuals > 0):
+            return self._perform_relay_apsim_individuals_split(variable_values_for_population, max_individuals)
         else:
             return self._perform_relay_apsim_one_request(variable_values_for_population)
 
@@ -71,12 +74,10 @@ class EnvironmentTypingProblem(ProblemBase):
 
             relay_apsim_request = RelayApsim(self.crop_gen_job.jobId, self.crop_gen_job.individuals)
             relay_apsim_request.add_inputs_for_env_typing(environment_types, season_date_generator, variable_values_for_population)
-            unique_simulation_names = list({name[1] for name in relay_apsim_request.simulationNames})
-            seasons = [season for env_type in environment_types 
-                  for env in env_type.Environments 
-                  for season in env.Seasons]
+            unique_simulation_names = relay_apsim_request.get_unique_simulation_names()
+            seasons = self.get_seasons(environment_types)
             
-            logging.info("Relay Apsim request %d of %d. Iteration: %d. SimulationNames: %s. Total Inputs for request: %d (TotalSimulationYears: '%d' (from %d simulation(s)) X TotalIndividuals: '%d' )", 
+            logging.info("Relay Apsim request %d of %d. Iteration: %d. SimulationNames: [%s]. Total Inputs for request: %d (TotalSimulationYears: '%d' (from %d simulation(s)) X TotalIndividuals: '%d' )", 
                 current_relay_apsim_request,
                 total_relay_apsim_requests,
                 self.current_iteration_id,
@@ -86,6 +87,9 @@ class EnvironmentTypingProblem(ProblemBase):
                 max_simulations,
                 self.crop_gen_job.individuals
             )
+
+            logging.debug("Seasons: [%s]", ",".join(unique_simulation_names))
+            logging.debug(relay_apsim_request.to_json(True))
 
             # Call relay apsim for the current chunk and store the response
             response = self._call_relay_apsim(relay_apsim_request)
@@ -98,6 +102,44 @@ class EnvironmentTypingProblem(ProblemBase):
         return response
     
     #
+    # Creates request(s) and runs apsim.
+    #
+    def _perform_relay_apsim_individuals_split(self, variable_values_for_population, max_individuals):
+        variable_values_for_population_len = len(variable_values_for_population)
+        total_relay_apsim_requests = (self.crop_gen_job.total_inputs_per_iteration + max_individuals - 1) // max_individuals
+        logging.info("Splitting %d Individuals for Iteration %d into %d RelayApsim request(s). Algorithm Variable Values For Population Length: %d", self.crop_gen_job.total_inputs_per_iteration, self.current_iteration_id, total_relay_apsim_requests, variable_values_for_population_len)
+
+        responses = []
+        current_relay_apsim_request = 1
+        season_date_generator = APSIMSeasonDateGenerator(self.config, self.crop_gen_job.apsimSimulationClockStartDate)
+        relay_apsim_request = RelayApsim(self.crop_gen_job.jobId, self.crop_gen_job.individuals)
+
+        for input_id in range(0, variable_values_for_population_len):
+
+            input_values = variable_values_for_population[input_id]
+
+            # Iterate over each environment type that was supplied.
+            for environment_type in self.crop_gen_job.environmentTypes:
+                for simulation in environment_type.Environments:
+                    for season in simulation.Seasons:
+                        relay_apsim_request.add_season(input_id, season_date_generator, season)
+                        relay_apsim_request.add_simulation_name(input_id, environment_type.Name)
+                        relay_apsim_request.add_inputs_for_individual(input_id, input_values)
+
+                        if len(relay_apsim_request.inputs) % max_individuals == 0:
+                            relay_apsim_request = self._call_relay_and_store_response(relay_apsim_request, responses, current_relay_apsim_request, total_relay_apsim_requests)
+                            current_relay_apsim_request += 1
+
+            is_last_value = (input_id == variable_values_for_population_len - 1)
+            if is_last_value and len(relay_apsim_request.inputs):
+                relay_apsim_request = self._call_relay_and_store_response(relay_apsim_request, responses, current_relay_apsim_request, total_relay_apsim_requests)
+                current_relay_apsim_request += 1
+
+        # Stitch the responses together
+        final_response = super()._stitch_responses_together(responses)
+        return final_response
+    
+    #
     # Creates request and runs apsim.
     #
     def _perform_relay_apsim_one_request(self, variable_values_for_population):
@@ -107,6 +149,38 @@ class EnvironmentTypingProblem(ProblemBase):
         relay_apsim_request.add_inputs_for_env_typing(self.crop_gen_job.environmentTypes, season_date_generator, variable_values_for_population)
         run_apsim_response = super()._call_relay_apsim(relay_apsim_request)
         return run_apsim_response
+    
+    #
+    # Simple helper for calling apsim and storing the results.
+    #
+    def _call_relay_and_store_response(self, relay_apsim_request, responses, current_relay_apsim_request, total_relay_apsim_requests):
+
+        unique_simulation_names = relay_apsim_request.get_unique_simulation_names()
+        
+        logging.info("Relay Apsim request %d of %d. Iteration: %d. SimulationNames: [%s]. Total Inputs for request: %d", 
+            current_relay_apsim_request,
+            total_relay_apsim_requests,
+            self.current_iteration_id,
+            ",".join(unique_simulation_names),
+            len(relay_apsim_request.inputs)
+        )
+
+        response = self._call_relay_apsim(relay_apsim_request)
+        if not response: return None
+        responses.append(response)
+
+        relay_apsim_request = RelayApsim(self.crop_gen_job.jobId, self.crop_gen_job.individuals)
+        return relay_apsim_request       
+    
+    #
+    # Gets the seasons for the given environment types
+    #
+    def get_seasons_for_environment_types(self, environment_types):
+        seasons = [season for env_type in environment_types 
+                for env in env_type.Environments 
+                for season in env.Seasons]
+        return seasons
+
     
     #
     # Logs the results for the simulations so that we can easily see the returned seasons.

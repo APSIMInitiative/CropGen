@@ -9,7 +9,7 @@
     "ApsimSimulationStartDateAddYear": 0,
     "ApsimSimulationEndDateAddYear": 1,
     "ConsoleLogLevel":"INFO",
-    "FileLogLevel":"INFO",
+    "FileLogLevel":"DEBUG",
     "RemoteLogLevel":"INFO",
     "RemoteLoggerUrl": "http://localhost:8084/api/CropGen/logs",
     "InitWorkersPreRunSimulations": false,
@@ -22,5 +22,6 @@
     "PrettyPrintJsonInLogsContainer": false,
     "_RemoteLoggerUrlContainer": "https://jobs.cgmwgp.com/api/CropGen/logs",
     "RemoteLoggerUrlContainer": "",
+    "FileLogLevelContainer": "INFO",
     "EndOfContainerOverrides": "______________________"
 }

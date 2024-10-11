@@ -25,6 +25,7 @@ class CropGenJob(Model):
         self.environmentTypes = []
         self.maxSimulationsPerRequest = 0
         self.maxIndividualsPerRequest = 0
+        self.total_inputs_per_iteration = 0
         self.errors = []
 
     #
@@ -53,10 +54,24 @@ class CropGenJob(Model):
             self.outputs = Output.parse_from_json_object(lower_case_json_data, self.errors)
             self.environmentTypes = self.parse_environment_types(lower_case_json_data, self.errors)
 
+            self.set_total_inputs_per_iteration()
+
         except Exception as error:
             self.errors.append(f"Failed to parse {self.__class__.__name__} JSON: '{lower_case_json_data}'. Error: '{error}'")
 
-    
+    #
+    # Calculates and sets the total inputs per iteration as this differs between standard and ET runs.
+    #
+    def set_total_inputs_per_iteration(self):
+        multiplier = 1
+        if self.environmentTypes:
+            multiplier = 0
+            for environment_type in self.environmentTypes:
+                for simulation in environment_type.Environments:
+                    for _ in simulation.Seasons:
+                        multiplier += 1
+        self.total_inputs_per_iteration = self.individuals * multiplier
+
     #
     # Helper function to parse the environment types.
     #
