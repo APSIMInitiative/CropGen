@@ -75,9 +75,7 @@ class EnvironmentTypingProblem(ProblemBase):
             relay_apsim_request = RelayApsim(self.crop_gen_job.jobId, self.crop_gen_job.individuals)
             relay_apsim_request.add_inputs_for_env_typing(environment_types, season_date_generator, variable_values_for_population)
             unique_simulation_names = relay_apsim_request.get_unique_simulation_names()
-            seasons = [season for env_type in environment_types 
-                  for env in env_type.Environments 
-                  for season in env.Seasons]
+            seasons = self.get_seasons_for_environment_types(environment_types)
             
             logging.info("Relay Apsim request %d of %d. Iteration: %d. SimulationNames: [%s]. Total Inputs for request: %d (TotalSimulationYears: '%d' (from %d simulation(s)) X TotalIndividuals: '%d' )", 
                 current_relay_apsim_request,
@@ -182,7 +180,6 @@ class EnvironmentTypingProblem(ProblemBase):
                 for env in env_type.Environments 
                 for season in env.Seasons]
         return seasons
-
     
     #
     # Logs the results for the simulations so that we can easily see the returned seasons.
@@ -190,6 +187,9 @@ class EnvironmentTypingProblem(ProblemBase):
     def _log_results_for_simulations(self, response):
         if not response: return
         results_dict = {}
+
+        log_level = logging.DEBUG
+        if (not logging.getLogger().isEnabledFor(log_level)): return
 
         for row in response.rows:
             simulation_name = row.simulationName
@@ -208,5 +208,5 @@ class EnvironmentTypingProblem(ProblemBase):
             logging.error(str(e))
             return
 
-        logging.debug("Environment Typing Sorted Results:")
-        logging.debug(json_str)
+        logging.log(log_level, "Environment Typing Sorted Results:")
+        logging.log(log_level, json_str)

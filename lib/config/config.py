@@ -62,7 +62,7 @@ class Config(Model):
         config_file_to_use = Config.CONFIG_FILE_FULL_PATH
 
         if os.path.exists(Config.OVERRIDE_CONFIG_FILE_FULL_PATH):
-            logging.warn("Found an override config: %s. This will be used to configure CropGen.", Config.OVERRIDE_CONFIG_FILE_FULL_PATH)
+            logging.warning("Found an override config: %s. This will be used to configure CropGen.", Config.OVERRIDE_CONFIG_FILE_FULL_PATH)
             config_file_to_use = Config.OVERRIDE_CONFIG_FILE_FULL_PATH
 
         with open(config_file_to_use) as json_config_file:
