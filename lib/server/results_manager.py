@@ -8,6 +8,7 @@ class ResultsManager:
         self.config = config
         self.server_state = server_state
         self.crop_gen_job = crop_gen_job
+        self.job_file = ""
         self.progress_file = ""
         self.all_individuals_path = ""
         self.optimal_individuals_path = ""
@@ -27,15 +28,19 @@ class ResultsManager:
 
         os.makedirs(self.job_results_dir, exist_ok=True)
 
+        self.job_file = os.path.join(self.job_results_dir, "cropgen_job.json")
         self.progress_file = os.path.join(self.job_results_dir, "progress.txt")
         self.all_individuals_path = os.path.join(self.job_results_dir, "all_individuals.csv")
         self.optimal_individuals_path = os.path.join(self.job_results_dir, "optimal_individuals.csv")
         self.zip_file_dir = os.path.join(self.results_dir, f"{self.crop_gen_job.jobId}.zip")
 
-        open(self.all_individuals_path, 'w').close()
-        open(self.optimal_individuals_path, 'w').close()
-        open(self.progress_file, 'w').close()
+        with open(self.job_file, 'w') as file:
+            file.write(self.crop_gen_job.to_json(True))
 
+        for path in [self.all_individuals_path, self.optimal_individuals_path, self.progress_file]:
+            with open(path, 'w'):
+                pass
+            
 
     def write_iteration_result(self, iteration_result, avg_run_time):
         if iteration_result.iterationID == 1:
