@@ -68,24 +68,11 @@ jobs:
     # Update filenames with version number
     - name: Update Filenames with Version
       run: |
-          ARCHIVE_FILE_NAME=${{ env.SINGULARITY_DEF_NAME }}_${{ env.new_version }}
-          SINGULARITY_IMAGE_FILE_NAME=${{ env.SINGULARITY_DEF_NAME }}_${{ env.new_version }}.sif
-          SINGULARITY_IMAGE_FILE_PATH=${{ env.APP_NAME }}/${SINGULARITY_IMAGE_FILE_NAME}
-
-          # Set the env vars.
-          echo "SINGULARITY_IMAGE_FILE_NAME=${SINGULARITY_IMAGE_FILE_NAME}" >> $GITHUB_ENV
-          echo "SINGULARITY_IMAGE_FILE_PATH=${SINGULARITY_IMAGE_FILE_PATH}" >> $GITHUB_ENV
-          echo "ARCHIVE_FILE_NAME=${ARCHIVE_FILE_NAME}" >> $GITHUB_ENV
-
-
-    # Update filenames with version number
-    - name: Update Filenames with Version
-      run: |
           # Use temporary local variables so that we can use them below.
           # You can't use an env var that has only just been set, within the same step.
           ARCHIVE_FILE_NAME=${{ env.SINGULARITY_DEF_NAME }}_${{ env.new_version }}
           SINGULARITY_IMAGE_FILE_NAME=${{ env.SINGULARITY_DEF_NAME }}_${{ env.new_version }}.sif
-          SINGULARITY_IMAGE_FILE_PATH=${{ env.APP_NAME }}/${SINGULARITY_IMAGE_FILE_NAME}
+          SINGULARITY_IMAGE_FILE_PATH=${SINGULARITY_IMAGE_FILE_NAME}
 
           # Set the env vars.
           echo "SINGULARITY_IMAGE_FILE_NAME=${SINGULARITY_IMAGE_FILE_NAME}" >> $GITHUB_ENV
@@ -163,13 +150,6 @@ jobs:
       run: pip install -r requirements.txt
 
 
-    # Copy updated/generated files to the build context directory for Singularity container
-    # - 
-    #     name: Copy updated/generated files to Build Context
-    #     run: |
-    #         cp ${{ env.GIT_DETAILS_FILE_PATH }} ${{ env.APP_NAME }}/
-
-
     # Install Apptainer
     - 
         name: Install Apptainer
@@ -187,8 +167,7 @@ jobs:
 
     # Build Apptainer Image
     - 
-        name: Build Apptainer Image
-        working-directory: ${{ env.APP_NAME }}        
+        name: Build Apptainer Image        
         run: |
             sudo apptainer build ${{ env.SINGULARITY_IMAGE_FILE_NAME }} ${{ env.SINGULARITY_DEFINITION_FILE_NAME }}
 
