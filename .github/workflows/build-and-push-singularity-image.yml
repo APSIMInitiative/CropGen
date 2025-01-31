@@ -22,6 +22,7 @@ jobs:
       APP_NAME: 'CropGen'
       SINGULARITY_DEF_NAME: 'cropgen'
       VERSION_FILE_PATH: version.txt
+      GIT_DETAILS_FILE_PATH: git_details.txt
       SINGULARITY_IMAGE_FILE_PATH: ''
       SINGULARITY_IMAGE_FILE_NAME: ''
       SINGULARITY_DEFINITION_FILE_NAME: ''
