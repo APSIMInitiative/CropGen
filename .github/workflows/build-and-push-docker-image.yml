@@ -2,9 +2,7 @@ name: BuildAndPushDockerImage
 
 # Set when this runs.
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 # Add the job.
 jobs:
