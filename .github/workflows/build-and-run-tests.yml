@@ -22,10 +22,14 @@ jobs:
     steps:
     
     # Step 1
-    # Checkout the code.
+    # Checkout the source code (including the submodules)
     - 
-      name: Check out code
-      uses: actions/checkout@v3
+      name: Checkout
+      uses: actions/checkout@v4
+      with:
+          token: ${{ secrets.PAT_TOKEN }}
+          submodules: 'recursive'
+          fetch-depth: 0
 
 
     # Step 2
