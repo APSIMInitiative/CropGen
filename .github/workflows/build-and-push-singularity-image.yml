@@ -32,14 +32,72 @@ jobs:
 
     steps:
 
+    # Update paths with app name
+    - 
+      name: Update Filenames with Version
+      run: |            
+          echo "SINGULARITY_DEFINITION_FILE_NAME=${{ env.SINGULARITY_DEF_NAME }}.def" >> $GITHUB_ENV
+
+
+    # Add key to ssh agent
+    - 
+        name: Add SSH key
+        if: ${{ github.event.inputs.action == env.INPUT_ACTION_COPY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.REMOTE_SERVER_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/id_rsa
+
+
+    # Add server to known hosts
+    - 
+        name: Add remote host to known_hosts
+        if: ${{ github.event.inputs.action == env.INPUT_ACTION_COPY }}
+        run: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H "${{ secrets.REMOTE_SERVER_HOST }}" >> ~/.ssh/known_hosts
+            chmod 600 ~/.ssh/known_hosts            
+            cat ~/.ssh/known_hosts
+
+
+    # Test SSH Connection to the built images destination. 
+    - 
+        name: Test SSH Connection to the server
+        if: ${{ github.event.inputs.action == env.INPUT_ACTION_COPY }}
+        run: |
+            echo "Testing SSH connection and ensuring the directory exists on the remote server..."
+            ssh -o BatchMode=yes "${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_HOST }}" "
+              if [ ! -d '${{ secrets.SERVER_BUILT_IMAGES_DEST }}' ]; then
+                echo 'Directory does not exist. Creating ${{ secrets.SERVER_BUILT_IMAGES_DEST }}...';
+                mkdir -p '${{ secrets.SERVER_BUILT_IMAGES_DEST }}';
+                if [ \$? -eq 0 ]; then
+                  echo 'Directory created successfully.';
+                else
+                  echo 'Failed to create directory ${{ secrets.SERVER_BUILT_IMAGES_DEST }}!' >&2;
+                  exit 1;
+                fi
+              else
+                echo 'Directory already exists: ${{ secrets.SERVER_BUILT_IMAGES_DEST }}';
+              fi"
+
+
     # Checkout the source code (including the submodules)
     - 
-        name: Checkout
-        uses: actions/checkout@v4
-        with:
-            token: ${{ secrets.PAT_TOKEN }}
-            submodules: 'recursive'
-            fetch-depth: 0
+      name: Checkout
+      uses: actions/checkout@v4
+      with:
+          token: ${{ secrets.PAT_TOKEN }}
+          submodules: 'recursive'
+          fetch-depth: 0
+
+
+    # Initialize Submodules (ensure they are properly loaded)
+    -
+      name: Initialize Submodules
+      run: git submodule update --init --recursive
 
 
     # Read and update the version
@@ -75,7 +133,6 @@ jobs:
           SINGULARITY_IMAGE_FILE_PATH=${SINGULARITY_IMAGE_FILE_NAME}
 
           # Set the env vars.
-          echo "SINGULARITY_DEFINITION_FILE_NAME=${{ env.SINGULARITY_DEF_NAME }}.def" >> $GITHUB_ENV
           echo "SINGULARITY_IMAGE_FILE_NAME=${SINGULARITY_IMAGE_FILE_NAME}" >> $GITHUB_ENV
           echo "SINGULARITY_IMAGE_FILE_PATH=${SINGULARITY_IMAGE_FILE_PATH}" >> $GITHUB_ENV
           echo "ARCHIVE_FILE_NAME=${ARCHIVE_FILE_NAME}" >> $GITHUB_ENV
