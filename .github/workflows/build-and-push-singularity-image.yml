@@ -1,0 +1,261 @@
+name: BuildAndArchiveSingularityImage
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform (archive/copy). Archive=Store image in GitHub Action. Copy=Copy image to Server.'
+        required: true
+        default: 'copy'
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+
+    runs-on: ubuntu-latest
+
+    env:
+      APP_NAME: 'CropGen'
+      SINGULARITY_DEF_NAME: 'cropgen'
+      VERSION_FILE_PATH: version.txt
+      SINGULARITY_IMAGE_FILE_PATH: ''
+      SINGULARITY_IMAGE_FILE_NAME: ''
+      SINGULARITY_DEFINITION_FILE_NAME: ''
+      ARCHIVE_FILE_NAME: ''
+      INPUT_ACTION_COPY: 'copy'
+      INPUT_ACTION_ARCHIVE: 'archive'
+
+    steps:
+
+    # Checkout the source code (including the submodules)
+    - 
+        name: Checkout
+        uses: actions/checkout@v4
+        with:
+            token: ${{ secrets.PAT_TOKEN }}
+            submodules: 'recursive'
+            fetch-depth: 0
+
+
+    # Read and update the version
+    - 
+        name: Update Version File
+        id: version_update
+        run: |
+            # Read the current version from version.txt
+            current_version=$(cat ${{ env.VERSION_FILE_PATH }})
+            echo "Current version: $current_version"
+
+            # Increment the patch version
+            new_version=$(echo $current_version | awk -F. '{printf "%d.%d.%d", $1, $2, $3+1}')
+            echo "New version: $new_version"
+
+            # Update the version.txt file with the new version
+            echo $new_version > ${{ env.VERSION_FILE_PATH }}
+
+            # Display the updated file for debugging
+            cat ${{ env.VERSION_FILE_PATH }}
+
+            # Output the new version for later steps
+            echo "new_version=$new_version" >> $GITHUB_ENV
+
+
+    # Update filenames with version number
+    - name: Update Filenames with Version
+      run: |
+          ARCHIVE_FILE_NAME=${{ env.SINGULARITY_DEF_NAME }}_${{ env.new_version }}
+          SINGULARITY_IMAGE_FILE_NAME=${{ env.SINGULARITY_DEF_NAME }}_${{ env.new_version }}.sif
+          SINGULARITY_IMAGE_FILE_PATH=${{ env.APP_NAME }}/${SINGULARITY_IMAGE_FILE_NAME}
+
+          # Set the env vars.
+          echo "SINGULARITY_IMAGE_FILE_NAME=${SINGULARITY_IMAGE_FILE_NAME}" >> $GITHUB_ENV
+          echo "SINGULARITY_IMAGE_FILE_PATH=${SINGULARITY_IMAGE_FILE_PATH}" >> $GITHUB_ENV
+          echo "ARCHIVE_FILE_NAME=${ARCHIVE_FILE_NAME}" >> $GITHUB_ENV
+
+
+    # Update filenames with version number
+    - name: Update Filenames with Version
+      run: |
+          # Use temporary local variables so that we can use them below.
+          # You can't use an env var that has only just been set, within the same step.
+          ARCHIVE_FILE_NAME=${{ env.SINGULARITY_DEF_NAME }}_${{ env.new_version }}
+          SINGULARITY_IMAGE_FILE_NAME=${{ env.SINGULARITY_DEF_NAME }}_${{ env.new_version }}.sif
+          SINGULARITY_IMAGE_FILE_PATH=${{ env.APP_NAME }}/${SINGULARITY_IMAGE_FILE_NAME}
+
+          # Set the env vars.
+          echo "SINGULARITY_IMAGE_FILE_NAME=${SINGULARITY_IMAGE_FILE_NAME}" >> $GITHUB_ENV
+          echo "SINGULARITY_IMAGE_FILE_PATH=${SINGULARITY_IMAGE_FILE_PATH}" >> $GITHUB_ENV
+          echo "ARCHIVE_FILE_NAME=${ARCHIVE_FILE_NAME}" >> $GITHUB_ENV
+
+
+    # Log Git details for the main repository
+    - 
+        name: Log Main Repository Details
+        run: |
+            # Ensure the directory exists before attempting to write to the file
+            mkdir -p $(dirname ${{ env.GIT_DETAILS_FILE_PATH }})
+
+            # Write the CSV header
+            echo "Repository,Branch,Commit SHA,Last Commit Date,Last Commit Message,Tags,Repository URL" > "${{ env.GIT_DETAILS_FILE_PATH }}"
+
+            # Log details for the main repository
+            repo_name=$(basename "$(pwd)")
+            branch=$(git rev-parse --abbrev-ref HEAD)
+            commit_sha=$(git rev-parse HEAD)
+            commit_date=$(git show -s --format=%ci HEAD)
+            commit_message=$(git log -1 --pretty=%B | tr '\n' ' ')
+            tags=${{ env.new_version }}
+            repo_url=$(git remote get-url origin)
+
+            echo "$repo_name,$branch,$commit_sha,$commit_date,\"$commit_message\",\"$tags\",\"$repo_url\"" >> "${{ env.GIT_DETAILS_FILE_PATH }}"
+
+
+    # Log Git details for submodules
+    - 
+        name: Log Submodule Details
+        run: |
+            # Append details for submodules to the same file
+            git submodule foreach --quiet '
+            repo_path=$(dirname "$PWD")/"$sm_path"
+            if [ -d "$repo_path" ]; then
+                repo_name=$(basename "$repo_path")
+                branch=$(git -C "$repo_path" rev-parse --abbrev-ref HEAD)
+                commit_sha=$(git -C "$repo_path" rev-parse HEAD)
+                commit_date=$(git -C "$repo_path" show -s --format=%ci HEAD)
+                commit_message=$(git -C "$repo_path" log -1 --pretty=%B | tr "\n" " ")
+                tags=$(git -C "$repo_path" describe --tags --always)
+                repo_url=$(git -C "$repo_path" remote get-url origin)
+
+                echo "$repo_name,$branch,$commit_sha,$commit_date,\"$commit_message\",\"$tags\",\"$repo_url\""
+            else
+                echo "Submodule path $repo_path does not exist or is not initialized" >&2
+            fi' >> "${{ env.GIT_DETAILS_FILE_PATH }}"
+
+
+    # Print details file for debugging or verification
+    - 
+        name: Print Git Details
+        run: cat ${{ env.GIT_DETAILS_FILE_PATH }}
+
+
+    # Setup .NET
+    - 
+      name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+
+    # Print out the python version.
+    - 
+      name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+
+
+    # Install dependencies.
+    - 
+      name: Install dependencies
+      run: pip install -r requirements.txt
+
+
+    # Copy updated/generated files to the build context directory for Singularity container
+    - 
+        name: Copy updated/generated files to Build Context
+        run: |
+            cp ${{ env.GIT_DETAILS_FILE_PATH }} ${{ env.APP_NAME }}/
+
+
+    # Install Apptainer
+    - 
+        name: Install Apptainer
+        uses: eWaterCycle/setup-apptainer@v2
+        with:
+            apptainer-version: 1.1.2
+
+
+    # Print Apptainer Version
+    - 
+        name: Print Apptainer Version
+        run: |
+            apptainer --version
+
+
+    # Build Apptainer Image
+    - 
+        name: Build Apptainer Image
+        working-directory: ${{ env.APP_NAME }}        
+        run: |
+            sudo apptainer build ${{ env.SINGULARITY_IMAGE_FILE_NAME }} ${{ env.SINGULARITY_DEFINITION_FILE_NAME }}
+
+
+    # Sanity check that the resulting files are there.
+    - 
+        name: Ensure files exist
+        run: |
+            if [ -f "${{ env.GIT_DETAILS_FILE_PATH }}" ]; then 
+              echo "${{ env.GIT_DETAILS_FILE_PATH }} exists"; 
+            else 
+              echo "${{ env.GIT_DETAILS_FILE_PATH }} does not exist"; 
+              exit 1; 
+            fi
+            if [ -f "${{ env.SINGULARITY_IMAGE_FILE_PATH }}" ]; then 
+              echo "${{ env.SINGULARITY_IMAGE_FILE_PATH }} exists"; 
+            else 
+              echo "${{ env.SINGULARITY_IMAGE_FILE_PATH }} does not exist"; 
+              exit 1; 
+            fi
+
+    
+    # Optionally Copy the Files
+    - 
+        name: Copy Files to Server
+        if: ${{ github.event.inputs.action == env.INPUT_ACTION_COPY }}
+        run: |
+            scp -v -o StrictHostKeyChecking=no "${{ env.SINGULARITY_IMAGE_FILE_PATH }}" "${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_HOST }}:${{ secrets.SERVER_BUILT_IMAGES_DEST }}"
+
+
+    # Archive the Zip File
+    - 
+        name: Archive Zip File
+        if: ${{ github.event.inputs.action == env.INPUT_ACTION_ARCHIVE }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARCHIVE_FILE_NAME }}
+          path: |
+              ${{ env.GIT_DETAILS_FILE_PATH }}
+              ${{ env.SINGULARITY_IMAGE_FILE_PATH }}
+          retention-days: 1
+          overwrite: true
+
+
+    # Commit and Push Updated Version
+    - 
+        name: Commit Updated Version
+        if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
+        run: |
+            # Configure Git user
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+
+            # Increment the version in the __version__.py (or version.txt)
+            # For example, using __version__.py:
+            echo "__version__ = '${{ env.new_version }}'" > ${{ env.APP_NAME }}/__version__.py
+
+            # Or, for version.txt (if you are using a .txt file):
+            echo "${{ env.new_version }}" > ${{ env.APP_NAME }}/version.txt
+
+            # Commit the updated version file
+            git add ${{ env.APP_NAME }}/__version__.py  # Or use version.txt if applicable
+            git commit -m "Increment version to ${{ env.new_version }}"
+
+            # Create and push the tag
+            git tag -a ${{ env.new_version }} -m "Release version ${{ env.new_version }}"
+            git push origin ${{ env.new_version }}
+
+            # Push the commit
+            git push
+
