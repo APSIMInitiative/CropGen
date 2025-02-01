@@ -23,20 +23,6 @@ From: python:3.11-slim
     apt-get update && apt-get install -y python3 python3-pip
     pip3 install --no-cache-dir -r requirements.txt
 
-    copy_if_exists() {
-        local file=$1
-        local destination=$2
-        if [ -f "$file" ]; then
-            cp "$file" "$destination"
-            echo "$file copied to $destination."
-        else
-            echo "$file not found, skipping..."
-        fi
-    }
-
-    copy_if_exists "git_details.txt" "/app/"
-    copy_if_exists "version.txt" "/app/"
-
 %runscript
     cd /app
     exec python main.py
