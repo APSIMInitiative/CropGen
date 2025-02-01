@@ -279,15 +279,8 @@ jobs:
             git config user.name "GitHub Actions"
             git config user.email "actions@github.com"
 
-            # Increment the version in the __version__.py (or version.txt)
-            # For example, using __version__.py:
-            echo "__version__ = '${{ env.new_version }}'" > ${{ env.APP_NAME }}/__version__.py
-
-            # Or, for version.txt (if you are using a .txt file):
-            echo "${{ env.new_version }}" > ${{ env.APP_NAME }}/version.txt
-
-            # Commit the updated version file
-            git add ${{ env.APP_NAME }}/__version__.py  # Or use version.txt if applicable
+            # Commit the updated version.txt
+            git add ${{ env.VERSION_FILE_PATH }}
             git commit -m "Increment version to ${{ env.new_version }}"
 
             # Create and push the tag
