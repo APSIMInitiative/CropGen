@@ -10,6 +10,7 @@ class DateTimeHelper():
     DATE_FORMAT = '%Y-%m-%d'
     TIME_FORMAT = '%H.%M.%S'
     DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
+    DATE_TIME_FORMAT_WITH_TIMEZONE = "%Y-%m-%d %H:%M:%S %z"
     DATE_TIME_FORMAT_DIR = "%Y-%m-%d %H-%M-%S"
 
     #
@@ -38,6 +39,12 @@ class DateTimeHelper():
     #
     def date_to_str(date, date_format=DATE_FORMAT):
         return date.strftime(date_format)
+    
+    #
+    # Converts a date to a string in the given format.
+    #
+    def str_to_date(date, date_format=DATE_TIME_FORMAT_WITH_TIMEZONE):
+        return datetime.strptime(date, date_format)
 
     #
     # Gets the seconds since now and the start time provided.
@@ -107,7 +114,6 @@ class DateTimeHelper():
     @staticmethod
     def get_date_time_now_str():
         return DateTimeHelper._get_now_str(DateTimeHelper.DATE_TIME_FORMAT)
-    
 
     #
     # Gets now as a datetime string.

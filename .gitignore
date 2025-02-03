@@ -10,3 +10,4 @@ __pycache__/
 /lib/config/config_override.json
 /runtime
 /.venv
+git_details.txt

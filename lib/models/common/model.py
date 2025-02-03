@@ -1,4 +1,5 @@
 import json
+import datetime
 
 #
 # A base class model. Simply provides a to json routine.
@@ -8,16 +9,15 @@ class Model:
     # Serialises itself to JSON.
     #
     def to_json(self, pretty_print=False):
-        indent = None
-        if pretty_print: indent = 4        
+        indent = 4 if pretty_print else None
+        
         json_str = json.dumps(
             self, 
-            default = lambda
-            obj: obj.__dict__,
+            default=lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else obj.__dict__,
             separators=(',', ':'),
             indent=indent
         )
-
+        
         return json_str
     
     #

@@ -7,6 +7,7 @@ from lib.server.server_state import ServerState
 from lib.server.job_state import JobState
 from lib.utils.constants import Constants
 from lib.utils.memory_usage_tracker import MemoryUsageTracker
+from lib.version.software_version_info import SoftwareVersionInfo
 
 class CropGenRunner():
 
@@ -16,16 +17,20 @@ class CropGenRunner():
         self.jobs_client = JobsClientFactory.create(config, env_provider)
         self.cgm_relay_address = self.jobs_client.retrieve_cgm_relay_address()
         self.memory_usage_tracker = MemoryUsageTracker()
+        self.version_info = SoftwareVersionInfo()
         
         if not self.cgm_relay_address:
             raise Exception(f"Failed to find {Constants.CGM_RELAY_APP_NAME}")
         
         self.server_state = ServerState(config, env_provider, self.jobs_client)
 
+        self.log_app_startup()
+
 
     def log_app_startup(self):
         logging.info("Started CropGen application")
-        logging.info("Service Config: %s", self.config.to_json(self.config.PrettyPrintJsonInLogs))
+        logging.info("Service Config: %s", self.config.to_json(self.config.PrettyPrintJsonInLogs))        
+        logging.info(self.version_info.to_string())
 
 
     def poll_for_job_and_run(self):
