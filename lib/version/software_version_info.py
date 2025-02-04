@@ -37,9 +37,9 @@ class SoftwareVersionInfo():
     def to_string(self):
         lines = []
         lines.append("VersionInfo")
-        lines.append(self.version_info.to_json())
+        lines.append(self.version_info.to_json(True))
         lines.append("GitRepositoryInformation")
-        lines.extend(info.to_json() for info in self.git_repository_info)
+        lines.extend(info.to_json(True) for info in self.git_repository_info)
         return "\n".join(lines)
     
     
