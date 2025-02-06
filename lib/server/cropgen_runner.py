@@ -68,7 +68,8 @@ class CropGenRunner():
             self.server_state,
             self.cgm_relay_address,
             crop_gen_job,
-            self.memory_usage_tracker
+            self.memory_usage_tracker,
+            self.version_info
         )
 
         job_runner.run()

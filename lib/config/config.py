@@ -91,6 +91,7 @@ class Config(Model):
         self.AlwaysResetRunner = self._get_config_setting(data, 'AlwaysResetRunner', False)
         self.SleepBetweenJobsSeconds = self._get_config_setting(data, 'SleepBetweenJobsSeconds', 60)
         self.CopyLogsToResults = self._get_config_setting(data, 'CopyLogsToResults', True)
+        self.WriteVersionInfoToResults = self._get_config_setting(data, 'WriteVersionInfoToResults', True)
         self.DeleteResultsDirAfterZip = self._get_config_setting(data, 'DeleteResultsDirAfterZip', True)
 
     #

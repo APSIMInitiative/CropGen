@@ -11,12 +11,22 @@ from lib.utils.constants import Constants
 
 class JobRunner():
 
-    def __init__(self, env_provider, config, server_state, cgm_relay_address, crop_gen_job, memory_usage_tracker):
+    def __init__(
+            self, 
+            env_provider, 
+            config, 
+            server_state, 
+            cgm_relay_address, 
+            crop_gen_job, 
+            memory_usage_tracker, 
+            version_info
+        ):
+
         self.env_provider = env_provider
         self.config = config
         self.cgm_relay_address = cgm_relay_address
         self.crop_gen_job = crop_gen_job
-        self.results_manager = ResultsManager(self.config, server_state, crop_gen_job)
+        self.results_manager = ResultsManager(self.config, server_state, crop_gen_job, version_info)
         self.zmq_client = ProtoZMQClient(config, self.cgm_relay_address, env_provider.get_cgm_relay_socket_service_port())
         self.memory_usage_tracker = memory_usage_tracker
 

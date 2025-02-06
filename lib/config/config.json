@@ -16,6 +16,7 @@
     "AlwaysResetRunner": true,
     "SleepBetweenJobsSeconds": 60,
     "CopyLogsToResults": true,
+    "WriteVersionInfoToResults": true,
     "DeleteResultsDirAfterZip": true,
     
     "ContainerOverrides": "______________________",
