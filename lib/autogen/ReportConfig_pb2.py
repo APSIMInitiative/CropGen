@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x12ReportConfig.proto\"K\n\x11ReportConfigProto\x12\x17\n\nReportName\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x0e\n\x06\x46ields\x18\x02 \x03(\tB\r\n\x0b_ReportNameB\x14\xaa\x02\x11protobuf.messagesb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x12ReportConfig.proto\"_\n\x11ReportConfigProto\x12\x17\n\nReportName\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x0e\n\x06\x46ields\x18\x02 \x03(\t\x12\x12\n\nTextFields\x18\x03 \x03(\tB\r\n\x0b_ReportNameB\x14\xaa\x02\x11protobuf.messagesb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -33,5 +33,5 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\252\002\021protobuf.messages'
   _globals['_REPORTCONFIGPROTO']._serialized_start=22
-  _globals['_REPORTCONFIGPROTO']._serialized_end=97
+  _globals['_REPORTCONFIGPROTO']._serialized_end=117
 # @@protoc_insertion_point(module_scope)

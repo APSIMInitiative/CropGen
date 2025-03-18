@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11\x41psimResult.proto\"\x96\x01\n\x10\x41psimResultProto\x12\x0f\n\x02ID\x18\x01 \x01(\x05H\x00\x88\x01\x01\x12\x19\n\x0cSimulationID\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x1b\n\x0eSimulationName\x18\x03 \x01(\tH\x02\x88\x01\x01\x12\x0e\n\x06Values\x18\x04 \x03(\x01\x42\x05\n\x03_IDB\x0f\n\r_SimulationIDB\x11\n\x0f_SimulationNameB\x14\xaa\x02\x11protobuf.messagesb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11\x41psimResult.proto\"\xaa\x01\n\x10\x41psimResultProto\x12\x0f\n\x02ID\x18\x01 \x01(\x05H\x00\x88\x01\x01\x12\x19\n\x0cSimulationID\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x1b\n\x0eSimulationName\x18\x03 \x01(\tH\x02\x88\x01\x01\x12\x0e\n\x06Values\x18\x04 \x03(\x01\x12\x12\n\nTextValues\x18\x05 \x03(\tB\x05\n\x03_IDB\x0f\n\r_SimulationIDB\x11\n\x0f_SimulationNameB\x14\xaa\x02\x11protobuf.messagesb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -33,5 +33,5 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\252\002\021protobuf.messages'
   _globals['_APSIMRESULTPROTO']._serialized_start=22
-  _globals['_APSIMRESULTPROTO']._serialized_end=172
+  _globals['_APSIMRESULTPROTO']._serialized_end=192
 # @@protoc_insertion_point(module_scope)
