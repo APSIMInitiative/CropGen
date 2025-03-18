@@ -46,7 +46,7 @@ class CropGenRunner():
                     if len(crop_gen_job.errors) == 0:
                         self.server_state.job_pending(crop_gen_job)
                         self.run_job(crop_gen_job)
-                        logging.info("Finished running job. Polling for new job in  %d seconds", self.config.SleepBetweenJobsSeconds)
+                        logging.info("Finished running job. Polling for new job in '%d' seconds", self.config.SleepBetweenJobsSeconds)
                     else:
                         self.server_state.job_error(crop_gen_job.errors)
 

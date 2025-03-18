@@ -2,7 +2,6 @@ import logging
 
 from lib.proto.messages.relay_apsim  import RelayApsim
 from lib.problems.problem_base import ProblemBase
-from lib.config.apsim_simulation_data import APSimSimulationData
 from lib.utils.date_time_helper import DateTimeHelper
 from lib.utils.array_utils import ArrayUtils
 
@@ -42,8 +41,7 @@ class Problem(ProblemBase):
 
         max_simulations = self.crop_gen_job.maxSimulationsPerRequest
         max_individuals = self.crop_gen_job.maxIndividualsPerRequest
-        apsim_data = APSimSimulationData()
-        simulation_names = apsim_data.get_simulation_names(self.crop_gen_job.apsimJobId)
+        simulation_names = self.crop_gen_job.apsimSimulationNames
 
         if (max_simulations and max_simulations > 0):
             return self._perform_relay_apsim_simulation_split(variable_values_for_population, simulation_names, max_simulations)

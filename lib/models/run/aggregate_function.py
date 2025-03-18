@@ -13,6 +13,7 @@ class AggregateFunction(Model):
         self.maximise = maximise
         self.multiplier = multiplier
         self.calcType = calc_type
+        self.apsimOutputContextFields = []
         self.params = params
         
     #

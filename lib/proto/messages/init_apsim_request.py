@@ -32,7 +32,10 @@ class InitApsimRequest(ProtoRequest):
         report_config_proto.ReportName = self.crop_gen_job.reportName
 
         for output in self.crop_gen_job.outputs:
-            report_config_proto.Fields.append(output.apsimOutputName)
+            if output.is_text == True:            
+                report_config_proto.TextFields.append(output.apsimOutputName)
+            else:
+                report_config_proto.Fields.append(output.apsimOutputName)
 
         init_proto.Configuration.CopyFrom(apsim_config_proto)
 
