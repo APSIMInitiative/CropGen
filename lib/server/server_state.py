@@ -69,7 +69,7 @@ class ServerState():
 
 
     def _set_job_state(self, job_state):
-        self.job_state = job_state
+        self.job_state = job_state        
         if self.running_crop_gen_job:
             self.jobs_client.update_job_status(self.running_crop_gen_job.id, job_state)
 

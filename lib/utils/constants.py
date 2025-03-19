@@ -13,7 +13,9 @@ class Constants():
     # Calc functions
     TYPE_FAILURE_RISK = 'failurerisk'
     TYPE_MEAN = 'mean'
+    TYPE_WEIGHTED_MEAN = 'weightedmean'
     TYPE_MEAN_AT_HIGH_LOW_PERCENTAGE_YEARS = 'meanathighlowpercentageyears'
+    TYPE_WEIGHTED_MEAN_AT_HIGH_LOW_PERCENTAGE_YEARS = 'weightedmeanathighlowpercentageyears'
 
     FAILURE_RISK_PARAM_OPERATOR = 0
     FAILURE_RISK_PARAM_VALUE = 1

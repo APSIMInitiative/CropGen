@@ -1,5 +1,3 @@
-from enum import IntEnum
-
 from lib.models.common.model import Model
 from lib.models.run.aggregate_function import AggregateFunction
 from lib.utils.json_helper import JsonHelper
@@ -11,11 +9,9 @@ class Output(Model):
     #
     # Constructor
     #
-    def __init__(self, apsim_output_name, optimise, regex_pattern, is_text, maximise, multiplier, aggregate_functions):
+    def __init__(self, apsim_output_name, optimise, maximise, multiplier, aggregate_functions):
         self.apsimOutputName = apsim_output_name
         self.optimise = optimise
-        self.regex_pattern = regex_pattern
-        self.is_text = is_text
         self.maximise = maximise
         self.multiplier = multiplier
         self.aggregateFunctions = aggregate_functions
@@ -34,16 +30,14 @@ class Output(Model):
         total_outputs_to_optimise = 0
         parsed_outputs = []
         for output_value in outputs:
-            apsim_output_name = JsonHelper.get_attribute(output_value, 'apsimOutputName', errors, True)
+            apsim_output_name = JsonHelper.get_attribute(output_value, 'apsimOutputName', errors, True)            
             optimise = JsonHelper.get_non_mandatory_attribute(output_value, 'optimise', True, True)
-            regex_pattern = JsonHelper.get_non_mandatory_attribute(output_value, 'regexPattern', True, "")
-            is_text = JsonHelper.get_non_mandatory_attribute(output_value, 'isText', True, False)
             maximise = JsonHelper.get_non_mandatory_attribute(output_value, 'maximise', True, False)
             multiplier = JsonHelper.get_non_mandatory_attribute(output_value, 'multiplier', True, 1)
             aggregate_functions = AggregateFunction.parse_aggregate_functions(output_value, errors)
 
             parsed_outputs.append(Output(
-                apsim_output_name, optimise, regex_pattern, is_text, maximise, multiplier, aggregate_functions
+                apsim_output_name, optimise, maximise, multiplier, aggregate_functions
             ))
 
             # Keep track of the items that should be optimised.

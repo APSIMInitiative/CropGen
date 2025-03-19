@@ -6,6 +6,7 @@ class ApsimResult(ProtoResponse):
         self.simulationID = ''
         self.simulationName = ''
         self.values = []
+        self.text_values = []
 
 
     @staticmethod
@@ -15,6 +16,7 @@ class ApsimResult(ProtoResponse):
         apsim_result.simulationID = proto.SimulationID
         apsim_result.simulationName = proto.SimulationName
         apsim_result.values = list(proto.Values)
+        apsim_result.text_values = list(proto.TextValues)
         return apsim_result
             
 

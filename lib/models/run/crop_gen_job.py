@@ -1,6 +1,7 @@
 from lib.models.common.model import Model
 from lib.models.run.input import Input
 from lib.models.run.output import Output
+from lib.models.run.text_output import TextOutput
 from lib.models.run.sowing_date_weighting import SowingDateWeighting
 from lib.models.run.environment_typing.simulation import Simulation
 from lib.utils.json_helper import JsonHelper
@@ -29,6 +30,7 @@ class CropGenJob(Model):
 
         self.inputs = []
         self.outputs = []
+        self.text_outputs = []
         self.sowingDateWeighting = []
         self.environmentTypes = []        
         self.errors = []
@@ -59,7 +61,8 @@ class CropGenJob(Model):
 
             # Process Inputs and Outputs
             self.inputs = Input.parse_from_json_object(lower_case_json_data, self.errors)
-            self.outputs = Output.parse_from_json_object(lower_case_json_data, self.errors)
+            self.text_outputs = TextOutput.parse_from_json_object(lower_case_json_data, self.errors)
+            self.outputs = Output.parse_from_json_object(lower_case_json_data, self.errors)            
             self.sowingDateWeighting = SowingDateWeighting.parse_from_json_object(lower_case_json_data, self.errors)
             self.environmentTypes = self.parse_environment_types(lower_case_json_data, self.errors)
 

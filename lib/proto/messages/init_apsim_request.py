@@ -14,6 +14,7 @@ class InitApsimRequest(ProtoRequest):
     def to_proto(self):
         init_proto = InitApsim_pb2.InitApsimProto()
         init_proto.JobID = self.crop_gen_job.apsimJobId
+        init_proto.ApsimPath = self.crop_gen_job.apsimPath
         init_proto.Url = ""
         init_proto.PreRunSimulations = self.config.InitWorkersPreRunSimulations
         init_proto.ResetRunner = self.config.AlwaysResetRunner
@@ -32,10 +33,10 @@ class InitApsimRequest(ProtoRequest):
         report_config_proto.ReportName = self.crop_gen_job.reportName
 
         for output in self.crop_gen_job.outputs:
-            if output.is_text == True:            
-                report_config_proto.TextFields.append(output.apsimOutputName)
-            else:
-                report_config_proto.Fields.append(output.apsimOutputName)
+            report_config_proto.Fields.append(output.apsimOutputName)
+
+        for text_output in self.crop_gen_job.text_outputs:
+            report_config_proto.TextFields.append(text_output.apsimOutputName)
 
         init_proto.Configuration.CopyFrom(apsim_config_proto)
 
