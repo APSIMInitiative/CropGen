@@ -10,17 +10,8 @@ class MeanFunction:
     @staticmethod
     def calculate(results_for_individual, apsim_output_index):
 
-        total_results_for_individuals = len(results_for_individual)
+        if not results_for_individual:
+            return 0.0
 
-        if total_results_for_individuals == 0:
-            return 0
-
-        # Need to calculate the sum of our data to obtain the mean.
-        total = 0
-
-        for apsim_result in results_for_individual:
-            total += apsim_result.values[apsim_output_index]
-
-        result = total / total_results_for_individuals
-        
-        return result
+        total = sum(apsim_result.values[apsim_output_index] for apsim_result in results_for_individual)
+        return total / len(results_for_individual)

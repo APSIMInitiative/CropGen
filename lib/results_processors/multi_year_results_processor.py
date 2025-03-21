@@ -37,6 +37,7 @@ class MultiYearResultsProcessor():
             if request_output.aggregateFunctions:
                 MultiYearResultsProcessor.process_output_aggregate_functions(
                     config,
+                    crop_gen_job,
                     request_output,
                     output_index,
                     apsim_simulation_name_str,
@@ -61,6 +62,7 @@ class MultiYearResultsProcessor():
     @staticmethod
     def process_output_aggregate_functions(
         config,
+        crop_gen_job,
         request_output,
         output_index,
         apsim_simulation_name_str,
@@ -69,7 +71,7 @@ class MultiYearResultsProcessor():
         apsim_output
     ):
         for aggregate_function in request_output.aggregateFunctions:
-            aggregate_function_calculator = AggregateFunctionCalculator(config, apsim_simulation_name_str, aggregate_function)
+            aggregate_function_calculator = AggregateFunctionCalculator(config, crop_gen_job, apsim_simulation_name_str, aggregate_function)
             raw_output_value = aggregate_function_calculator.calculate_output_value(results_for_individual, output_index)
             output_value = OutputValue(
                 raw_output_value, 

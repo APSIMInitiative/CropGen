@@ -1,0 +1,114 @@
+{
+    "Id": "8",
+    "ApsimJobId": "",
+    "ApsimPath": "/app/TestFiles/ApsimFiles/dalby_170325.zip",
+    "JobId": "dalby test",
+    "Name": "dalby test",
+    "Iterations": 1,
+    "Individuals": 1,
+    "ReportName": "Report",
+    "APSIMSimulationClockStartDate": "",
+    "MaxSimulationsPerRequest": 0,
+    "MaxIndividualsPerRequest": 0,
+    "WaitForJobsTimeoutSeconds": 20000,
+    "Inputs": [
+        {
+            "Name": "[Sorghum].Phenology.TTEndJuvToInit.FixedValue",
+            "Min": 130,
+            "Max": 190
+        }
+    ],
+    "Outputs": [
+        {
+            "ApsimOutputName": "Yield",
+            "Optimise": true,
+            "AggregateFunctions": [
+                {
+                    "DisplayName": "Avg. Yield (t/ha)",
+                    "Maximise": true,
+                    "Multiplier": 0.01,
+                    "CalcType": "WeightedMean",
+                    "Params": ["SowingDate", "Site"]
+                }
+            ]
+        }
+    ],
+    "TextOutputs": [
+        {
+            "ApsimOutputName": "SowingDate"
+        },
+        {
+            "ApsimOutputName": "Site",
+            "RegexPattern": "^([^_]+)"
+        }
+    ],
+    "SowingDateWeighting": [
+        {
+            "SiteName": "Dalby",
+            "Weights": [
+                {
+                    "SowingDate": "15-aug",
+                    "Weight": null
+                },
+                {
+                    "SowingDate": "15-sep",
+                    "Weight": 0.55
+                },
+                {
+                    "SowingDate": "15-oct",
+                    "Weight": 0.91
+                },
+                {
+                    "SowingDate": "15-nov",
+                    "Weight": 1.11
+                },
+                {
+                    "SowingDate": "15-dec",
+                    "Weight": 1.31
+                },
+                {
+                    "SowingDate": "15-jan",
+                    "Weight": 1.11
+                },
+                {
+                    "SowingDate": "15-feb",
+                    "Weight": null
+                }
+            ]
+        },
+        {
+            "SiteName": "Emerald",
+            "Weights": [
+                {
+                    "SowingDate": "15-aug",
+                    "Weight": null
+                },
+                {
+                    "SowingDate": "15-sep",
+                    "Weight": 0.55
+                },
+                {
+                    "SowingDate": "15-oct",
+                    "Weight": 0.91
+                },
+                {
+                    "SowingDate": "15-nov",
+                    "Weight": 1.11
+                },
+                {
+                    "SowingDate": "15-dec",
+                    "Weight": 1.31
+                },
+                {
+                    "SowingDate": "15-jan",
+                    "Weight": 1.11
+                },
+                {
+                    "SowingDate": "15-feb",
+                    "Weight": null
+                }
+            ]
+        }
+    ],
+    "ApsimSimulationNames": []
+}

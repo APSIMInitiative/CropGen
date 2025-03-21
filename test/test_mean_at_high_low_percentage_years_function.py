@@ -27,7 +27,7 @@ class MeanFunctionTests(TestBase):
         ]
 
         results_for_individual = ApsimResultHelper.create_results_for_individual(
-            result_values, apsim_output_index
+            result_values, [], apsim_output_index
         )
 
         aggregate_function = TestAggregateFunction([high_low, percentage])
@@ -54,7 +54,7 @@ class MeanFunctionTests(TestBase):
         result_values = [112, 125, 9, 72, 170, 146, 157]
 
         results_for_individual = ApsimResultHelper.create_results_for_individual(
-            result_values, 0
+            result_values, [], 0
         )
 
         aggregate_function = TestAggregateFunction([high_low, percentage])

@@ -39,7 +39,7 @@ class FailureRiskFunctionTests(TestBase):
         # Arrange
         aggregate_function = TestAggregateFunction([operator, param])
         results_for_individual = ApsimResultHelper.create_results_for_individual(
-            [1, 2, 8, 10], 0
+            [1, 2, 8, 10], [], 0
         )
 
         # Act
@@ -61,7 +61,7 @@ class FailureRiskFunctionTests(TestBase):
         result_values = [112, 125, 9, 72, 170, 146, 157]
 
         results_for_individual = ApsimResultHelper.create_results_for_individual(
-            result_values, 0
+            result_values, [], 0
         )
 
         aggregate_function = TestAggregateFunction([high_low, percentage])

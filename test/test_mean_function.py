@@ -17,7 +17,7 @@ class MeanFunctionTests(TestBase):
     def test_calculate(self, result_values, apsim_output_index, expected):
         # Arrange
         results_for_individual = ApsimResultHelper.create_results_for_individual(
-            result_values, apsim_output_index
+            result_values, [], apsim_output_index
         )
 
         # Act

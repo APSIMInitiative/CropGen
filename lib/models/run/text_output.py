@@ -1,3 +1,5 @@
+import re
+
 from lib.models.common.model import Model
 from lib.models.run.aggregate_function import AggregateFunction
 from lib.utils.json_helper import JsonHelper
@@ -11,7 +13,7 @@ class TextOutput(Model):
     #
     def __init__(self, apsim_output_name, regex_pattern):
         self.apsimOutputName = apsim_output_name
-        self.regex_pattern = regex_pattern
+        self.regexPattern = regex_pattern
 
     #
     # Parses the text outputs
@@ -31,6 +33,11 @@ class TextOutput(Model):
             parsed_text_outputs.append(TextOutput(apsim_output_name, regex_pattern))
             
         return parsed_text_outputs
+    
+
+    def cleanse_text(self, text):
+        if not self.regexPattern: return text        
+        return re.sub(self.regexPattern, '', text)
 
     #
     # Returns the type name.
