@@ -35,10 +35,7 @@ class WeightedFunctionHelper:
             missing_params.append("Job Config Sowing Date Weighting")
 
         if missing_params:
-            logging.error("Weighted Mean Function is missing required parameters: %s", ", ".join(missing_params))
-            return False
-        
-        return True
+            raise ValueError("Weighted Mean Function is missing required parameters: %s", ", ".join(missing_params))
     
 
     @staticmethod
@@ -55,7 +52,15 @@ class WeightedFunctionHelper:
 
         # If there are missing parameters, log the error and return False
         if missing_params:
-            logging.error("Weighted Mean Function is missing required parameters: %s", ", ".join(missing_params))
-            return False
+            raise ValueError("Weighted Mean Function is missing required parameters: %s", ", ".join(missing_params))
         
-        return True
+        
+    @staticmethod
+    def extract_site_and_sowing_date(text_outputs, result, site_name_index, sowing_date_index):
+        site_output = text_outputs[site_name_index]
+        site_name = site_output.extract_match(result.text_values[site_name_index]).strip().lower()
+        
+        sowing_date_output = text_outputs[sowing_date_index]
+        sowing_date = sowing_date_output.extract_match(result.text_values[sowing_date_index]).strip().lower()
+
+        return site_name, sowing_date

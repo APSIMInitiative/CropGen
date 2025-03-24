@@ -1,5 +1,6 @@
 import unittest
 import random
+
 from test.test_base import TestBase
 from test.helpers.cropgen_job_helper import CropGenJobHelper
 from lib.proto.messages.apsim_result import ApsimResult
@@ -7,25 +8,36 @@ from lib.aggregate_functions.weighted_mean_function import WeightedMeanFunction
 
 class WeightedMeanFunctionTests(TestBase):
 
-    def generate_apsim_results(self, num_results, value_range=(100, 1000), text_values=None):
-        if text_values is None:
-            text_values = ["15-nov", "Dalby_GC150M_Current"]
-        
-        apsim_results = []
-        for _ in range(num_results):
-            apsim_result = ApsimResult()
-            value = random.uniform(*value_range)
-            apsim_result.values.append(value)
-            apsim_result.text_values.append(random.choice(text_values))
-            apsim_results.append(apsim_result)
-        return apsim_results
-
+    def generate_apsim_result(self, output_values, text_values):
+        apsim_result = ApsimResult()
+        apsim_result.values = output_values
+        apsim_result.text_values = text_values
+        return apsim_result
 
     def test_calculate(self):
         # Arrange
-        apsim_results = []
-        apsim_results.extend(self.generate_apsim_results(5, value_range=(800, 900), text_values=["15-nov", "Dalby_GC150M_Current"]))
-        apsim_results.extend(self.generate_apsim_results(5, value_range=(100, 200), text_values=["15-nov", "Emerald_GC150M_Current"]))
+        dalby_aug_weight = None
+        dalby_sep_weight = 0.55
+        dalby_oct_weight = 0.91
+        dalby_nov_weight = 1.11
+
+        emerald_aug_weight = None
+        emerald_sep_weight = 0.5
+        emerald_oct_weight = 0.95
+        emerald_nov_weight = 1.10
+
+        # Outputs are Yield and Evapotranspiration (as per weighted.json file)
+        apsim_results = [
+            self.generate_apsim_result([500, 0], ["15-aug", "Dalby_GC150M_Current"]),
+            self.generate_apsim_result([600, 0], ["15-sep", "Dalby_"]),
+            self.generate_apsim_result([700, 0], ["15-oct", "Dalby_"]),
+            self.generate_apsim_result([800, 0], ["15-nov", "Dalby_kjkjkjkjkjkjkjk"]),
+
+            self.generate_apsim_result([100, 0], ["15-aug", "Emerald_GC150M_Current"]),
+            self.generate_apsim_result([200, 0], ["15-sep", "Emerald_"]),
+            self.generate_apsim_result([300, 0], ["15-oct", "Emerald_"]),
+            self.generate_apsim_result([400, 0], ["15-nov", "Emerald_kjkjkjkjkjkjkjk"])
+        ]
 
         cropgen_job_helper = CropGenJobHelper("weighted.json")
         cropgen_job = cropgen_job_helper.parse()

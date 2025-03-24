@@ -31,6 +31,10 @@
                     "Params": ["SowingDate", "Site"]
                 }
             ]
+        },
+        {
+            "ApsimOutputName": "Evapotranspiration",
+            "Optimise": true
         }
     ],
     "TextOutputs": [
@@ -85,15 +89,15 @@
                 },
                 {
                     "SowingDate": "15-sep",
-                    "Weight": 0.55
+                    "Weight": 0.5
                 },
                 {
                     "SowingDate": "15-oct",
-                    "Weight": 0.91
+                    "Weight": 0.95
                 },
                 {
                     "SowingDate": "15-nov",
-                    "Weight": 1.11
+                    "Weight": 1.10
                 },
                 {
                     "SowingDate": "15-dec",
