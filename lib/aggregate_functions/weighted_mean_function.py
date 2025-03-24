@@ -1,3 +1,4 @@
+import logging
 import random
 import numpy as np
 from collections import defaultdict
@@ -53,7 +54,28 @@ class WeightedMeanFunction:
         site_name_index, 
         apsim_output_index
     ):        
-        # Dictionary to store results per (Site, SowingDate)
+        proportional_yields = []
+        
+        categorized_results = WeightedMeanFunction.categorize_results(
+            results_for_individual, text_outputs, site_name_index, sowing_date_index
+        )
+
+        proportional_yields = WeightedMeanFunction.compute_proportional_yields_from_categories(
+            categorized_results, sowing_date_weighting, apsim_output_index
+        )
+
+        # Log the final output
+        if proportional_yields:
+            mean_yield = sum(proportional_yields) / len(proportional_yields)
+            logging.info(f"Proportional Yield Mean: {mean_yield}")
+        else:
+            logging.warning("No proportional yields available.")
+
+        return proportional_yields
+    
+
+    @staticmethod
+    def categorize_results(results_for_individual, text_outputs, site_name_index, sowing_date_index):
         categorized_results = defaultdict(list)
 
         for apsim_result in results_for_individual:
@@ -64,48 +86,22 @@ class WeightedMeanFunction:
             if site_name and sowing_date:
                 categorized_results[(site_name, sowing_date)].append(apsim_result)
 
+        return categorized_results
+
+
+    @staticmethod
+    def compute_proportional_yields_from_categories(categorized_results, sowing_date_weighting, apsim_output_index):
         proportional_yields = []
 
         for (site_name, sowing_date), results in categorized_results.items():
             site_data = sowing_date_weighting.get(site_name)
-            if site_data: 
+            if site_data:
                 weight = site_data.weights.get(sowing_date)
-        
+            
                 if weight is not None:
-                    # Extract all yield values
                     result_values = [res.values[apsim_output_index] for res in results]
-
-                    # Number of samples based on weight
                     num_samples = round(len(result_values) * weight)
-
-                    # Sample proportionally
                     proportional_sowing_yields = random.choices(result_values, k=num_samples)
                     proportional_yields.extend(proportional_sowing_yields)
 
-                    # Final Output
-                    print(
-                        "Proportional Yield Mean:", 
-                        sum(proportional_yields) / len(proportional_yields) 
-                            if proportional_yields 
-                            else "No Data"
-                    )
-
-        # proportional_yields = []
-
-        # for apsim_result in results_for_individual:
-        #     result_values = apsim_result.values[apsim_output_index]
-
-        #     site_name, sowing_date = WeightedFunctionHelper.extract_site_and_sowing_date(
-        #         text_outputs, apsim_result, site_name_index, sowing_date_index
-        #     )
-
-        #     # Now check that the site name and sowing date are in the sowing date weighting
-        #     site_data = sowing_date_weighting.get(site_name)
-        #     if site_data:
-        #         weight = site_data.weights.get(sowing_date)
-        #         if weight is not None:
-        #             num_samples = round(len(apsim_result.values) * weight)
-        #             proportional_sowing_yields = random.choices(result_values, k=num_samples)
-        #             proportional_yields.extend(proportional_sowing_yields)
-
-        # return proportional_yields
+        return proportional_yields
