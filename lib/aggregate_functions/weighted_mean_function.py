@@ -6,6 +6,7 @@ from collections import defaultdict
 from lib.aggregate_functions.weighted_function_helper import WeightedFunctionHelper
 
 class WeightedMeanFunction:
+
     @staticmethod
     def calculate(crop_gen_job, aggregate_function, results_for_individual, apsim_output_index):
 
@@ -18,6 +19,7 @@ class WeightedMeanFunction:
         
         return np.average(proportional_yields) if proportional_yields else 0
 
+
     @staticmethod
     def extract_weighting_data(crop_gen_job, aggregate_function):
         sowing_date_output_name = WeightedFunctionHelper.get_sowing_date_output_name(aggregate_function)
@@ -29,6 +31,7 @@ class WeightedMeanFunction:
         )
 
         return sowing_date_output_name, site_output_name, sowing_date_weighting
+
 
     @staticmethod
     def validate_and_get_indexes(crop_gen_job, sowing_date_output_name, site_output_name):
@@ -45,6 +48,7 @@ class WeightedMeanFunction:
 
         return sowing_date_index, site_name_index
 
+
     @staticmethod
     def compute_proportional_yields(
         text_outputs, 
@@ -56,10 +60,12 @@ class WeightedMeanFunction:
     ):        
         proportional_yields = []
         
+        # The first step is to categorize the results by site and sowing date
         categorized_results = WeightedMeanFunction.categorize_results(
             results_for_individual, text_outputs, site_name_index, sowing_date_index
         )
 
+        # Now that the results are categorized, we can compute the proportional yields
         proportional_yields = WeightedMeanFunction.compute_proportional_yields_from_categories(
             categorized_results, sowing_date_weighting, apsim_output_index
         )
@@ -103,5 +109,7 @@ class WeightedMeanFunction:
                     num_samples = round(len(result_values) * weight)
                     proportional_sowing_yields = random.choices(result_values, k=num_samples)
                     proportional_yields.extend(proportional_sowing_yields)
+            else:
+                logging.warning(f"No sowing date weighting data for site: {site_name}")
 
         return proportional_yields
