@@ -6,9 +6,7 @@ from lib.utils.constants import Constants
 # Represents an mean at high low percentage years aggregate function
 #
 class MeanAtHighLowPercentageYears:
-    #
-    # Calculate the mean.
-    #
+    
     @staticmethod
     def calculate(aggregate_function, results_for_individual, apsim_output_index, round_up_years):
         
@@ -20,6 +18,22 @@ class MeanAtHighLowPercentageYears:
         high_low = aggregate_function.get_param_by_index(Constants.MEAN_AT_PARAM_HIGH_LOW)
         percentage = float(aggregate_function.get_param_by_index(Constants.MEAN_AT_PARAM_PERCENT))
 
+        MeanAtHighLowPercentageYears.validate_high_low_percentage(high_low, percentage)
+
+        # Create a sorted list for these values.
+        sorted_list = MeanAtHighLowPercentageYears._extract_years_of_interest(results_for_individual, apsim_output_index, high_low, percentage, total_years, round_up_years)
+        sorted_list_length = len(sorted_list)
+        result = 0
+
+        if sorted_list_length > 0:
+            result = sum(sorted_list) / sorted_list_length
+            
+        return result
+    
+
+    @staticmethod
+    def validate_high_low_percentage(high_low, percentage):
+
         if high_low == None: 
             raise Exception(f"{Constants.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. No high/low specifier at index: {Constants.MEAN_AT_PARAM_HIGH_LOW}")
         if percentage == None: 
@@ -28,22 +42,7 @@ class MeanAtHighLowPercentageYears:
             raise Exception(f"{Constants.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. Unknown high/low specifier: '{high_low}'")
         if not MeanAtHighLowPercentageYears._is_supported_percentage(percentage): 
             raise Exception(f"{Constants.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. Unknown percentage: '{percentage}'")
-
-        # Create a sorted list for these values.
-        sorted_list = MeanAtHighLowPercentageYears._extract_years_of_interest(results_for_individual, apsim_output_index, high_low, percentage, total_years, round_up_years)
-        sorted_list_length = len(sorted_list)
-        result = 0
-
-        if sorted_list_length > 0:
-            for value in sorted_list: 
-                result += value
-            result = result / sorted_list_length
-            
-        return result
     
-    #
-    # Tests the high/low specifier to ensure that it is supported.
-    #
     @staticmethod
     def _is_supported_high_low(high_low):
         return (
@@ -51,9 +50,7 @@ class MeanAtHighLowPercentageYears:
             high_low == Constants.MEAN_AT_PARAM_LOWEST
         )
     
-    #
-    # Tests the percentage specifier to ensure that it is within a valid range.
-    #
+    
     @staticmethod
     def _is_supported_percentage(percentage):
         return (
@@ -61,9 +58,7 @@ class MeanAtHighLowPercentageYears:
             percentage <= 100.0
         )
     
-    #
-    # Extracts the years that we are interested in.
-    #
+
     @staticmethod
     def _extract_years_of_interest(results_for_individual, apsim_output_index, high_low, percentage, total_years, round_up_years):
         sorted_list = list()

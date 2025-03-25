@@ -221,16 +221,38 @@ class WeightedFunctionHelper:
         site_name_index, 
         apsim_output_index
     ):        
-        proportional_values = []
+        """
+        Computes proportional values based on categorized APSIM results using sowing date weighting.
+
+        This method categorizes the APSIM results by site and sowing date, then computes 
+        the proportional values based on the provided sowing date weighting. The proportional 
+        values are calculated by applying a weight for each sowing date for a given site, 
+        and then randomly sampling the corresponding result values according to the weight.
+
+        Parameters:
+        - text_outputs: List of text outputs that contain site and sowing date information.
+        - results_for_individual: List of APSIM result objects that need to be categorized.
+        - sowing_date_weighting: Weighting information for sowing dates per site.
+        - sowing_date_index: Index to extract the sowing date information from the results.
+        - site_name_index: Index to extract the site name information from the results.
+        - apsim_output_index: Index to extract the APSIM output values from the results.
+
+        Returns:
+        - List of proportional values computed based on the categorized results and sowing date weighting.
+        """
         
+        # Initialize an empty list to store proportional values
+        proportional_values = []
+
         # The first step is to categorize the results by site and sowing date
         categorized_results = WeightedFunctionHelper.categorize_results(
             results_for_individual, text_outputs, site_name_index, sowing_date_index, apsim_output_index
         )
 
-        # Now that the results are categorized, we can compute the proportional
+        # Now that the results are categorized, we can compute the proportional values based on the weighting data
         proportional_values = WeightedFunctionHelper.compute_proportional_values_from_categories(
             categorized_results, sowing_date_weighting
         )
 
+        # Return the computed proportional values
         return proportional_values
