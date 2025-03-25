@@ -1,6 +1,4 @@
 import unittest
-import random
-import numpy as np
 
 from test.test_base import TestBase
 from test.helpers.cropgen_job_helper import CropGenJobHelper
@@ -17,23 +15,7 @@ class WeightedMeanFunctionTests(TestBase):
 
     def test_calculate(self):
         # Arrange
-        expected_yields = {
-            "Dalby": {
-                "15-aug": None,
-                "15-sep": 0.55,
-                "15-oct": 0.91,
-                "15-nov": 1.11
-            },
-            "Emerald": {
-                "15-aug": None,
-                "15-sep": 0.5,
-                "15-oct": 0.95,
-                "15-nov": 1.10
-            }
-        }
-
         apsim_results = [
-            # Dalby: Multiple entries for each sowing date
             self.generate_apsim_result([500, 0], ["15-aug", "Dalby_GC150M_Current"]),
             self.generate_apsim_result([520, 0], ["15-aug", "Dalby_Extra"]),
 

@@ -11,13 +11,18 @@ class WeightedMeanFunction:
     def calculate(crop_gen_job, aggregate_function, results_for_individual, apsim_output_index):
 
         if not results_for_individual:
+            logging.error("No results available for calculating weighted mean.")
             return 0.0
         
         sowing_date_output_name, site_output_name, sowing_date_weighting = WeightedMeanFunction.extract_weighting_data(crop_gen_job, aggregate_function)
         sowing_date_index, site_name_index = WeightedMeanFunction.validate_and_get_indexes(crop_gen_job, sowing_date_output_name, site_output_name)
         proportional_yields = WeightedMeanFunction.compute_proportional_yields(crop_gen_job.text_outputs, results_for_individual, sowing_date_weighting, sowing_date_index, site_name_index, apsim_output_index)
         
-        return np.average(proportional_yields) if proportional_yields else 0
+        if not proportional_yields:
+            logging.error("No proportional yields available for calculating weighted mean.")
+            return 0.0
+
+        return np.average(proportional_yields)
 
 
     @staticmethod
@@ -62,12 +67,12 @@ class WeightedMeanFunction:
         
         # The first step is to categorize the results by site and sowing date
         categorized_results = WeightedMeanFunction.categorize_results(
-            results_for_individual, text_outputs, site_name_index, sowing_date_index
+            results_for_individual, text_outputs, site_name_index, sowing_date_index, apsim_output_index
         )
 
         # Now that the results are categorized, we can compute the proportional yields
         proportional_yields = WeightedMeanFunction.compute_proportional_yields_from_categories(
-            categorized_results, sowing_date_weighting, apsim_output_index
+            categorized_results, sowing_date_weighting
         )
 
         # Log the final output
@@ -81,7 +86,7 @@ class WeightedMeanFunction:
     
 
     @staticmethod
-    def categorize_results(results_for_individual, text_outputs, site_name_index, sowing_date_index):
+    def categorize_results(results_for_individual, text_outputs, site_name_index, sowing_date_index, apsim_output_index):
         categorized_results = defaultdict(list)
 
         for apsim_result in results_for_individual:
@@ -90,22 +95,22 @@ class WeightedMeanFunction:
             )
 
             if site_name and sowing_date:
-                categorized_results[(site_name, sowing_date)].append(apsim_result)
+                output_result = apsim_result.values[apsim_output_index]
+                categorized_results[(site_name, sowing_date)].append(output_result)
 
         return categorized_results
 
 
     @staticmethod
-    def compute_proportional_yields_from_categories(categorized_results, sowing_date_weighting, apsim_output_index):
+    def compute_proportional_yields_from_categories(categorized_results, sowing_date_weighting):
         proportional_yields = []
 
-        for (site_name, sowing_date), results in categorized_results.items():
+        for (site_name, sowing_date), result_values in categorized_results.items():
             site_data = sowing_date_weighting.get(site_name)
             if site_data:
                 weight = site_data.weights.get(sowing_date)
             
                 if weight is not None:
-                    result_values = [res.values[apsim_output_index] for res in results]
                     num_samples = round(len(result_values) * weight)
                     proportional_sowing_yields = random.choices(result_values, k=num_samples)
                     proportional_yields.extend(proportional_sowing_yields)
