@@ -210,3 +210,27 @@ class WeightedFunctionHelper:
             logging.warning(f"No sowing date weighting data for sites: {', '.join(missing_sites)}")
 
         return proportional_values
+
+
+    @staticmethod
+    def compute_proportional(
+        text_outputs, 
+        results_for_individual, 
+        sowing_date_weighting, 
+        sowing_date_index, 
+        site_name_index, 
+        apsim_output_index
+    ):        
+        proportional_values = []
+        
+        # The first step is to categorize the results by site and sowing date
+        categorized_results = WeightedFunctionHelper.categorize_results(
+            results_for_individual, text_outputs, site_name_index, sowing_date_index, apsim_output_index
+        )
+
+        # Now that the results are categorized, we can compute the proportional
+        proportional_values = WeightedFunctionHelper.compute_proportional_values_from_categories(
+            categorized_results, sowing_date_weighting
+        )
+
+        return proportional_values
