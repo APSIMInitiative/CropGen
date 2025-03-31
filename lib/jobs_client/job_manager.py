@@ -73,16 +73,14 @@ class JobFileManager:
     def _create_lock_file(self, job_file):
         self.job_file = job_file
         self.lock_file = self._get_lock_file_path(job_file)
-        logging.error("!!! TODO PUT ME BACK !!!")
-        # with open(self.lock_file, 'w') as file:
-        #     file.write(f"{DateTimeHelper.get_date_time_now_str()} - Job started for: {job_file}\n")
+        with open(self.lock_file, 'w') as file:
+            file.write(f"{DateTimeHelper.get_date_time_now_str()} - Job started for: {job_file}\n")
 
 
     def append_to_lock_file(self, message):
         if os.path.exists(self.lock_file):
-            logging.error("!!! TODO PUT ME BACK !!!")
-            # with open(self.lock_file, 'a') as file:
-            #     file.write(f"{DateTimeHelper.get_date_time_now_str()} - {message} \n")
+            with open(self.lock_file, 'a') as file:
+                file.write(f"{DateTimeHelper.get_date_time_now_str()} - {message} \n")
 
 
     def rename_lock_to_error(self):
