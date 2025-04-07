@@ -24,11 +24,6 @@ class WeightedMeanAtHighLowPercentageYears:
         if not results_for_individual:
             logging.error("No results available for calculating weighted mean.")
             return 0.0
-        
-        total_years = len(results_for_individual)
-
-        if total_years == 1:
-            return results_for_individual[0].values[apsim_output_index]
 
         high_low = aggregate_function.get_param_by_index(WeightedMeanAtHighLowPercentageYears.MEAN_AT_PARAM_HIGH_LOW)
         percentage = float(aggregate_function.get_param_by_index(WeightedMeanAtHighLowPercentageYears.MEAN_AT_PARAM_PERCENT))
@@ -47,12 +42,18 @@ class WeightedMeanAtHighLowPercentageYears:
             logging.error("No proportional yields available for calculating weighted mean.")
             return 0.0
         
+        total_years = len(proportional_yields)
+
+        if total_years == 1:
+            return proportional_yields[0]
+        
         # Create a sorted list for these values.
-        sorted_list = MeanAtHighLowPercentageYears._extract_years_of_interest(proportional_yields, apsim_output_index, high_low, percentage, total_years, round_up_years)
-        sorted_list_length = len(sorted_list)
+        proportional_yields.sort()
+        years_of_interest = MeanAtHighLowPercentageYears._extract_years_of_interest(proportional_yields, apsim_output_index, high_low, percentage, total_years, round_up_years)
+        years_of_interest_length = len(years_of_interest)
         result = 0
 
-        if sorted_list_length > 0:
-            result = sum(sorted_list) / sorted_list_length
+        if years_of_interest_length > 0:
+            result = sum(years_of_interest) / years_of_interest_length
             
-        return result
+        return result        

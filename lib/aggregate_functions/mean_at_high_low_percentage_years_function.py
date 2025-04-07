@@ -29,12 +29,13 @@ class MeanAtHighLowPercentageYears:
         MeanAtHighLowPercentageYears.validate_high_low_percentage(high_low, percentage)
 
         # Create a sorted list for these values.
-        sorted_list = MeanAtHighLowPercentageYears._extract_years_of_interest(results_for_individual, apsim_output_index, high_low, percentage, total_years, round_up_years)
-        sorted_list_length = len(sorted_list)
+        sorted_list = MeanAtHighLowPercentageYears.create_sorted_list(results_for_individual)
+        years_of_interest = MeanAtHighLowPercentageYears._extract_years_of_interest(sorted_list, apsim_output_index, high_low, percentage, total_years, round_up_years)
+        years_of_interest_length = len(years_of_interest)
         result = 0
 
-        if sorted_list_length > 0:
-            result = sum(sorted_list) / sorted_list_length
+        if years_of_interest_length > 0:
+            result = sum(years_of_interest) / years_of_interest_length
             
         return result
     
@@ -68,22 +69,27 @@ class MeanAtHighLowPercentageYears:
     
 
     @staticmethod
-    def _extract_years_of_interest(results_for_individual, apsim_output_index, high_low, percentage, total_years, round_up_years):
+    def create_sorted_list(results_for_individual, apsim_output_index):
         sorted_list = list()
         for apsim_result in results_for_individual:
             sorted_list.append(apsim_result.values[apsim_output_index])
         sorted_list.sort()
-        
+
+        return sorted_list
+    
+
+    @staticmethod
+    def _extract_years_of_interest(sorted_list, high_low, percentage, total_years, round_up_years):
         years = (total_years * (percentage/100))
         if round_up_years:
             years += 0.5
         years = int(years)
 
         if high_low == MeanAtHighLowPercentageYears.MEAN_AT_PARAM_LOWEST:
-            sorted_list = sorted_list[0:years]
+            return sorted_list[0:years]
         elif high_low == MeanAtHighLowPercentageYears.MEAN_AT_PARAM_HIGHEST:
-            sorted_list = sorted_list[-years:]
+            return sorted_list[-years:]
         else:
             logging.error("Unknown high_low '%s'", high_low)
         
-        return sorted_list
+        return None
