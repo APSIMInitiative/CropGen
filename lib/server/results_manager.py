@@ -117,7 +117,7 @@ class ResultsManager:
 
 
     def remove_results_dir(self):
-        if not self.zip_file_dir.exists() or not self.config.delete_results_dir_after_zip:
+        if not self.zip_file_dir.exists() or not self.config.DeleteResultsDirAfterZip:
             return
 
         shutil.rmtree(self.job_results_dir, ignore_errors=True)
