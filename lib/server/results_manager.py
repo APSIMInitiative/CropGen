@@ -57,7 +57,9 @@ class ResultsManager:
 
 
     def write_progress(self, progress_str):
-        self.progress_file.write_text(progress_str + '\n', append=True)
+        with self.progress_file.open('a', encoding='utf-8') as f:
+            f.write(progress_str + '\n')
+
 
 
     def zip_results(self):
