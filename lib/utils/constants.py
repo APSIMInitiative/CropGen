@@ -27,11 +27,6 @@ class Constants():
     FAILURE_RISK_PARAM_EQUAL = '=='
     FAILURE_RISK_PARAM_NOT_EQUAL = '!='
 
-    MEAN_AT_PARAM_HIGH_LOW = 0
-    MEAN_AT_PARAM_PERCENT = 1
-    MEAN_AT_PARAM_HIGHEST = 'highest'
-    MEAN_AT_PARAM_LOWEST = 'lowest'
-
     # Error messages
     NO_APSIM_RESULT_FOR_INDIVIDUALS = "Couldn't find an APSIM result for a given individual."
     NO_APSIM_RESULTS = "No results have been returned from APSIM."

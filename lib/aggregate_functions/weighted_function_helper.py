@@ -2,6 +2,8 @@ import logging
 import numpy as np
 from collections import defaultdict
 
+from lib.aggregate_functions.aggregated_data_state import AggregatedDataState
+
 class WeightedFunctionHelper:
 
     # Constants to define parameter indices for sowing date and site
@@ -256,3 +258,31 @@ class WeightedFunctionHelper:
 
         # Return the computed proportional values
         return proportional_values
+
+
+    @staticmethod
+    def get_or_compute_proportional_yields(
+        crop_gen_job, 
+        aggregate_function, 
+        results_for_individual, 
+        apsim_output_index,
+        aggregated_data_state
+    ):
+        if aggregated_data_state.has(AggregatedDataState.PROPORTIONAL_YIELDS_KEY):
+            return aggregated_data_state.get(AggregatedDataState.PROPORTIONAL_YIELDS_KEY)
+
+        sowing_date_output_name, site_output_name, sowing_date_weighting = WeightedFunctionHelper.extract_weighting_data(crop_gen_job, aggregate_function)
+        sowing_date_index, site_name_index = WeightedFunctionHelper.validate_and_get_indexes(crop_gen_job, sowing_date_output_name, site_output_name)
+        proportional_yields = WeightedFunctionHelper.compute_proportional(
+            crop_gen_job.text_outputs,
+            results_for_individual,
+            sowing_date_weighting,
+            sowing_date_index,
+            site_name_index,
+            apsim_output_index
+        )
+
+        if proportional_yields:
+            aggregated_data_state.set(AggregatedDataState.PROPORTIONAL_YIELDS_KEY, proportional_yields)
+
+        return proportional_yields

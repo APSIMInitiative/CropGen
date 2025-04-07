@@ -4,6 +4,7 @@ from lib.problems.output_value import OutputValue
 from lib.problems.apsim_output import ApsimOutput
 
 from lib.aggregate_functions.aggregate_function_calculator import AggregateFunctionCalculator
+from lib.aggregate_functions.aggregated_data_state import AggregatedDataState
 
 #
 # Helper for processing the single year results.
@@ -70,8 +71,10 @@ class MultiYearResultsProcessor():
         algorithm_outputs,
         apsim_output
     ):
+        aggregated_data_state = AggregatedDataState()
+
         for aggregate_function in request_output.aggregateFunctions:
-            aggregate_function_calculator = AggregateFunctionCalculator(config, crop_gen_job, apsim_simulation_name_str, aggregate_function)
+            aggregate_function_calculator = AggregateFunctionCalculator(config, crop_gen_job, apsim_simulation_name_str, aggregate_function, aggregated_data_state)
             raw_output_value = aggregate_function_calculator.calculate_output_value(results_for_individual, output_index)
             output_value = OutputValue(
                 raw_output_value, 

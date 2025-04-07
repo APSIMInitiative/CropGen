@@ -4,6 +4,7 @@ from test.test_base import TestBase
 from test.helpers.cropgen_job_helper import CropGenJobHelper
 from lib.proto.messages.apsim_result import ApsimResult
 from lib.aggregate_functions.weighted_mean_function import WeightedMeanFunction
+from lib.aggregate_functions.aggregated_data_state import AggregatedDataState
 
 class WeightedMeanFunctionTests(TestBase):
 
@@ -52,9 +53,18 @@ class WeightedMeanFunctionTests(TestBase):
         cropgen_job_helper = CropGenJobHelper("weighted.json")
         cropgen_job = cropgen_job_helper.parse()
         weighted_mean_aggregate_function = cropgen_job.outputs[0].aggregateFunctions[0]
+        aggregated_data_state = AggregatedDataState()
 
         # Act
-        actual = WeightedMeanFunction.calculate(cropgen_job, weighted_mean_aggregate_function, apsim_results, 0)
+        actual = WeightedMeanFunction.calculate(
+            cropgen_job, 
+            weighted_mean_aggregate_function, 
+            apsim_results, 
+            0,
+            aggregated_data_state
+        )
+
+        proportional_yields = aggregated_data_state.get(AggregatedDataState.PROPORTIONAL_YIELDS_KEY)
 
         # Assert: Ensure the result is not None
         self.assertIsNotNone(actual, "The calculated yield should not be None.")
@@ -64,6 +74,15 @@ class WeightedMeanFunctionTests(TestBase):
 
         # Assert: Ensure the yield is positive
         self.assertGreater(actual, 0, "The calculated proportional yield should be greater than zero.")
+
+        # Assert: Ensure the proportional yields are not None
+        self.assertIsNotNone(proportional_yields, "The proportional yields should not be None.")
+        self.assertEqual(
+            len(proportional_yields),
+            16,
+            "The proportional yields should contain exactly 16 items."
+        )
+
 
 
 if __name__ == "__main__":
