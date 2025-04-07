@@ -49,7 +49,7 @@ class WeightedMeanAtHighLowPercentageYears:
         
         # Create a sorted list for these values.
         proportional_yields.sort()
-        years_of_interest = MeanAtHighLowPercentageYears._extract_years_of_interest(proportional_yields, apsim_output_index, high_low, percentage, total_years, round_up_years)
+        years_of_interest = MeanAtHighLowPercentageYears._extract_years_of_interest(proportional_yields, high_low, percentage, total_years, round_up_years)
         years_of_interest_length = len(years_of_interest)
         result = 0
 

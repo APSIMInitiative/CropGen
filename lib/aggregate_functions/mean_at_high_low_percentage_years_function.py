@@ -30,7 +30,7 @@ class MeanAtHighLowPercentageYears:
 
         # Create a sorted list for these values.
         sorted_list = MeanAtHighLowPercentageYears.create_sorted_list(results_for_individual)
-        years_of_interest = MeanAtHighLowPercentageYears._extract_years_of_interest(sorted_list, apsim_output_index, high_low, percentage, total_years, round_up_years)
+        years_of_interest = MeanAtHighLowPercentageYears._extract_years_of_interest(sorted_list, high_low, percentage, total_years, round_up_years)
         years_of_interest_length = len(years_of_interest)
         result = 0
 
