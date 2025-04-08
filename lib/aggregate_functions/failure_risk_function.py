@@ -1,26 +1,30 @@
 import logging
 
-from lib.utils.constants import Constants
-
 #
 # Represents an failure risk aggregate function
 #
 class FailureRiskFunction:
+
+    FAILURE_RISK_PARAM_OPERATOR = 0
+    FAILURE_RISK_PARAM_VALUE = 1
+
+    FAILURE_RISK_PARAM_LESS_THAN = '<'
+    FAILURE_RISK_PARAM_LESS_THAN_EQUAL = '<='
+    FAILURE_RISK_PARAM_GREATER_THAN = '>'
+    FAILURE_RISK_PARAM_GREATER_THAN_EQUAL = '>='
+    FAILURE_RISK_PARAM_EQUAL = '=='
+    FAILURE_RISK_PARAM_NOT_EQUAL = '!='
+
     #
     # Calculate the failure risk.
     #
     @staticmethod
     def calculate(aggregate_function, results_for_individual, apsim_output_index):
         
-        operator = aggregate_function.get_param_by_index(Constants.FAILURE_RISK_PARAM_OPERATOR)
-        value = float(aggregate_function.get_param_by_index(Constants.FAILURE_RISK_PARAM_VALUE))
+        operator = aggregate_function.get_param_by_index(FailureRiskFunction.FAILURE_RISK_PARAM_OPERATOR)
+        value = float(aggregate_function.get_param_by_index(FailureRiskFunction.FAILURE_RISK_PARAM_VALUE))
 
-        if operator == None: 
-            raise Exception(f"{Constants.FAILURE_RISK_AGGREGATE_FUNCTION_ERROR}. No operator at index: {Constants.FAILURE_RISK_PARAM_OPERATOR}")
-        if value == None: 
-            raise Exception(f"{Constants.FAILURE_RISK_AGGREGATE_FUNCTION_ERROR}. No value at index: {Constants.FAILURE_RISK_PARAM_VALUE}")
-        if not FailureRiskFunction._is_supported_operator(operator): 
-            raise Exception(f"{Constants.FAILURE_RISK_AGGREGATE_FUNCTION_ERROR}. Unknown operator: '{operator}'")
+        FailureRiskFunction.validate_operator_value(operator, value)
 
         total_results_for_individuals = len(results_for_individual)
 
@@ -34,17 +38,29 @@ class FailureRiskFunction:
         return result
     
     #
+    # Validates both the operator and value are valid.
+    #
+    @staticmethod
+    def validate_operator_value(operator, value):
+        if operator == None: 
+            raise Exception(f"{FailureRiskFunction.FAILURE_RISK_AGGREGATE_FUNCTION_ERROR}. No operator at index: {FailureRiskFunction.FAILURE_RISK_PARAM_OPERATOR}")
+        if value == None: 
+            raise Exception(f"{FailureRiskFunction.FAILURE_RISK_AGGREGATE_FUNCTION_ERROR}. No value at index: {FailureRiskFunction.FAILURE_RISK_PARAM_VALUE}")
+        if not FailureRiskFunction._is_supported_operator(operator): 
+            raise Exception(f"{FailureRiskFunction.FAILURE_RISK_AGGREGATE_FUNCTION_ERROR}. Unknown operator: '{operator}'")
+    
+    #
     # Tests the operator is one that is supported.
     #
     @staticmethod
     def _is_supported_operator(operator):
         return (
-            operator == Constants.FAILURE_RISK_PARAM_LESS_THAN or
-            operator == Constants.FAILURE_RISK_PARAM_LESS_THAN_EQUAL or 
-            operator == Constants.FAILURE_RISK_PARAM_GREATER_THAN or 
-            operator == Constants.FAILURE_RISK_PARAM_GREATER_THAN_EQUAL or 
-            operator == Constants.FAILURE_RISK_PARAM_EQUAL or 
-            operator == Constants.FAILURE_RISK_PARAM_NOT_EQUAL
+            operator == FailureRiskFunction.FAILURE_RISK_PARAM_LESS_THAN or
+            operator == FailureRiskFunction.FAILURE_RISK_PARAM_LESS_THAN_EQUAL or 
+            operator == FailureRiskFunction.FAILURE_RISK_PARAM_GREATER_THAN or 
+            operator == FailureRiskFunction.FAILURE_RISK_PARAM_GREATER_THAN_EQUAL or 
+            operator == FailureRiskFunction.FAILURE_RISK_PARAM_EQUAL or 
+            operator == FailureRiskFunction.FAILURE_RISK_PARAM_NOT_EQUAL
         )
 
     #
@@ -52,17 +68,17 @@ class FailureRiskFunction:
     #
     @staticmethod
     def _test_failure_risk_result_in_range(result_value, operator, value):
-        if operator == Constants.FAILURE_RISK_PARAM_LESS_THAN:
+        if operator == FailureRiskFunction.FAILURE_RISK_PARAM_LESS_THAN:
             return result_value < value
-        elif operator == Constants.FAILURE_RISK_PARAM_LESS_THAN_EQUAL:
+        elif operator == FailureRiskFunction.FAILURE_RISK_PARAM_LESS_THAN_EQUAL:
             return result_value <= value
-        elif operator == Constants.FAILURE_RISK_PARAM_GREATER_THAN:
+        elif operator == FailureRiskFunction.FAILURE_RISK_PARAM_GREATER_THAN:
             return result_value > value
-        elif operator == Constants.FAILURE_RISK_PARAM_GREATER_THAN_EQUAL:
+        elif operator == FailureRiskFunction.FAILURE_RISK_PARAM_GREATER_THAN_EQUAL:
             return result_value >= value
-        elif operator == Constants.FAILURE_RISK_PARAM_EQUAL:
+        elif operator == FailureRiskFunction.FAILURE_RISK_PARAM_EQUAL:
             return result_value == value
-        elif operator == Constants.FAILURE_RISK_PARAM_NOT_EQUAL:
+        elif operator == FailureRiskFunction.FAILURE_RISK_PARAM_NOT_EQUAL:
             return result_value != value
         else: 
             logging.error("Unknown operator '%s'", operator)

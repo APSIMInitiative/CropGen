@@ -1,10 +1,7 @@
 import logging
-import numpy as np
 
-from lib.utils.constants import Constants
 from lib.aggregate_functions.mean_at_high_low_percentage_years_function import MeanAtHighLowPercentageYears
 from lib.aggregate_functions.weighted_function_helper import WeightedFunctionHelper
-from lib.aggregate_functions.aggregated_data_state import AggregatedDataState
 
 
 class WeightedMeanAtHighLowPercentageYears:
@@ -22,7 +19,7 @@ class WeightedMeanAtHighLowPercentageYears:
         aggregated_data_state
     ):
         if not results_for_individual:
-            logging.error("No results available for calculating weighted mean.")
+            logging.error("No results available for calculating WeightedMeanAtHighLowPercentageYears.")
             return 0.0
 
         high_low = aggregate_function.get_param_by_index(WeightedMeanAtHighLowPercentageYears.MEAN_AT_PARAM_HIGH_LOW)

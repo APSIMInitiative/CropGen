@@ -5,6 +5,8 @@ from lib.aggregate_functions.mean_function import MeanFunction
 from lib.aggregate_functions.weighted_mean_function import WeightedMeanFunction
 from lib.aggregate_functions.mean_at_high_low_percentage_years_function import MeanAtHighLowPercentageYears
 from lib.aggregate_functions.weighted_mean_at_high_low_percentage_years_function import WeightedMeanAtHighLowPercentageYears
+from lib.aggregate_functions.failure_risk_function import FailureRiskFunction
+from lib.aggregate_functions.weighted_failure_risk_function import WeightedFailureRiskFunction
 
 #
 # Represents an aggregate function that is sent as part of a run job request.
@@ -66,6 +68,22 @@ class AggregateFunctionCalculator:
                     results_for_individual, 
                     apsim_output_index, 
                     self.config.RoundUpYearsInMeanCalculation,
+                    self.aggregated_data_state
+                ),
+
+            Constants.TYPE_FAILURE_RISK:
+                lambda: FailureRiskFunction.calculate(
+                    self.aggregate_function, 
+                    results_for_individual, 
+                    apsim_output_index
+                ),
+
+            Constants.TYPE_WEIGHTED_FAILURE_RISK:
+                lambda: WeightedFailureRiskFunction.calculate(
+                    self.crop_gen_job, 
+                    self.aggregate_function, 
+                    results_for_individual, 
+                    apsim_output_index,
                     self.aggregated_data_state
                 )
         }

@@ -10,23 +10,14 @@ class Constants():
     OBJECTIVE_VALUES_ARRAY_INDEX = 'F'
     CGM_RELAY_APP_NAME = "CGMRelay"
 
-    # Calc functions
-    TYPE_FAILURE_RISK = 'failurerisk'
+    # Calc functions    
     TYPE_MEAN = 'mean'
     TYPE_WEIGHTED_MEAN = 'weightedmean'
     TYPE_MEAN_AT_HIGH_LOW_PERCENTAGE_YEARS = 'meanathighlowpercentageyears'
     TYPE_WEIGHTED_MEAN_AT_HIGH_LOW_PERCENTAGE_YEARS = 'weightedmeanathighlowpercentageyears'
-
-    FAILURE_RISK_PARAM_OPERATOR = 0
-    FAILURE_RISK_PARAM_VALUE = 1
-
-    FAILURE_RISK_PARAM_LESS_THAN = '<'
-    FAILURE_RISK_PARAM_LESS_THAN_EQUAL = '<='
-    FAILURE_RISK_PARAM_GREATER_THAN = '>'
-    FAILURE_RISK_PARAM_GREATER_THAN_EQUAL = '>='
-    FAILURE_RISK_PARAM_EQUAL = '=='
-    FAILURE_RISK_PARAM_NOT_EQUAL = '!='
-
+    TYPE_FAILURE_RISK = 'failurerisk'
+    TYPE_WEIGHTED_FAILURE_RISK = 'weightedfailurerisk'
+    
     # Error messages
     NO_APSIM_RESULT_FOR_INDIVIDUALS = "Couldn't find an APSIM result for a given individual."
     NO_APSIM_RESULTS = "No results have been returned from APSIM."

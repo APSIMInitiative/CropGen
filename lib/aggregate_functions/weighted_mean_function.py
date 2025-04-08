@@ -13,7 +13,7 @@ class WeightedMeanFunction:
         aggregated_data_state
     ):
         if not results_for_individual:
-            logging.error("No results available for calculating weighted mean.")
+            logging.error("No results available for calculating WeightedMeanFunction.")
             return 0.0
 
         proportional_yields = WeightedFunctionHelper.get_or_compute_proportional_yields(

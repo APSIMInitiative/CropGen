@@ -1,5 +1,7 @@
 import logging
 
+from lib.utils.constants import Constants
+
 #
 # Represents an mean at high low percentage years aggregate function
 #
@@ -15,7 +17,7 @@ class MeanAtHighLowPercentageYears:
     def calculate(aggregate_function, results_for_individual, apsim_output_index, round_up_years):
         
         if not results_for_individual:
-            logging.error("No results available for calculating weighted mean.")
+            logging.error("No results available for calculating MeanAtHighLowPercentageYears.")
             return 0.0
         
         total_years = len(results_for_individual)
@@ -44,14 +46,15 @@ class MeanAtHighLowPercentageYears:
     def validate_high_low_percentage(high_low, percentage):
 
         if high_low == None: 
-            raise Exception(f"{MeanAtHighLowPercentageYears.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. No high/low specifier at index: {MeanAtHighLowPercentageYears.MEAN_AT_PARAM_HIGH_LOW}")
+            raise Exception(f"{Constants.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. No high/low specifier at index: {Constants.MEAN_AT_PARAM_HIGH_LOW}")
         if percentage == None: 
-            raise Exception(f"{MeanAtHighLowPercentageYears.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. No percentage at index: {MeanAtHighLowPercentageYears.MEAN_AT_PARAM_PERCENT}")
+            raise Exception(f"{Constants.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. No percentage at index: {Constants.MEAN_AT_PARAM_PERCENT}")
         if not MeanAtHighLowPercentageYears._is_supported_high_low(high_low): 
-            raise Exception(f"{MeanAtHighLowPercentageYears.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. Unknown high/low specifier: '{high_low}'")
+            raise Exception(f"{Constants.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. Unknown high/low specifier: '{high_low}'")
         if not MeanAtHighLowPercentageYears._is_supported_percentage(percentage): 
-            raise Exception(f"{MeanAtHighLowPercentageYears.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. Unknown percentage: '{percentage}'")
+            raise Exception(f"{Constants.MEAN_AT_AGGREGATE_FUNCTION_ERROR}. Unknown percentage: '{percentage}'")
     
+
     @staticmethod
     def _is_supported_high_low(high_low):
         return (
