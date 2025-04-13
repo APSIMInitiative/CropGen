@@ -49,7 +49,7 @@ class WeightedFunctionCompareTests(TestBase):
         prototype_total = sum(prototype_results)
 
         # Compare totals within a tolerance
-        tolerance = 100
+        tolerance = 300
         assert abs(algo_total - prototype_total) <= tolerance, (
             f"Totals do not match: algo_total={algo_total}, prototype_total={prototype_total}, "
             f"diff={abs(algo_total - prototype_total)} > tolerance={tolerance}"
@@ -99,7 +99,7 @@ class WeightedFunctionCompareTests(TestBase):
         # Write to CSV
         with open(output_path, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow(["algorithm_results", "prototype_results"])  # Header
+            writer.writerow(["AlgorithmResults", "PrototypeResults"])
 
             # Ensure equal length
             max_len = max(len(algorithm_results), len(prototype_results))

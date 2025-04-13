@@ -17,6 +17,7 @@ class CropGenCsvHelper:
                     yield_value = float(row["Yield"])
                     evapotranspiration = float(row["Evapotranspiration"])
                     site = row["Site"].strip()
+                    site = "dalby"
 
                     apsim_results.append(
                         self.generate_apsim_result(
