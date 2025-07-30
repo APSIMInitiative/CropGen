@@ -37,11 +37,21 @@ class SoftwareVersionInfo():
     def to_string(self):
         lines = []
         lines.append("VersionInfo")
-        lines.append(self.version_info.to_json(True))
+        
+        if self.version_info is not None:
+            lines.append(self.version_info.to_json(True))
+        else:
+            lines.append("VersionInfo: None")
+
         lines.append("GitRepositoryInformation")
-        lines.extend(info.to_json(True) for info in self.git_repository_info)
+        
+        if self.git_repository_info:
+            lines.extend(info.to_json(True) for info in self.git_repository_info if info is not None)
+        else:
+            lines.append("No Git repository information available.")
+
         return "\n".join(lines)
-    
+
     
     @staticmethod
     def get_type_name():
