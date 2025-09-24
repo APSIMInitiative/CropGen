@@ -23,9 +23,10 @@ _sym_db = _symbol_database.Default()
 
 
 import ApsimConfig_pb2 as ApsimConfig__pb2
+import Types_pb2 as Types__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fInitApsim.proto\x1a\x11\x41psimConfig.proto\"\x98\x02\n\x0eInitApsimProto\x12\r\n\x05JobID\x18\x01 \x01(\t\x12\n\n\x02ID\x18\x02 \x01(\x05\x12\x10\n\x03Url\x18\x03 \x01(\tH\x00\x88\x01\x01\x12(\n\rConfiguration\x18\x04 \x01(\x0b\x32\x11.ApsimConfigProto\x12\x18\n\x0bResetRunner\x18\x05 \x01(\x08H\x01\x88\x01\x01\x12\x1e\n\x11PreRunSimulations\x18\x06 \x01(\x08H\x02\x88\x01\x01\x12!\n\x19WaitForJobsTimeoutSeconds\x18\x07 \x01(\x05\x12\x16\n\tApsimPath\x18\x08 \x01(\tH\x03\x88\x01\x01\x42\x06\n\x04_UrlB\x0e\n\x0c_ResetRunnerB\x14\n\x12_PreRunSimulationsB\x0c\n\n_ApsimPathB\x14\xaa\x02\x11protobuf.messagesb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fInitApsim.proto\x1a\x11\x41psimConfig.proto\x1a\x0bTypes.proto\"\xc4\x02\n\x0eInitApsimProto\x12\r\n\x05JobID\x18\x01 \x01(\t\x12\n\n\x02ID\x18\x02 \x01(\x05\x12\x10\n\x03Url\x18\x03 \x01(\tH\x00\x88\x01\x01\x12(\n\rConfiguration\x18\x04 \x01(\x0b\x32\x11.ApsimConfigProto\x12\x18\n\x0bResetRunner\x18\x05 \x01(\x08H\x01\x88\x01\x01\x12\x1e\n\x11PreRunSimulations\x18\x06 \x01(\x08H\x02\x88\x01\x01\x12!\n\x19WaitForJobsTimeoutSeconds\x18\x07 \x01(\x05\x12\x16\n\tApsimPath\x18\x08 \x01(\tH\x03\x88\x01\x01\x12*\n\x0fSimulationNames\x18\t \x03(\x0b\x32\x11.StringArrayProtoB\x06\n\x04_UrlB\x0e\n\x0c_ResetRunnerB\x14\n\x12_PreRunSimulationsB\x0c\n\n_ApsimPathB\x14\xaa\x02\x11protobuf.messagesb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -33,6 +34,6 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'InitApsim_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\252\002\021protobuf.messages'
-  _globals['_INITAPSIMPROTO']._serialized_start=39
-  _globals['_INITAPSIMPROTO']._serialized_end=319
+  _globals['_INITAPSIMPROTO']._serialized_start=52
+  _globals['_INITAPSIMPROTO']._serialized_end=376
 # @@protoc_insertion_point(module_scope)
