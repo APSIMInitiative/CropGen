@@ -4,6 +4,6 @@ requests
 parameterized
 tzlocal
 pyzmq
-protobuf==5.28.1
+protobuf==5.29.6
 psutil
 pandas
